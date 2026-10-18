@@ -45,8 +45,8 @@ export CENSUS_API_KEY=...                       # PowerShell: $env:CENSUS_API_KE
 python collect.py --sources qcew fhfa acs acs5   # qcew is fast from cache; acs5 covers small metros
 python build_metro_panel.py                    # -> data/processed/metro_panel.csv + usable-metro counts
 ```
-One row per metro: IT employment growth 2019-2024 (NAICS 5415, quarter-matched because QCEW suppression is erratic), location quotient, work-from-home change,
-education, income, rent, house-price growth. The printout says how many metros are complete cases.
+One row per metro. Two outcomes: IT *employment* growth 2019-2024 (NAICS 5415; quarter-matched, with a flagged fallback, because QCEW withholds employment erratically) and IT *establishment* growth (never withheld, covers every metro). Plus, location quotient, work-from-home change,
+education, income, rent, house-price growth. The printout says how many metros are complete cases for each outcome and names the biggest metros with no usable employment. If `metro_panel.csv` is open in Excel the builder saves `metro_panel_new.csv` instead.
 FHFA publishes the biggest metros as divisions; `config/msad_parent.csv` maps them to their parent metro.
 
 ## Sharing on GitHub
@@ -56,8 +56,10 @@ your supervisor; see `DATA_SOURCES.md` for licences before making anything publi
 
 ## Explore
 ```bash
-jupyter lab notebooks/01_first_look.ipynb     # run all cells; figures are saved to reports/figures/
+jupyter lab notebooks/01_first_look.ipynb     # national and cross-source first look
+jupyter lab notebooks/02_geography.ipynb      # metro analysis: two outcomes, robust regression, cross-validation
 ```
+Figures are saved to `reports/figures/`. The regression code is in `analysis/metro_models.py`.
 The notebook reads only the master file, so re-run `build_master.py` after collecting new data.
 
 ## Layoffs: one manual step

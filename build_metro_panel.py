@@ -38,13 +38,24 @@ def _num(s):
     return pd.to_numeric(s, errors="coerce")
 
 
-def _paired(piv: pd.DataFrame, ya: int, yb: int, mask: pd.DataFrame | None = None):
-    """Mean over the quarters present in both years. Returns (mean_a, mean_b, n_quarters, mask)."""
-    A, B = piv[ya], piv[yb]
-    A, B = A.align(B, join="inner", axis=1)
-    if mask is None:
-        mask = A.notna() & B.notna()
+def _matched(piv: pd.DataFrame, ya: int, yb: int):
+    """Quarter-matched means: only quarters reported in BOTH years. Returns (mean_a, mean_b, n_quarters, mask)."""
+    A, B = piv[ya].align(piv[yb], join="inner", axis=1)
+    mask = A.notna() & B.notna()
     return A.where(mask).mean(axis=1), B.where(mask).mean(axis=1), mask.sum(axis=1), mask
+
+
+def _growth_inputs(piv: pd.DataFrame, ya: int, yb: int):
+    """Prefer quarter-matched means (>= MIN_Q common quarters). Otherwise fall back to the mean of whatever
+    quarters exist in each year (>= 1 per year): a small seasonal mismatch, flagged in `basis`."""
+    m0, m1, n, mask = _matched(piv, ya, yb)
+    f0, f1 = piv[ya].mean(axis=1), piv[yb].mean(axis=1)
+    matched = n >= MIN_Q
+    fallback = ~matched & f0.notna() & f1.notna()
+    v0 = m0.where(matched, f0.where(fallback))
+    v1 = m1.where(matched, f1.where(fallback))
+    basis = pd.Series(np.where(matched, "matched", np.where(fallback, "unmatched", "none")), index=piv.index)
+    return v0, v1, n, basis, mask, matched
 
 
 def load_qcew() -> pd.DataFrame:
@@ -55,38 +66,33 @@ def load_qcew() -> pd.DataFrame:
     m = a[["month1_emplvl", "month2_emplvl", "month3_emplvl"]].apply(_num)
     supp = (a["disclosure_code"] == "N") if "disclosure_code" in a else pd.Series(False, index=a.index)
     supp = supp | (_num(a["month3_emplvl"]) == 0)
-    a["emp"] = m.mean(axis=1).where(~supp)
-    a["estabs"] = _num(a["qtrly_estabs"]).where(~supp)
+    a["emp"] = m.mean(axis=1).where(~supp)            # employment and wages ARE withheld when suppressed...
     a["wage"] = _num(a["avg_wkly_wage"]).where(~supp)
+    a["estabs"] = _num(a["qtrly_estabs"])             # ...but the establishment count is still reported
     piv = {v: a.pivot_table(index=["area_fips", "industry_code"], columns=["year", "qtr"], values=v, aggfunc="first")
            for v in ("emp", "estabs", "wage")}
-    it = {v: piv[v].xs(IT, level="industry_code") for v in piv}
-    tot = piv["emp"].xs(TOTAL, level="industry_code")
+    idx = piv["emp"].xs(IT, level="industry_code").index.union(piv["emp"].xs(TOTAL, level="industry_code").index)
+    it = {v: piv[v].xs(IT, level="industry_code").reindex(idx) for v in piv}
+    tot = piv["emp"].xs(TOTAL, level="industry_code").reindex(idx)
 
-    idx = it["emp"].index.union(tot.index)  # keep metros with NO IT rows, so coverage shares are honest
-    it = {v: it[v].reindex(idx) for v in it}
     out = pd.DataFrame(index=idx)
-    # main comparison: 2019 vs 2024 on quarters reported in both years
-    e0, e1, n, mask = _paired(it["emp"], Y0, Y1)
-    out["emp_it_2019"], out["emp_it_2024"], out["n_quarters"] = e0, e1, n
-    out["estabs_it_2019"] = _paired(it["estabs"], Y0, Y1, mask)[0]
-    out["wage_it_2019"], out["wage_it_2024"] = _paired(it["wage"], Y0, Y1, mask)[:2]
-    t0, t1, _, _ = _paired(tot.reindex(out.index), Y0, Y1, mask)
-    out["emp_total_2019"], out["emp_total_2024"] = t0, t1
-    # pre-trend: 2015 vs 2019 on their own matched quarters
-    p15, p19, npre, _ = _paired(it["emp"], YPRE, Y0)
+    # --- IT employment outcome: 2019 vs 2024
+    e0, e1, n, basis, mask, matched = _growth_inputs(it["emp"], Y0, Y1)
+    out["emp_it_2019"], out["emp_it_2024"], out["n_quarters"], out["emp_basis"] = e0, e1, n, basis
+    w0 = np.where(matched, _matched(it["wage"], Y0, Y1)[0], it["wage"][Y0].mean(axis=1))
+    w1 = np.where(matched, _matched(it["wage"], Y0, Y1)[1], it["wage"][Y1].mean(axis=1))
+    usable_emp = e0.notna() & e1.notna()
+    out["wage_it_2019"] = pd.Series(w0, index=idx).where(usable_emp)
+    out["wage_it_2024"] = pd.Series(w1, index=idx).where(usable_emp)
+    # --- establishments (never suppressed) and total employment (never suppressed): all-quarter means
+    out["estabs_it_2019"], out["estabs_it_2024"] = it["estabs"][Y0].mean(axis=1), it["estabs"][Y1].mean(axis=1)
+    out["estabs_it_2015"] = it["estabs"][YPRE].mean(axis=1)
+    out["emp_total_2019"], out["emp_total_2024"] = tot[Y0].mean(axis=1), tot[Y1].mean(axis=1)
+    # --- pre-trend (2015 -> 2019)
+    p15, p19, npre, _, _, _ = _growth_inputs(it["emp"], YPRE, Y0)
     out["it_growth_pre_pct"] = (p19 / p15 - 1) * 100
-    out["n_quarters_pre"] = npre
-
-    # total private employment is never suppressed: keep an all-quarter version that does NOT depend on
-    # IT being usable, so coverage and "biggest metros" are measured on ALL metros
-    out["emp_total_all_2019"] = tot.reindex(idx)[Y0].mean(axis=1)
-    thin = out["n_quarters"] < MIN_Q
-    out.loc[thin, [c for c in out.columns if c.startswith(("emp_it_", "emp_total_2", "estabs_", "wage_"))]] = np.nan
-    out.loc[out["n_quarters_pre"] < MIN_Q, "it_growth_pre_pct"] = np.nan
     # the old rule (Q1 only), kept for comparison
-    q1 = it["emp"]
-    out["usable_q1_only"] = q1[(Y0, 1)].notna() & q1[(Y1, 1)].notna()
+    out["usable_q1_only"] = it["emp"][(Y0, 1)].notna() & it["emp"][(Y1, 1)].notna()
     out = out.reset_index()
     out["cbsa_code"] = out["area_fips"].str[1:] + "0"
     return out
@@ -97,6 +103,15 @@ def national_it_share() -> float:
     n = n[(n["year"] == Y0) & n["industry_code"].isin([IT, TOTAL])]
     emp = n.groupby("industry_code")[["month1_emplvl", "month2_emplvl", "month3_emplvl"]].mean().mean(axis=1)
     return float(emp[IT] / emp[TOTAL] * 100)
+
+
+def national_estab_density() -> float:
+    """IT establishments per 1,000 private workers, US, 2019 (all quarters)."""
+    n = pd.read_csv(RAW / "bls_qcew_it_industries.csv", dtype={"industry_code": str})
+    n = n[(n["year"] == Y0) & n["industry_code"].isin([IT, TOTAL])]
+    est = n.groupby("industry_code")["qtrly_estabs"].mean()
+    emp = n.groupby("industry_code")[["month1_emplvl", "month2_emplvl", "month3_emplvl"]].mean().mean(axis=1)
+    return float(est[IT] / (emp[TOTAL] / 1000))
 
 
 def acs_path() -> Path | None:
@@ -150,7 +165,8 @@ def load_fhfa() -> pd.DataFrame:
 
 def build() -> tuple[pd.DataFrame, list[str]]:
     q = load_qcew()
-    nat = national_it_share()
+    nat, nat_dens = national_it_share(), national_estab_density()
+    # outcome A: IT employment (can be suppressed)
     q["it_growth_pct"] = (q["emp_it_2024"] / q["emp_it_2019"] - 1) * 100
     q["it_share_2019_pct"] = q["emp_it_2019"] / q["emp_total_2019"] * 100
     q["it_location_quotient_2019"] = q["it_share_2019_pct"] / nat
@@ -158,6 +174,12 @@ def build() -> tuple[pd.DataFrame, list[str]]:
     q["it_avg_estab_size_2019"] = q["emp_it_2019"] / q["estabs_it_2019"]
     q["it_wage_growth_pct"] = (q["wage_it_2024"] / q["wage_it_2019"] - 1) * 100
     q["usable"] = q["emp_it_2019"].notna() & q["emp_it_2024"].notna()
+    # outcome B: IT establishments (never suppressed, so every metro with IT firms is included)
+    q["estab_growth_pct"] = (q["estabs_it_2024"] / q["estabs_it_2019"] - 1) * 100
+    q["estab_growth_pre_pct"] = (q["estabs_it_2019"] / q["estabs_it_2015"] - 1) * 100
+    q["it_estabs_per_1000_workers_2019"] = q["estabs_it_2019"] / (q["emp_total_2019"] / 1000)
+    q["it_estab_quotient_2019"] = q["it_estabs_per_1000_workers_2019"] / nat_dens
+    q["usable_estab"] = q["estab_growth_pct"].notna() & q["it_estab_quotient_2019"].notna()
 
     p = q.merge(load_fhfa(), on="cbsa_code", how="left")
     have_acs = acs_path() is not None
@@ -167,34 +189,40 @@ def build() -> tuple[pd.DataFrame, list[str]]:
         p["population_growth_pct"] = (p["population_acs_end"] / p["population_acs2019"] - 1) * 100
         p["metro_name"] = p["name"].fillna(p["hpi_name"])
     else:
-        log.warning("census_acs1_metro.csv not found: building the panel WITHOUT Census features "
-                    "(run `python collect.py --sources acs`; it needs a free CENSUS_API_KEY).")
+        log.warning("No Census ACS file found: building the panel WITHOUT Census features "
+                    "(run `python collect.py --sources acs5`; it needs a free CENSUS_API_KEY).")
         p["metro_name"] = p["hpi_name"]
 
-    feats = ["it_growth_pre_pct", "it_location_quotient_2019", "it_avg_estab_size_2019", "wfh_share_pct_acs2019",
-             "wfh_change_pp", "bachelors_plus_pct_acs2019", "population_acs2019", "median_hh_income_acs2019",
-             "median_gross_rent_acs2019", "median_age_acs2019", "hpi_growth_pre_pct", "hpi_growth_pct"]
-    feats = [f for f in feats if f in p]
+    common = ["wfh_share_pct_acs2019", "wfh_change_pp", "bachelors_plus_pct_acs2019", "population_acs2019",
+              "median_hh_income_acs2019", "median_gross_rent_acs2019", "median_age_acs2019",
+              "hpi_growth_pre_pct", "hpi_growth_pct"]
+    feats = [f for f in ["it_growth_pre_pct", "it_location_quotient_2019", "it_avg_estab_size_2019"] + common if f in p]
+    feats_e = [f for f in ["estab_growth_pre_pct", "it_estab_quotient_2019"] + common if f in p]
     p["complete_case"] = p["usable"] & p[feats].notna().all(axis=1)
-    allm = p["emp_total_all_2019"]
+    p["complete_case_estab"] = p["usable_estab"] & p[feats_e].notna().all(axis=1)
+
+    allm = p["emp_total_2019"]
     big = p.loc[allm.nlargest(25).index]
-    unusable_big = big[~big["usable"]]
     lines = [
-        f"MSAs in QCEW area file:                       {len(p)}",
-        f"IT employment usable (old rule, Q1 only):     {int(p['usable_q1_only'].sum())}",
-        f"IT employment usable (quarter-matched, >= {MIN_Q}):   {int(p['usable'].sum())}",
-        f"  share of ALL private employment in usable metros: {allm[p['usable']].sum() / allm.sum() * 100:.0f}%",
-        f"  of the 25 biggest metros (all employment), usable: {int(big['usable'].sum())}",
-        (f"  ... and matched to Census ACS:             {int((p['usable'] & p['name'].notna()).sum())}"
-         if have_acs else "  ... Census ACS:                            NOT AVAILABLE (see warning)"),
-        f"  ... and matched to FHFA house prices:      {int((p['usable'] & p['hpi_growth_pct'].notna()).sum())}",
-        f"COMPLETE CASES for the regression:           {int(p['complete_case'].sum())}  ({len(feats)} candidate predictors)",
-        f"Rule of thumb: 10-15 metros per predictor -> about {int(p['complete_case'].sum() // 12)} predictors supportable.",
-        "Features: " + ", ".join(feats),
+        f"MSAs in QCEW area file:                        {len(p)}",
+        f"--- Outcome A: IT EMPLOYMENT growth 2019-2024 (employment is sometimes withheld) ---",
+        f"  usable, quarter-matched:                     {int((p['emp_basis'] == 'matched').sum())}",
+        f"  usable, quarters not matched (fallback):     {int((p['emp_basis'] == 'unmatched').sum())}",
+        f"  usable in total:                             {int(p['usable'].sum())}   (old Q1-only rule: {int(p['usable_q1_only'].sum())})",
+        f"  share of ALL private employment covered:     {allm[p['usable']].sum() / allm.sum() * 100:.0f}%",
+        f"  of the 25 biggest metros, usable:            {int(big['usable'].sum())}",
+        f"  COMPLETE CASES: {int(p['complete_case'].sum())}  ({len(feats)} candidate predictors; ~{int(p['complete_case'].sum() // 12)} supportable)",
+        f"--- Outcome B: IT ESTABLISHMENT growth 2019-2024 (never withheld) ---",
+        f"  usable:                                      {int(p['usable_estab'].sum())}",
+        f"  share of ALL private employment covered:     {allm[p['usable_estab']].sum() / allm.sum() * 100:.0f}%",
+        f"  of the 25 biggest metros, usable:            {int(big['usable_estab'].sum())}",
+        f"  COMPLETE CASES: {int(p['complete_case_estab'].sum())}  ({len(feats_e)} candidate predictors; ~{int(p['complete_case_estab'].sum() // 12)} supportable)",
+        "Census file: " + (acs_path().name if have_acs else "NOT AVAILABLE"),
     ]
-    if len(unusable_big):
-        lines.append("BIGGEST METROS THAT ARE UNUSABLE (no quarter reported in both years): "
-                     + "; ".join(unusable_big["metro_name"].fillna(unusable_big["cbsa_code"]).astype(str)))
+    miss = big[~big["usable"]]
+    if len(miss):
+        lines.append("Biggest metros with NO usable IT employment: "
+                     + "; ".join(miss["metro_name"].fillna(miss["cbsa_code"]).astype(str)))
     return p, lines
 
 
@@ -203,7 +231,12 @@ def main() -> None:
     ensure_dirs()
     panel, lines = build()
     out = PROCESSED / "metro_panel.csv"
-    panel.drop(columns=["area_fips"]).to_csv(out, index=False)
+    try:
+        panel.drop(columns=["area_fips"]).to_csv(out, index=False)
+    except PermissionError:  # typically the old file is open in Excel
+        out = out.with_name("metro_panel_new.csv")
+        panel.drop(columns=["area_fips"]).to_csv(out, index=False)
+        print("NOTE: metro_panel.csv is open in another program (Excel?), so the new panel was saved as", out.name)
     print("\n".join(lines) + f"\n\nMetro panel: {out}")
 
 
