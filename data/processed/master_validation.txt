@@ -1,0 +1,29 @@
+PASS  schema columns and order
+PASS  every row has a date
+PASS  every row has a metric
+PASS  no duplicate (series_id, date) keys [0 duplicates]
+PASS  one unit per metric
+PASS  spot check CES CEU0000000001 2023-05-01: master=156038.0 raw=156038.0
+PASS  spot check BRES 62011 2019 Employment (thousands): master=14.0 raw=14.0
+PASS  spot check QCEW 541511 2015-01-01 establishments: master=105535.0 raw=105535
+
+Rows / date range / countries per dataset:
+  bls_ces                                704 rows  2015-01-01 -> 2026-09-01    1 areas      5 series
+  bls_qcew                              1080 rows  2015-01-01 -> 2026-01-01    1 areas     27 series
+  eurostat_isoc_sks_itspa               2904 rows  2004-01-01 -> 2025-01-01   37 areas    148 series
+  eurostat_isoc_sks_itspe               3070 rows  2004-01-01 -> 2025-01-01   37 areas    170 series
+  eurostat_isoc_sks_itsps               2886 rows  2004-01-01 -> 2025-01-01   37 areas    148 series
+  eurostat_isoc_sks_itspt               1452 rows  2004-01-01 -> 2025-01-01   37 areas     74 series
+  eurostat_lfsa_egan22d                 4243 rows  2008-01-01 -> 2025-01-01   38 areas    263 series
+  hn_whoishiring                        5180 rows  2015-01-01 -> 2026-10-01    1 areas     37 series
+  indeed_aggregate                      2592 rows  2020-02-01 -> 2026-10-01    8 areas     32 series
+  indeed_it_sector                      2430 rows  2020-02-01 -> 2026-10-01    4 areas     30 series
+  layoffs_tracker                       5727 rows  2020-03-01 -> 2026-10-01   28 areas    681 series
+  ons_bres                              1520 rows  2015-01-01 -> 2024-01-01    1 areas    152 series
+
+Missing values per dataset: layoffs_tracker=459
+Quality flags: bls_qcew/series_break=3, eurostat_isoc_sks_itspa/b=164, eurostat_isoc_sks_itspa/bd=8, eurostat_isoc_sks_itspa/be=392, eurostat_isoc_sks_itspa/bu=16, eurostat_isoc_sks_itspa/d=30, eurostat_isoc_sks_itspa/de=2, eurostat_isoc_sks_itspa/e=1566, eurostat_isoc_sks_itspa/u=28, eurostat_isoc_sks_itspe/b=176, eurostat_isoc_sks_itspe/bd=4, eurostat_isoc_sks_itspe/bde=4, eurostat_isoc_sks_itspe/bdu=2, eurostat_isoc_sks_itspe/be=566, eurostat_isoc_sks_itspe/bu=42, eurostat_isoc_sks_itspe/d=24, eurostat_isoc_sks_itspe/de=10, eurostat_isoc_sks_itspe/du=4, eurostat_isoc_sks_itspe/e=1582, eurostat_isoc_sks_itspe/u=86, eurostat_isoc_sks_itsps/b=140, eurostat_isoc_sks_itsps/bd=8, eurostat_isoc_sks_itsps/be=408, eurostat_isoc_sks_itsps/bu=20, eurostat_isoc_sks_itsps/d=30, eurostat_isoc_sks_itsps/de=2, eurostat_isoc_sks_itsps/e=1556, eurostat_isoc_sks_itsps/u=76, eurostat_isoc_sks_itspt/b=108, eurostat_isoc_sks_itspt/bd=4, eurostat_isoc_sks_itspt/be=176, eurostat_isoc_sks_itspt/bu=2, eurostat_isoc_sks_itspt/d=16, eurostat_isoc_sks_itspt/e=646, eurostat_isoc_sks_itspt/u=2, eurostat_lfsa_egan22d/b=550, eurostat_lfsa_egan22d/bd=21, eurostat_lfsa_egan22d/bu=80, eurostat_lfsa_egan22d/d=49, eurostat_lfsa_egan22d/u=471, hn_whoishiring/partial_month=37, indeed_aggregate/partial_month=32, indeed_it_sector/partial_month=30
+
+All codes are covered by config/segment_map.csv.
+
+Reminder: to sum within a segment_group, filter ONE dataset and granularity == 'detailed' (aggregate rows overlap their parts), and exclude area_level == 'aggregate'.

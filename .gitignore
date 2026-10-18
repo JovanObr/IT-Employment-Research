@@ -1,0 +1,16 @@
+# --- secrets: never commit API keys (they live in environment variables, not in files) ---
+.env
+*.key
+
+# --- bulky or non-redistributable data: re-create it with `python collect.py` ---
+data/cache/
+data/raw/*
+!data/raw/sec_company_matches.csv
+data/manual/
+data/processed/layoffs_clean.csv
+
+# --- local clutter ---
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+*.zip

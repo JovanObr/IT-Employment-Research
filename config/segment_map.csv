@@ -1,0 +1,69 @@
+scheme,code,segment_group,segment,granularity,notes
+CES,CEU0000000001,All industries,Total nonfarm,total,NSA
+CES,CEU5000000001,Information & communication sector,Information sector (NAICS 51),sector,NAICS Information includes telecom & film but NOT IT services (NAICS 54): not equal to NACE J
+CES,CEU5051320001,Software publishing (incl. games),Software publishers (NAICS 5132),aggregate,aggregate of QCEW 513210 (2022+)
+CES,CEU5051800001,"Hosting, data & information services","Data processing, hosting & related (NAICS 5182)",aggregate,
+CES,CEU6054150001,IT services,Computer systems design & related services (NAICS 5415),aggregate,aggregate of QCEW 541511/2/3/9
+QCEW,511210,Software publishing (incl. games),Software publishers,detailed,"NAICS revision: 511210 until 2021Q4, 513210 from 2022Q1; definitions differ (series break)"
+QCEW,513210,Software publishing (incl. games),Software publishers,detailed,"NAICS revision: 511210 until 2021Q4, 513210 from 2022Q1; definitions differ (series break)"
+QCEW,541511,IT services,Custom computer programming,detailed,
+QCEW,541512,IT services,Computer systems design,detailed,
+QCEW,541513,IT services,Computer facilities management,detailed,
+QCEW,541519,IT services,Other computer related services,detailed,
+QCEW,518210,"Hosting, data & information services","Data processing, hosting & related",detailed,
+EUROSTAT_NACE,TOTAL,All industries,All industries,total,
+EUROSTAT_NACE,J,Information & communication sector,Information & communication (NACE J),sector,"includes telecom, media, IT services"
+EUROSTAT_NACE,J58,Publishing (broad),Publishing activities (NACE J58),aggregate,includes books/newspapers AND software & games publishing
+EUROSTAT_NACE,J59_J60,Media & broadcasting,"Film, TV, music production & broadcasting (J59-J60)",aggregate,
+EUROSTAT_NACE,J61,Telecommunications,Telecommunications (J61),aggregate,
+EUROSTAT_NACE,J62_J63,IT services,"Computer programming, consultancy & information services (J62-J63)",aggregate,"also contains information services (J63), unlike the US IT-services group"
+EUROSTAT_NACE,J62,IT services,Computer programming & consultancy (J62),aggregate,
+EUROSTAT_NACE,J63,"Hosting, data & information services",Information service activities (J63),aggregate,
+EUROSTAT_ICT,*,ICT occupations,ICT specialists (all industries),total,"occupation-based (LFS), not industry-based"
+BRES_SIC,TOTAL,All industries,All industries (Great Britain),total,
+BRES_SIC,581,Non-software publishing,"Publishing of books, periodicals & other (SIC 581)",aggregate,counts rounded for disclosure control
+BRES_SIC,5811,Non-software publishing,Book publishing,aggregate,counts rounded for disclosure control
+BRES_SIC,58110,Non-software publishing,Book publishing,detailed,counts rounded for disclosure control
+BRES_SIC,5812,Non-software publishing,Directories & mailing lists,aggregate,counts rounded for disclosure control
+BRES_SIC,58120,Non-software publishing,Directories & mailing lists,detailed,counts rounded for disclosure control
+BRES_SIC,5813,Non-software publishing,Newspapers,aggregate,counts rounded for disclosure control
+BRES_SIC,58130,Non-software publishing,Newspapers,detailed,counts rounded for disclosure control
+BRES_SIC,5814,Non-software publishing,Journals & periodicals,aggregate,counts rounded for disclosure control
+BRES_SIC,58141,Non-software publishing,Learned journals,detailed,counts rounded for disclosure control
+BRES_SIC,58142,Non-software publishing,"Consumer, business & professional journals",detailed,counts rounded for disclosure control
+BRES_SIC,5819,Non-software publishing,Other publishing,aggregate,counts rounded for disclosure control
+BRES_SIC,58190,Non-software publishing,Other publishing,detailed,counts rounded for disclosure control
+BRES_SIC,582,Software publishing (incl. games),Software publishing (SIC 582),aggregate,counts rounded for disclosure control
+BRES_SIC,5821,Software publishing (incl. games),Computer games publishing,aggregate,counts rounded for disclosure control
+BRES_SIC,58210,Software publishing (incl. games),Computer games publishing,detailed,counts rounded for disclosure control
+BRES_SIC,5829,Software publishing (incl. games),Other software publishing,aggregate,counts rounded for disclosure control
+BRES_SIC,58290,Software publishing (incl. games),Other software publishing,detailed,counts rounded for disclosure control
+BRES_SIC,620,IT services,"Computer programming, consultancy & related (SIC 620)",aggregate,counts rounded for disclosure control
+BRES_SIC,6201,IT services,Computer programming activities,aggregate,counts rounded for disclosure control
+BRES_SIC,62011,IT services,Games & entertainment software development,detailed,counts rounded for disclosure control
+BRES_SIC,62012,IT services,Business & domestic software development,detailed,counts rounded for disclosure control
+BRES_SIC,6202,IT services,Computer consultancy,aggregate,counts rounded for disclosure control
+BRES_SIC,62020,IT services,Computer consultancy,detailed,counts rounded for disclosure control
+BRES_SIC,6203,IT services,Computer facilities management,aggregate,counts rounded for disclosure control
+BRES_SIC,62030,IT services,Computer facilities management,detailed,counts rounded for disclosure control
+BRES_SIC,6209,IT services,Other IT & computer services,aggregate,counts rounded for disclosure control
+BRES_SIC,62090,IT services,Other IT & computer services,detailed,counts rounded for disclosure control
+BRES_SIC,631,"Hosting, data & information services","Data processing, hosting & web portals (SIC 631)",aggregate,counts rounded for disclosure control
+BRES_SIC,6311,"Hosting, data & information services",Data processing & hosting,aggregate,counts rounded for disclosure control
+BRES_SIC,63110,"Hosting, data & information services",Data processing & hosting,detailed,counts rounded for disclosure control
+BRES_SIC,6312,"Hosting, data & information services",Web portals,aggregate,counts rounded for disclosure control
+BRES_SIC,63120,"Hosting, data & information services",Web portals,detailed,counts rounded for disclosure control
+BRES_SIC,639,"Hosting, data & information services",Other information services (SIC 639),aggregate,counts rounded for disclosure control
+BRES_SIC,6391,"Hosting, data & information services",News agencies,aggregate,counts rounded for disclosure control
+BRES_SIC,63910,"Hosting, data & information services",News agencies,detailed,counts rounded for disclosure control
+BRES_SIC,6399,"Hosting, data & information services",Other information services n.e.c.,aggregate,counts rounded for disclosure control
+BRES_SIC,63990,"Hosting, data & information services",Other information services n.e.c.,detailed,counts rounded for disclosure control
+INDEED,ALL,All industries,All job postings,total,
+INDEED,Software Development,ICT occupations,Software Development,detailed,"postings by occupation category, all industries"
+INDEED,"IT Infrastructure, Operations & Support",ICT occupations,"IT Infrastructure, Operations & Support",detailed,"postings by occupation category, all industries"
+INDEED,IT Systems & Solutions,ICT occupations,IT Systems & Solutions,detailed,"postings by occupation category, all industries"
+INDEED,Data & Analytics,ICT occupations,Data & Analytics,detailed,"postings by occupation category, all industries"
+EUROSTAT_NACE,J59,Media & broadcasting,"Film, video, TV production, sound & music publishing (J59)",aggregate,
+EUROSTAT_NACE,J60,Media & broadcasting,Programming & broadcasting (J60),aggregate,
+QCEW,5415,IT services,Computer systems design & related services (NAICS 5415),aggregate,aggregate of 541511/2/3/9; less suppressed than the 6-digit codes
+QCEW,10,All industries,"Total, all industries (private)",total,

@@ -1,0 +1,208 @@
+cik,ticker,sec_title,match_type,score,needs_review,layoffs_company
+6951,AMAT,APPLIED MATERIALS INC /DE,fuzzy,0.889,1,Applied Material
+1839341,CORZ,"Core Scientific, Inc./tx",fuzzy,0.909,1,Core Scientific
+1770787,TXG,"10x Genomics, Inc.",exact,1.0,0,10X Genomics
+1818644,LIDR,"AEye, Inc.",exact,1.0,0,AEye
+937966,ASML,ASML HOLDING NV,exact,1.0,0,ASML
+1672688,ABSI,Absci Corp,exact,1.0,0,Absci
+1478320,ADPT,Adaptive Biotechnologies Corp,exact,1.0,0,Adaptive Biotechnologies
+796343,ADBE,ADOBE INC.,exact,1.0,0,Adobe
+1820953,AFRM,"Affirm Holdings, Inc.",exact,1.0,0,Affirm
+1559720,ABNB,"Airbnb, Inc.",exact,1.0,0,Airbnb
+1062579,DOX,AMDOCS LTD,exact,1.0,0,Amdocs
+1866692,AMPL,"Amplitude, Inc.",exact,1.0,0,Amplitude
+6281,ADI,ANALOG DEVICES INC,exact,1.0,0,Analog Devices
+1705110,ANGI,Angi Inc.,exact,1.0,0,Angi
+1433195,APPF,APPFOLIO INC,exact,1.0,0,AppFolio
+1751008,APP,AppLovin Corp,exact,1.0,0,AppLovin
+320193,AAPL,Apple Inc.,exact,1.0,0,Apple
+1521332,APTV,Aptiv PLC,exact,1.0,0,Aptiv
+1477720,ASAN,"Asana, Inc.",exact,1.0,0,Asana
+769397,ADSK,"Autodesk, Inc.",exact,1.0,0,Autodesk
+1820302,BKKT,"Bakkt, Inc.",exact,1.0,0,Bakkt
+1819574,BARK,"Bark, Inc.",exact,1.0,0,Bark
+1655210,BYND,"BEYOND MEAT, INC.",exact,1.0,0,Beyond Meat
+1836981,BBAI,"BigBear.ai Holdings, Inc.",exact,1.0,0,BigBear.ai
+1786352,BILL,"BILL Holdings, Inc.",exact,1.0,0,Bill.com
+1666134,BL,"BLACKLINE, INC.",exact,1.0,0,BlackLine
+1280058,BLKB,BLACKBAUD INC,exact,1.0,0,Blackbaud
+1871638,BZAI,"Blaize Holdings, Inc.",exact,1.0,0,Blaize
+1429764,BLNK,Blink Charging Co.,exact,1.0,0,Blink Charging
+1512673,XYZ,"Block, Inc.",exact,1.0,0,Block
+1075531,BKNG,Booking Holdings Inc.,exact,1.0,0,Booking Holdings
+1730168,AVGO,Broadcom Inc.,exact,1.0,0,Broadcom
+1830043,BMBL,Bumble Inc.,exact,1.0,0,Bumble
+1804176,BFLY,"Butterfly Network, Inc.",exact,1.0,0,Butterfly Network
+1828972,BZFD,"BuzzFeed, Inc.",exact,1.0,0,BuzzFeed
+1625641,LAW,"CS Disco, Inc.",exact,1.0,0,CS Disco
+1494259,CARG,"CarGurus, Inc.",exact,1.0,0,CarGurus
+1666071,CDLX,"Cardlytics, Inc.",exact,1.0,0,Cardlytics
+1690820,CVNA,CARVANA CO.,exact,1.0,0,Carvana
+1850119,IPSC,"Century Therapeutics, Inc.",exact,1.0,0,Century Therapeutics
+1364954,CHGG,"CHEGG, INC",exact,1.0,0,Chegg
+1766502,CHWY,"Chewy, Inc.",exact,1.0,0,Chewy
+1262976,CMPR,CIMPRESS plc,exact,1.0,0,Cimpress
+1477333,NET,"Cloudflare, Inc.",exact,1.0,0,Cloudflare
+1200375,CDXS,"CODEXIS, INC.",exact,1.0,0,Codexis
+820318,COHR,COHERENT CORP.,exact,1.0,0,Coherent
+1563190,COMP,"Compass, Inc.",exact,1.0,0,Compass
+1651562,COUR,"Coursera, Inc.",exact,1.0,0,Coursera
+1535527,CRWD,"CrowdStrike Holdings, Inc.",exact,1.0,0,CrowdStrike
+1393883,DHX,"DHI GROUP, INC.",exact,1.0,0,DHI Group
+1861795,DH,Definitive Healthcare Corp.,exact,1.0,0,Definitive Healthcare
+2119322,DMRC,Digimarc Corp,exact,1.0,0,Digimarc
+1582961,DOCN,"DigitalOcean Holdings, Inc.",exact,1.0,0,DigitalOcean
+1261333,DOCU,"DOCUSIGN, INC.",exact,1.0,0,DocuSign
+1792789,DASH,"DoorDash, Inc.",exact,1.0,0,DoorDash
+1516513,DOCS,"Doximity, Inc.",exact,1.0,0,Doximity
+1883685,DKNG,DraftKings Inc.,exact,1.0,0,DraftKings
+1467623,DBX,"DROPBOX, INC.",exact,1.0,0,Dropbox
+1821159,EVGO,EVgo Inc.,exact,1.0,0,EVgo
+1650664,EDIT,"Editas Medicine, Inc.",exact,1.0,0,Editas Medicine
+1828318,ENVX,Enovix Corp,exact,1.0,0,Enovix
+1463101,ENPH,"Enphase Energy, Inc.",exact,1.0,0,Enphase Energy
+1370637,ETSY,ETSY INC,exact,1.0,0,Etsy
+1640428,EVER,"EverQuote, Inc.",exact,1.0,0,Everquote
+1324424,EXPE,"Expedia Group, Inc.",exact,1.0,0,Expedia
+1048695,FFIV,"F5, INC.",exact,1.0,0,F5
+1517413,FSLY,"Fastly, Inc.",exact,1.0,0,Fastly
+1434316,FATE,FATE THERAPEUTICS INC,exact,1.0,0,Fate Therapeutics
+1288847,FIVN,"Five9, Inc.",exact,1.0,0,Five9
+1039399,FORM,FORMFACTOR INC,exact,1.0,0,FormFactor
+1262039,FTNT,"Fortinet, Inc.",exact,1.0,0,Fortinet
+1927719,CRGO,Freightos Ltd,exact,1.0,0,Freightos
+1544522,FRSH,Freshworks Inc.,exact,1.0,0,Freshworks
+1484769,FUBO,FuboTV Inc.,exact,1.0,0,FuboTV
+1830214,DNA,"Ginkgo Bioworks Holdings, Inc.",exact,1.0,0,Ginkgo Bioworks
+1653482,GTLB,Gitlab Inc.,exact,1.0,0,GitLab
+2069785,GLOO,"Gloo Holdings, Inc.",exact,1.0,0,Gloo
+1609711,GDDY,GoDaddy Inc.,exact,1.0,0,GoDaddy
+1500435,GPRO,"GoPro, Inc.",exact,1.0,0,GoPro
+1809519,GDRX,"GoodRx Holdings, Inc.",exact,1.0,0,GoodRx
+1699031,GRAL,"GRAIL, Inc.",exact,1.0,0,Grail
+1490281,GRPN,"Groupon, Inc.",exact,1.0,0,Groupon
+1576280,GH,"Guardant Health, Inc.",exact,1.0,0,Guardant Health
+1645590,HPE,Hewlett Packard Enterprise Co,exact,1.0,0,Hewlett Packard Enterprise
+1404655,HUBS,HUBSPOT INC,exact,1.0,0,HubSpot
+1404655,HUBS,HUBSPOT INC,exact,1.0,0,Hubspot
+1538379,IBTA,"Ibotta, Inc.",exact,1.0,0,Ibotta
+1110803,ILMN,"ILLUMINA, INC.",exact,1.0,0,Illumina
+1114995,PI,IMPINJ INC,exact,1.0,0,Impinj
+50863,INTC,INTEL CORP,exact,1.0,0,Intel
+896878,INTU,INTUIT INC.,exact,1.0,0,Intuit
+1432133,KLTR,KALTURA INC,exact,1.0,0,Kaltura
+1867072,KD,"Kyndryl Holdings, Inc.",exact,1.0,0,Kyndryl
+707549,LRCX,LAM RESEARCH CORP,exact,1.0,0,Lam Research
+1826000,LTCH,"Latch, Inc.",exact,1.0,0,Latch
+1286139,LZ,"LEGALZOOM.COM, INC.",exact,1.0,0,LegalZoom
+1691421,LMND,"Lemonade, Inc.",exact,1.0,0,Lemonade
+1434621,TREE,"LendingTree, Inc.",exact,1.0,0,LendingTree
+1581760,LIF,"Life360, Inc.",exact,1.0,0,Life360
+733269,RAMP,"LiveRamp Holdings, Inc.",exact,1.0,0,LiveRamp
+1799011,LUCD,Lucid Diagnostics Inc.,exact,1.0,0,Lucid Diagnostics
+1759509,LYFT,"Lyft, Inc.",exact,1.0,0,Lyft
+1507605,MARA,"MARA Holdings, Inc.",exact,1.0,0,MARA
+1595974,MGNI,"MAGNITE, INC.",exact,1.0,0,Magnite
+1056696,MANH,MANHATTAN ASSOCIATES INC,exact,1.0,0,Manhattan Associates
+1522540,MQ,"Marqeta, Inc.",exact,1.0,0,Marqeta
+891103,MTCH,"Match Group, Inc.",exact,1.0,0,Match Group
+1613103,MDT,Medtronic plc,exact,1.0,0,Medtronic
+65770,MVIS,"MICROVISION, INC.",exact,1.0,0,MicroVision
+1604821,NTRA,"Natera, Inc.",exact,1.0,0,Natera
+1625278,NRDS,"NERDWALLET, INC.",exact,1.0,0,NerdWallet
+1819404,NRDY,Nerdy Inc.,exact,1.0,0,Nerdy
+1002047,NTAP,"NetApp, Inc.",exact,1.0,0,NetApp
+1065280,NFLX,NETFLIX INC,exact,1.0,0,Netflix
+1846069,NXDR,"Nextdoor Holdings, Inc.",exact,1.0,0,Nextdoor
+1822966,SMR,NUSCALE POWER Corp,exact,1.0,0,NuScale Power
+1618732,NTNX,"Nutanix, Inc.",exact,1.0,0,Nutanix
+1660134,OKTA,"Okta, Inc.",exact,1.0,0,Okta
+1341439,ORCL,ORACLE CORP,exact,1.0,0,Oracle
+1816581,OUST,"Ouster, Inc.",exact,1.0,0,Ouster
+1816708,OWLT,"Owlet, Inc.",exact,1.0,0,Owlet
+1568100,PD,"PagerDuty, Inc.",exact,1.0,0,PagerDuty
+1633917,PYPL,"PayPal Holdings, Inc.",exact,1.0,0,PayPal
+1013857,PEGA,PEGASYSTEMS INC,exact,1.0,0,Pegasystems
+1527753,PSNL,"Personalis, Inc.",exact,1.0,0,Personalis
+1665300,PHUN,"Phunware, Inc.",exact,1.0,0,Phunware
+1506293,PINS,"PINTEREST, INC.",exact,1.0,0,Pinterest
+1422930,PUBM,"PubMatic, Inc.",exact,1.0,0,PubMatic
+1503274,QTRX,Quanterix Corp,exact,1.0,0,Quanterix
+1816431,QSI,Quantum-Si Inc,exact,1.0,0,Quantum SI
+1560327,RPD,"Rapid7, Inc.",exact,1.0,0,Rapid7
+1468327,RENT,"Rent the Runway, Inc.",exact,1.0,0,Rent the Runway
+1838359,RGTI,"Rigetti Computing, Inc.",exact,1.0,0,Rigetti Computing
+1384905,RNG,"RingCentral, Inc.",exact,1.0,0,RingCentral
+1851112,RSKD,RISKIFIED LTD.,exact,1.0,0,Riskified
+1315098,RBLX,Roblox Corp,exact,1.0,0,Roblox
+1805284,RKT,"Rocket Companies, Inc.",exact,1.0,0,Rocket Companies
+1428439,ROKU,"ROKU, INC",exact,1.0,0,Roku
+1597033,SABR,Sabre Corp,exact,1.0,0,Sabre
+1108524,CRM,"Salesforce, Inc.",exact,1.0,0,Salesforce
+1583708,S,"SentinelOne, Inc.",exact,1.0,0,SentinelOne
+1373715,NOW,"ServiceNow, Inc.",exact,1.0,0,ServiceNow
+1662991,SEZL,Sezzle Inc.,exact,1.0,0,Sezzle
+1842731,SMWB,SIMILARWEB LTD.,exact,1.0,0,Similarweb
+1564408,SNAP,Snap Inc,exact,1.0,0,Snap
+1640147,SNOW,Snowflake Inc.,exact,1.0,0,Snowflake
+1314727,SONO,Sonos Inc,exact,1.0,0,Sonos
+1836470,SRAD,Sportradar Group AG,exact,1.0,0,Sportradar
+1569345,CXM,"Sprinklr, Inc.",exact,1.0,0,Sprinklr
+1517375,SPT,"Sprout Social, Inc.",exact,1.0,0,Sprout Social
+1758766,STEM,"STEM, INC.",exact,1.0,0,Stem
+1576942,SFIX,"Stitch Fix, Inc.",exact,1.0,0,Stitch Fix
+1477815,SG,"Sweetgreen, Inc.",exact,1.0,0,Sweetgreen
+1527599,SYBX,"SYNLOGIC, INC.",exact,1.0,0,Synlogic
+883241,SNPS,SYNOPSYS INC,exact,1.0,0,Synopsys
+1840502,TBLA,Taboola.com Ltd.,exact,1.0,0,Taboola
+1829864,TASK,"TaskUs, Inc.",exact,1.0,0,TaskUs
+2018064,TTGT,"TechTarget, Inc.",exact,1.0,0,TechTarget
+1477449,TDOC,"Teladoc Health, Inc.",exact,1.0,0,Teladoc Health
+1660280,TENB,"Tenable Holdings, Inc.",exact,1.0,0,Tenable
+1318605,TSLA,"Tesla, Inc.",exact,1.0,0,Tesla
+1671933,TTD,"Trade Desk, Inc.",exact,1.0,0,The Trade Desk
+1484778,TDUP,ThredUp Inc.,exact,1.0,0,ThredUp
+1650164,TOST,"Toast, Inc.",exact,1.0,0,Toast
+1526520,TRIP,"TripAdvisor, Inc.",exact,1.0,0,TripAdvisor
+1823593,TSPH,TuSimple Holdings Inc.,exact,1.0,0,TuSimple
+1447669,TWLO,TWILIO INC,exact,1.0,0,Twilio
+1581280,TWST,Twist Bioscience Corp,exact,1.0,0,Twist Bioscience
+1734722,PATH,"UiPath, Inc.",exact,1.0,0,UIPath
+1734722,PATH,"UiPath, Inc.",exact,1.0,0,UiPath
+1647639,UPST,"Upstart Holdings, Inc.",exact,1.0,0,Upstart
+1627475,UPWK,"UPWORK, INC",exact,1.0,0,Upwork
+1825079,VELO,"Velo3D, Inc.",exact,1.0,0,Velo3D
+1615165,VERI,"Veritone, Inc.",exact,1.0,0,Veritone
+797721,VSAT,VIASAT INC,exact,1.0,0,Viasat
+1812173,RBOT,Vicarious Surgical Inc.,exact,1.0,0,Vicarious Surgical
+1580864,VRM,"Vroom, Inc.",exact,1.0,0,Vroom
+1504776,WRBY,Warby Parker Inc.,exact,1.0,0,Warby Parker
+1616707,W,Wayfair Inc.,exact,1.0,0,Wayfair
+1616707,W,Wayfair Inc.,exact,1.0,0,Wayfair 
+106040,WDC,WESTERN DIGITAL CORP,exact,1.0,0,Western Digital
+1309108,WEX,WEX Inc.,exact,1.0,0,Wex
+2099039,WSE,Wise Group plc,exact,1.0,0,Wise
+1327811,WDAY,"Workday, Inc.",exact,1.0,0,Workday
+1770450,XRX,Xerox Holdings Corp,exact,1.0,0,Xerox
+1345016,YELP,YELP INC,exact,1.0,0,Yelp
+1614178,YEXT,"Yext, Inc.",exact,1.0,0,Yext
+877212,ZBRA,ZEBRA TECHNOLOGIES CORP,exact,1.0,0,Zebra Technologies
+1617640,ZG,"ZILLOW GROUP, INC.",exact,1.0,0,Zillow
+1617553,ZIP,"ZIPRECRUITER, INC.",exact,1.0,0,ZipRecruiter
+1713683,ZS,"Zscaler, Inc.",exact,1.0,0,Zscaler
+1065088,EBAY,EBAY INC,exact,1.0,0,eBay
+1558569,ISPC,iSpecimen Inc.,exact,1.0,0,iSpecimen
+1902733,NCNO,"nCino, Inc.",exact,1.0,0,nCino
+1018724,AMZN,AMAZON COM INC,alias,1.0,0,Amazon
+858877,CSCO,"CISCO SYSTEMS, INC.",alias,1.0,0,Cisco
+1679788,COIN,"Coinbase Global, Inc.",alias,1.0,0,Coinbase
+1571996,DELL,Dell Technologies Inc.,alias,1.0,0,Dell
+1652044,GOOGL,Alphabet Inc.,alias,1.0,0,Google
+47217,HPQ,HP INC,alias,1.0,0,HP
+51143,IBM,INTERNATIONAL BUSINESS MACHINES CORP,alias,1.0,0,IBM
+1326801,META,"Meta Platforms, Inc.",alias,1.0,0,Meta
+789019,MSFT,MICROSOFT CORP,alias,1.0,0,Microsoft
+1639825,PTON,"PELOTON INTERACTIVE, INC.",alias,1.0,0,Peloton
+1783879,HOOD,"Robinhood Markets, Inc.",alias,1.0,0,Robinhood
+1810806,U,Unity Software Inc.,alias,1.0,0,Unity
+1585521,ZM,"Zoom Communications, Inc.",alias,1.0,0,Zoom
