@@ -60,6 +60,9 @@ jupyter lab notebooks/01_first_look.ipynb     # national and cross-source first 
 jupyter lab notebooks/02_geography.ipynb      # metro analysis: two outcomes, robust regression, cross-validation
 ```
 Figures are saved to `reports/figures/`. The regression code is in `analysis/metro_models.py`.
+
+**Slovenian versions** (simpler, conversational wording for a wider audience; same code and data, figures go to `reports/figures_sl/`):
+`notebooks/01_prvi_pogled_SL.ipynb` and `notebooks/02_geografija_SL.ipynb`.
 The notebook reads only the master file, so re-run `build_master.py` after collecting new data.
 
 ## Layoffs: one manual step
@@ -79,3 +82,6 @@ python collect.py --sources layoffs
 - **Indeed's index starts Feb 2020** (=100), so it has no pre-COVID history; use Eurostat/BLS for the baseline.
 - **Layoffs data is crowdsourced and skewed to VC-backed/large firms**; treat as a sample.
 - Scraping extras (SEC EDGAR 10-K headcounts, Wikipedia company lists) aren't included yet.
+
+## For collaborators and coding agents
+Read `AGENTS.md`: what is built, how, the mistakes already made, and the prioritised next steps. `CLAUDE.md` points to it.

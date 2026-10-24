@@ -8,9 +8,12 @@
 from __future__ import annotations
 
 import argparse
+import importlib
 import json
 import logging
+import pkgutil
 
+import collectors
 from collectors import bls, census_acs, eurostat, fhfa, hn, indeed, layoffs, nomis, qcew, sec
 from collectors.common import RAW, ensure_dirs
 
@@ -27,6 +30,29 @@ SOURCES = {
     "indeed": lambda a: indeed.collect(),
     "layoffs": lambda a: layoffs.collect(),
 }
+
+
+def _discover() -> dict:
+    """NEW collectors register themselves: define `SOURCES = {"name": lambda args: [...]}` at module level in
+    collectors/<module>.py (args has .start_year). No edit to this file is needed, so two people adding sources
+    never collide here."""
+    found = {}
+    for m in pkgutil.iter_modules(collectors.__path__):
+        if m.name == "common":
+            continue
+        try:
+            mod = importlib.import_module(f"collectors.{m.name}")
+        except Exception as e:  # a broken new collector must not break the others
+            logging.warning("collectors/%s.py failed to import: %s", m.name, e)
+            continue
+        for name, fn in getattr(mod, "SOURCES", {}).items():
+            if name in SOURCES or name in found:
+                raise SystemExit(f"Duplicate source name {name!r} (collectors/{m.name}.py)")
+            found[name] = fn
+    return found
+
+
+SOURCES.update(_discover())
 
 
 def main() -> None:
