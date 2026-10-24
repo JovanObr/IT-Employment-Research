@@ -41,3 +41,25 @@ Built by `python build_master.py`; mapping of codes to company types is in `conf
 8. `All industries` rows with `dataset = layoffs_tracker` are the sum over tracker industries for that country-month, not an official total.
 9. **Eurostat flags are frequent** (`e` estimated, `u` low reliability, `b` break in series, `d` definition differs; can be combined, e.g. `be`). Check `quality_flag` before reading a year-to-year jump as real, and treat `b` rows as possible discontinuities.
 10. **Layoffs have no gaming label.** The tracker's industries (Consumer, Media, Other...) can't isolate game studios; that needs company-name matching.
+
+
+## `data/raw/sec_financials_quarterly.csv` (source `sec_fin`, long format)
+`cik` · `period` (calendar-aligned XBRL frame, e.g. `CY2022Q1`; balance-sheet items end in `I`, e.g. `CY2022Q1I`; Q4 flows are `CY2022Q4`) ·
+`concept` (`net_income`, `operating_income`, `gross_profit`, `rnd`, `sga`, `cash`, `assets`, `equity`) · `value` (USD) ·
+`kind` (`quarter`, `annual`, `instant`, `derived_q4` = annual minus Q1..Q3) · `tag` (the us-gaap tag used; `derived` for Q4).
+Frames are calendar-aligned approximations (a June fiscal year is mapped to the nearest calendar quarter). Only companies in `sec_company_matches.csv` are kept.
+
+## `data/raw/sec_universe_sic.csv` (source `sec_universe`)
+One row per company: every SEC filer with at least 8 quarters of revenue in the XBRL frames, plus every company matched to a tracker layoff.
+`cik` · `name` · `sic` (text, 4 digits) · `sic_description` · `ticker` (first listed, blank if none) · `is_tech` (SIC 3570-3579, 3661-3669, 3670-3679, 7370-7379) ·
+`matched_layoff` (company matched to a layoff-tracker company) · `in_universe` (`is_tech` or `matched_layoff`; matched companies outside the tech list stay in as positives) ·
+`revenue_quarters` (quarters of revenue in the frames, Q4 derived). Blank `sic` = no submissions file found.
+
+## `data/processed/company_panel.csv` (`python -m analysis.company_panel`)
+One row per technology company (`is_tech`) and calendar quarter `t`. `quarter`/`qi` (quarter index) · `name`, `ticker`, `sic`, `sic2` ·
+`revenue_lagged` · features, all computed from filing quarter `t-1` (reports for `t` are not yet public at the end of `t`):
+`rev_yoy`, `rev_qoq`, `gross_margin`, `op_margin`, `rnd_ratio`, `sga_ratio`, `cash_assets`, `log_assets`, `net_loss` (NaN when an input or a positive denominator is missing) ·
+`y_next2q` = at least one tracker layoff of the company in quarters `t+1` or `t+2`. Rows whose label window is not fully inside the tracker's observed period are dropped.
+
+## `data/raw/sec_revenue_universe.csv` (written by `sec_universe`)
+Same columns as `sec_revenue_quarterly.csv` (`cik, period, revenue, tag, kind`) but for every company in `sec_universe_sic.csv` with `in_universe` (tech companies + matched layoff companies). `sec_fin` and the company panel read this file; run order: `layoffs`, `sec`, `sec_universe`, `sec_fin`, then `python -m analysis.company_panel`.
