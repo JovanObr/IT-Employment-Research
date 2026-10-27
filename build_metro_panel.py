@@ -87,6 +87,9 @@ def load_qcew() -> pd.DataFrame:
     # --- establishments (never suppressed) and total employment (never suppressed): all-quarter means
     out["estabs_it_2019"], out["estabs_it_2024"] = it["estabs"][Y0].mean(axis=1), it["estabs"][Y1].mean(axis=1)
     out["estabs_it_2015"] = it["estabs"][YPRE].mean(axis=1)
+    # 2019 IT jobs from whatever 2019 quarters are reported, even when 2024 is withheld (no growth can be formed, but
+    # the level is still useful as a bubble size on the maps, e.g. Chicago about 65,000)
+    out["emp_it_2019_reported"] = it["emp"][Y0].mean(axis=1)
     out["emp_total_2019"], out["emp_total_2024"] = tot[Y0].mean(axis=1), tot[Y1].mean(axis=1)
     # --- pre-trend (2015 -> 2019)
     p15, p19, npre, _, _, _ = _growth_inputs(it["emp"], YPRE, Y0)

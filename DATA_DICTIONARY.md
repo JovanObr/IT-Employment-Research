@@ -63,3 +63,9 @@ One row per technology company (`is_tech`) and calendar quarter `t`. `quarter`/`
 
 ## `data/raw/sec_revenue_universe.csv` (written by `sec_universe`)
 Same columns as `sec_revenue_quarterly.csv` (`cik, period, revenue, tag, kind`) but for every company in `sec_universe_sic.csv` with `in_universe` (tech companies + matched layoff companies). `sec_fin` and the company panel read this file; run order: `layoffs`, `sec`, `sec_universe`, `sec_fin`, then `python -m analysis.company_panel`.
+
+## Added by Stream B (text, geography)
+- `data/processed/hn_topics_monthly.csv`: `month` (YYYY-MM, the thread month), `topic` (label `T<n>: top terms`, or a hand-written name), `share` (share of that month's posts whose strongest NMF topic it is; sums to 1 per month). Startup-skewed sample; topics depend on k (default 10) and the seed.
+- `data/raw/census_gazetteer_cbsa.csv`: `cbsa_code` (5-character string), `name`, `lsad`, `lat`, `lon` (internal point, 2023 delineation), `aland_sqmi`.
+- `data/processed/metro_panel.csv`, new column `emp_it_2019_reported`: mean 2019 IT employment over the 2019 quarters that are reported, even when 2024 is withheld (so no growth exists). Used only to size map bubbles; use `emp_it_2019` for anything quarter-matched.
+- `data/processed/qcew_metro_code_stability.csv` (written by notebook 06): QCEW metro codes (`C####`) present in only one of 2019 and 2024, with the years each appears in.
