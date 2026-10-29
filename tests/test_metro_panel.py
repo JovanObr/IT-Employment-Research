@@ -103,3 +103,62 @@ def test_matched_requires_two_common_quarters():
 def test_2019_level_is_kept_for_map_sizes_even_when_2024_is_withheld(q):
     assert q.loc["C1698", "emp_it_2019_reported"] == pytest.approx(65000)   # Chicago: level known, growth not
     assert q.loc["C1974", "emp_it_2019_reported"] == q.loc["C1974", "emp_it_2019"]
+
+
+# ---------------------------------------------------------------- code crosswalk (2023 delineation)
+def _xw_file(tmp_path, rows, name="qcew_code_crosswalk.csv"):
+    p = tmp_path / name
+    p.write_text("old_area_fips,new_area_fips,note\n" + "".join(f'{o},{n},"x"\n' for o, n in rows))
+    return p
+
+
+def _renamed_rows():
+    """C1746 exists 2015-2023 (old code), C1741 only 2024: the same metro under two codes."""
+    rows = []
+    for y in (2015, 2019, 2024):
+        for q in (1, 2, 3, 4):
+            code = "C1741" if y == 2024 else "C1746"
+            rows += [row(code, y, q, "5415", {2015: 800, 2019: 1000, 2024: 1200}[y], 100 + (y - 2015)),
+                     row(code, y, q, "10", 50000, 20000)]
+    return pd.DataFrame(rows, columns=COLS)
+
+
+def test_without_a_crosswalk_a_renamed_metro_is_two_half_series(data_dir, monkeypatch):
+    monkeypatch.setattr(bmp, "CONFIG", data_dir)             # no qcew_code_crosswalk.csv here
+    _renamed_rows().to_csv(data_dir / "raw" / "bls_qcew_areas_it_industries.csv", index=False)
+    q = bmp.load_qcew().set_index("area_fips")
+    assert q.loc["C1746", "emp_basis"] == "none" and q.loc["C1741", "emp_basis"] == "none"   # neither has both years
+
+
+def test_crosswalk_joins_old_and_new_code_into_one_series(data_dir, monkeypatch):
+    monkeypatch.setattr(bmp, "CONFIG", data_dir)
+    _xw_file(data_dir, [("C1746", "C1741")])
+    _renamed_rows().to_csv(data_dir / "raw" / "bls_qcew_areas_it_industries.csv", index=False)
+    q = bmp.load_qcew().set_index("area_fips")
+    assert "C1746" not in q.index and q.loc["C1741", "cbsa_code"] == "17410"
+    c = q.loc["C1741"]
+    assert c["emp_basis"] == "matched" and c["emp_it_2019"] == pytest.approx(1000) and c["emp_it_2024"] == pytest.approx(1200)
+    assert c["it_growth_pre_pct"] == pytest.approx(25.0)       # 800 -> 1000 uses the old-code years
+
+
+def test_crosswalk_applies_to_census_and_fhfa_codes():
+    xw = {"C1746": "C1741"}
+    assert bmp._cbsa_crosswalk(xw) == {"17460": "17410"}
+    s = pd.Series(["17460", "10180"]).replace(bmp._cbsa_crosswalk(xw))
+    assert s.tolist() == ["17410", "10180"]
+
+
+def test_crosswalk_rejects_bad_files(tmp_path):
+    with pytest.raises(ValueError, match="C####"):
+        bmp.load_crosswalk(_xw_file(tmp_path, [("17460", "C1741")]))
+    with pytest.raises(ValueError, match="chain"):
+        bmp.load_crosswalk(_xw_file(tmp_path, [("C1111", "C2222"), ("C2222", "C3333")]))
+    with pytest.raises(ValueError, match="twice"):
+        bmp.load_crosswalk(_xw_file(tmp_path, [("C1111", "C2222"), ("C1111", "C3333")]))
+    assert bmp.load_crosswalk(tmp_path / "missing.csv") == {}
+
+
+def test_shipped_crosswalk_file_is_valid():
+    xw = bmp.load_crosswalk()
+    assert len(xw) == 5 and xw["C1746"] == "C1741" and xw["C1938"] == "C1943"
+    assert all(k != v for k, v in xw.items())

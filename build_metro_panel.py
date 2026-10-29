@@ -15,11 +15,14 @@ Conventions
   * FHFA metropolitan divisions (NYC, LA, SF, Seattle, ...) are mapped to their parent MSA through
     config/msad_parent.csv and averaged, unweighted: an approximation, see hpi_areas_averaged.
   * QCEW area code 'C1018' = CBSA 10180 (C + first four digits).
+  * Five areas got a new code in the 2023 delineation without changing (config/qcew_code_crosswalk.csv): the old
+    code is mapped to the new one in the QCEW, Census and FHFA tables, so they keep a 2019-2024 growth.
 Run:  python build_metro_panel.py
 """
 from __future__ import annotations
 
 import logging
+import re
 from pathlib import Path
 
 import numpy as np
@@ -58,11 +61,38 @@ def _growth_inputs(piv: pd.DataFrame, ya: int, yb: int):
     return v0, v1, n, basis, mask, matched
 
 
+def load_crosswalk(path: Path | None = None) -> dict[str, str]:
+    """QCEW metro codes that changed with the 2023 delineation although the area is the same one
+    (old code -> new code, both in QCEW form 'C####'). See config/qcew_code_crosswalk.csv."""
+    path = path or CONFIG / "qcew_code_crosswalk.csv"
+    if not path.exists():
+        return {}
+    x = pd.read_csv(path, dtype=str, keep_default_na=False)
+    bad = [c for c in pd.concat([x["old_area_fips"], x["new_area_fips"]]) if not re.fullmatch(r"C\d{4}", c)]
+    if bad:
+        raise ValueError(f"qcew_code_crosswalk.csv: not a QCEW metro code (C####): {bad}")
+    if x["old_area_fips"].duplicated().any() or set(x["old_area_fips"]) & set(x["new_area_fips"]):
+        raise ValueError("qcew_code_crosswalk.csv: an old code is listed twice, or a new code is also an old one (chain)")
+    return dict(zip(x["old_area_fips"], x["new_area_fips"]))
+
+
+def _cbsa_crosswalk(xw: dict[str, str]) -> dict[str, str]:
+    """The same mapping in 5-digit CBSA form ('C1746' -> '17460'), for the Census and FHFA tables."""
+    return {k[1:] + "0": v[1:] + "0" for k, v in xw.items()}
+
+
 def load_qcew() -> pd.DataFrame:
     a = pd.read_csv(RAW / "bls_qcew_areas_it_industries.csv",
                     dtype={"area_fips": str, "industry_code": str}, keep_default_na=False, low_memory=False)
     a = a[a["area_fips"].str.fullmatch(r"C\d{4}") & a["year"].isin([YPRE, Y0, Y1])
           & a["industry_code"].isin([IT, TOTAL])].copy()
+    xw = load_crosswalk()
+    if xw:  # same area, new code: one continuous series instead of two half series
+        a["area_fips"] = a["area_fips"].replace(xw)
+        dup = a.duplicated(["area_fips", "industry_code", "year", "qtr"])
+        if dup.any():
+            log.warning("QCEW crosswalk: %d rows exist under both the old and the new code; keeping the first", int(dup.sum()))
+            a = a[~dup]
     m = a[["month1_emplvl", "month2_emplvl", "month3_emplvl"]].apply(_num)
     supp = (a["disclosure_code"] == "N") if "disclosure_code" in a else pd.Series(False, index=a.index)
     supp = supp | (_num(a["month3_emplvl"]) == 0)
@@ -129,7 +159,7 @@ def load_acs() -> pd.DataFrame:
     path = acs_path()
     log.info("Census file used: %s", path.name)
     d = pd.read_csv(path, dtype={"cbsa_code": str})
-    d["cbsa_code"] = d["cbsa_code"].str.zfill(5)
+    d["cbsa_code"] = d["cbsa_code"].str.zfill(5).replace(_cbsa_crosswalk(load_crosswalk()))
     end = max([y for y in (2024, 2023, 2022) if y in set(d["year"])], default=None)
     if end is None or Y0 not in set(d["year"]):
         raise RuntimeError("ACS needs 2019 and one of 2022-2024; re-run collect.py --sources acs")
@@ -157,6 +187,7 @@ def load_fhfa() -> pd.DataFrame:
     if bad:
         log.warning("FHFA divisions without a parent MSA (add them to config/msad_parent.csv): %s", bad)
     h = h.dropna(subset=["cbsa_code"])
+    h["cbsa_code"] = h["cbsa_code"].replace(_cbsa_crosswalk(load_crosswalk()))
     h["metro_name"] = np.where(h["is_division"] == 1, h["cbsa_code"].map(pname), h["place_name"])
     w = h.groupby(["cbsa_code", "year"])["hpi_nsa"].mean().unstack("year")  # divisions averaged, unweighted
     out = pd.DataFrame({"hpi_growth_pre_pct": (w[Y0] / w[YPRE] - 1) * 100,

@@ -45,3 +45,31 @@ def test_collect_writes_file_and_registers_source(data_dir, monkeypatch):
     monkeypatch.setattr(cg, "fetch", lambda url, **kw: make_zip("\n".join([HEADER, *ROWS]) + "\n"))
     rec = cg.SOURCES["gazetteer"](None)
     assert (data_dir / "raw" / "census_gazetteer_cbsa.csv").exists() and rec[0]["url"] == cg.URL
+
+
+def test_hand_downloaded_file_in_manual_is_used_without_network(data_dir, monkeypatch):
+    (data_dir / "manual" / "2023_Gaz_cbsa_national.zip").write_bytes(make_zip("\n".join([HEADER, *ROWS]) + "\n"))
+
+    def no_network(*a, **k):
+        raise AssertionError("must not download when a manual file exists")
+    monkeypatch.setattr(cg, "fetch", no_network)
+    rec = cg.collect()
+    assert (data_dir / "raw" / "census_gazetteer_cbsa.csv").exists() and rec
+
+
+def test_403_falls_back_to_browser_headers_then_gives_manual_instructions(data_dir, monkeypatch):
+    import requests
+
+    class R:
+        def __init__(self, code, content=b""):
+            self.status_code, self.content = code, content
+
+    def forbidden(*a, **k):
+        raise requests.HTTPError("403", response=R(403))
+    monkeypatch.setattr(cg, "fetch", forbidden)
+    good = make_zip("\n".join([HEADER, *ROWS]) + "\n")
+    monkeypatch.setattr(requests, "get", lambda url, **k: R(200, good))
+    assert len(cg._download()) == len(good)                         # the retry with browser headers worked
+    monkeypatch.setattr(requests, "get", lambda url, **k: R(403))
+    with pytest.raises(RuntimeError, match="data/manual"):
+        cg._download()
