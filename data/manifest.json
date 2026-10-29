@@ -1,16 +1,1 @@
-[
-  {
-    "source": "Hacker News 'Who is hiring?' (features)",
-    "file": "data\\raw\\hn_whoishiring_posts.csv",
-    "url": "https://hn.algolia.com/api/v1",
-    "licence_or_terms": "Public Hacker News content via Algolia API: derived features for personal analysis, do not redistribute raw text",
-    "retrieved_at_utc": "2026-10-29T12:48:27+00:00"
-  },
-  {
-    "source": "Hacker News 'Who is hiring?' (text)",
-    "file": "data\\raw\\hn_whoishiring_text.csv",
-    "url": "https://hn.algolia.com/api/v1",
-    "licence_or_terms": "Public Hacker News content via Algolia API: derived features for personal analysis, do not redistribute raw text",
-    "retrieved_at_utc": "2026-10-29T12:48:27+00:00"
-  }
-]
+[]
