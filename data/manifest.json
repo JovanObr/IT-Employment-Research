@@ -1,1 +1,9 @@
-[]
+[
+  {
+    "source": "SEC EDGAR XBRL frames: quarterly financials",
+    "file": "data\\raw\\sec_financials_quarterly.csv",
+    "url": "https://data.sec.gov/api/xbrl/frames/",
+    "licence_or_terms": "SEC EDGAR: public data (https://www.sec.gov/os/webmaster-faq#developers)",
+    "retrieved_at_utc": "2026-10-24T09:35:47+00:00"
+  }
+]
