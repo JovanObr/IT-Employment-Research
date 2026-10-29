@@ -24,6 +24,7 @@ First run takes a few minutes (QCEW is ~300 small requests). Everything is cache
 | SEC EDGAR (feasibility test 2) | `sec_company_matches.csv`, `sec_revenue_quarterly.csv` | Matches Post-IPO layoff companies to SEC filers (alias > exact > prefix > fuzzy; names also come from the revenue filings, so delisted companies are found) and pulls quarterly revenue (XBRL frames). Needs `CONTACT_EMAIL`. Review `needs_review=1` rows; extend `config/company_aliases.csv` (ticker or CIK) | Public SEC data |
 | FHFA house prices | `fhfa_hpi_metro_quarterly.csv` | Metro house-price index (all-transactions), quarterly. Index base 1995Q1 = 100, compare changes only | Public US government data |
 | Census ACS 1-year | `census_acs1_metro.csv` | Metro work-from-home share, education, income, rent, home value, age, broadband (2019, 2022-24) | Public; **needs a free `CENSUS_API_KEY`** (api.census.gov/data/key_signup.html) |
+| Census Gazetteer | `census_gazetteer_cbsa.csv` | CBSA internal points (lat/lon) for the metro maps: `python collect.py --sources gazetteer` (no key) | Public US government data |
 | Indeed Hiring Lab | `indeed_*.csv` | Daily job-postings index, US + EU countries + UK (`GB`), from Feb 2020 | CC BY 4.0, credit Indeed |
 | Layoffs (manual) | `processed/layoffs_clean.csv` | Tech layoffs since Mar 2020, tagged US/Europe/Other | Check the copy's terms |
 
@@ -48,6 +49,11 @@ python build_metro_panel.py                    # -> data/processed/metro_panel.c
 One row per metro. Two outcomes: IT *employment* growth 2019-2024 (NAICS 5415; quarter-matched, with a flagged fallback, because QCEW withholds employment erratically) and IT *establishment* growth (never withheld, covers every metro). Plus, location quotient, work-from-home change,
 education, income, rent, house-price growth. The printout says how many metros are complete cases for each outcome and names the biggest metros with no usable employment. If `metro_panel.csv` is open in Excel the builder saves `metro_panel_new.csv` instead.
 FHFA publishes the biggest metros as divisions; `config/msad_parent.csv` maps them to their parent metro.
+
+**Maps and code stability:** `python collect.py --sources gazetteer`, then notebook `06_geography_maps` (`analysis/geo.py`) draws bubble maps of IT employment and establishment growth into `reports/figures/` and lists QCEW metro codes that exist in only one of 2019 and 2024.
+
+## Hacker News text analysis
+`python -m analysis.hn_text run` (topics, `data/processed/hn_topics_monthly.csv`), notebook `05_skills_nlp` (topics, change points, junior and AI shares, flag validation). `python -m analysis.hn_text sample` writes 100 random posts to `data/manual/` (git-ignored) for hand labelling; `validate` then reports precision and recall of the `remote` and `junior` keyword flags. Raw text stays local.
 
 ## Sharing on GitHub
 Safe to publish: code, `config/`, docs, `data/processed/` (except `layoffs_clean.csv`), `reports/figures/`.
@@ -82,6 +88,21 @@ python collect.py --sources layoffs
 - **Indeed's index starts Feb 2020** (=100), so it has no pre-COVID history; use Eurostat/BLS for the baseline.
 - **Layoffs data is crowdsourced and skewed to VC-backed/large firms**; treat as a sample.
 - Scraping extras (SEC EDGAR 10-K headcounts, Wikipedia company lists) aren't included yet.
+
+## Tests
+```bash
+pip install -r requirements.txt -r requirements-dev.txt
+pytest -q                       # about 10 s, no network, never touches the real data/ folder
+python -m compileall -q .       # cheap syntax check (CI runs both)
+```
+`tests/conftest.py` points `DATA_DIR` at a throw-away folder before anything is imported, and the `data_dir`
+fixture re-points every module that copies the path constants. HTTP is never called: `fetch` or the session is replaced
+by a fake. Coverage: JSON-stat flattening (incl. a dataset with no extra dimensions), FHFA header-less parser,
+QCEW area codes and split, the metro panel with the real Chicago and Washington DC suppression patterns,
+Hacker News keyword rules (including the known no-negation weakness), SEC name matching, master-file segment mapping
+and duplicate-key check, the `fetch` cache rules (no empty or invalid replies cached), plus the company-panel
+and SEC-financials tests. GitHub Actions (`.github/workflows/ci.yml`) runs the same two commands on every push.
+When you fix a bug, add a test that uses the *real* file layout that triggered it.
 
 ## For collaborators and coding agents
 Read `AGENTS.md`: what is built, how, the mistakes already made, and the prioritised next steps. `CLAUDE.md` points to it.
