@@ -12,6 +12,8 @@ All data are public. Collectors use official APIs or published downloads. `data/
 | Hacker News "Who is hiring?" via Algolia API | Remote/skills/seniority trends | Public content; **raw text is not redistributed** |
 | Layoffs.fyi (CSV downloaded manually) | Layoff events | Credit Layoffs.fyi; check the terms of the copy you downloaded; **raw file not redistributed** |
 | SEC EDGAR (XBRL frames) | Public-company revenue; quarterly net income, operating income, gross profit, R&D, SG&A, cash, assets, equity (`sec_fin`); SIC industry codes for the comparison universe (`sec_universe`) | Public SEC data |
+| FRED (Federal Reserve Bank of St. Louis) | Fed funds rate (FEDFUNDS, DFF) and NASDAQ Composite (NASDAQCOM), for the causes analysis | Public; cite "Federal Reserve Bank of St. Louis (FRED)" and the original source (NASDAQCOM: Nasdaq) |
+| BLS JOLTS (Job Openings and Labor Turnover) | Information-sector and total-nonfarm openings, hires, layoffs, quits | Public domain; cite BLS |
 | FHFA House Price Index | Metro house-price growth | Public; cite FHFA |
 | US Census Bureau (Gazetteer files) | CBSA centroids for the metro maps (`census_gazetteer_cbsa.csv`) | Public; cite the US Census Bureau |
 | US Census Bureau (ACS) | Metro work-from-home, education, income, rent | Public. "This product uses the Census Bureau Data API but is not endorsed or certified by the Census Bureau." |

@@ -55,6 +55,15 @@ def _discover() -> dict:
 SOURCES.update(_discover())
 
 
+def merge_manifest(old: list[dict], new: list[dict]) -> list[dict]:
+    """Keep entries from earlier runs; a source that ran again replaces its own entries (matched by file path,
+    with Windows and POSIX separators treated as the same). A partial run used to overwrite the whole manifest."""
+    key = lambda e: str(e.get("file", "")).replace("\\", "/")
+    merged = {key(e): e for e in old}
+    merged.update({key(e): e for e in new})
+    return list(merged.values())
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--sources", nargs="+", choices=SOURCES, default=list(SOURCES))
@@ -75,6 +84,13 @@ def main() -> None:
             logging.exception("%s failed", name)
 
     path = RAW.parent / "manifest.json"
+    old = []
+    if path.exists():
+        try:
+            old = json.loads(path.read_text())
+        except (json.JSONDecodeError, OSError):
+            logging.warning("%s was unreadable; starting a new manifest", path)
+    manifest = merge_manifest(old, manifest)
     path.write_text(json.dumps(manifest, indent=2))
     logging.info("Done. %d files recorded in %s (keep this for your attributions).", len(manifest), path)
 

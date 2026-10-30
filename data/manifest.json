@@ -1,9 +1,177 @@
 [
   {
+    "source": "Eurostat isoc_sks_itspt",
+    "file": "data\\raw\\eurostat_isoc_sks_itspt.csv",
+    "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/isoc_sks_itspt",
+    "licence_or_terms": "Eurostat: free reuse with attribution (https://ec.europa.eu/eurostat/about-us/policies/copyright)",
+    "retrieved_at_utc": "2026-10-30T10:01:03+00:00"
+  },
+  {
+    "source": "Eurostat isoc_sks_itsps",
+    "file": "data\\raw\\eurostat_isoc_sks_itsps.csv",
+    "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/isoc_sks_itsps",
+    "licence_or_terms": "Eurostat: free reuse with attribution (https://ec.europa.eu/eurostat/about-us/policies/copyright)",
+    "retrieved_at_utc": "2026-10-30T10:01:03+00:00"
+  },
+  {
+    "source": "Eurostat isoc_sks_itspa",
+    "file": "data\\raw\\eurostat_isoc_sks_itspa.csv",
+    "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/isoc_sks_itspa",
+    "licence_or_terms": "Eurostat: free reuse with attribution (https://ec.europa.eu/eurostat/about-us/policies/copyright)",
+    "retrieved_at_utc": "2026-10-30T10:01:03+00:00"
+  },
+  {
+    "source": "Eurostat isoc_sks_itspe",
+    "file": "data\\raw\\eurostat_isoc_sks_itspe.csv",
+    "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/isoc_sks_itspe",
+    "licence_or_terms": "Eurostat: free reuse with attribution (https://ec.europa.eu/eurostat/about-us/policies/copyright)",
+    "retrieved_at_utc": "2026-10-30T10:01:03+00:00"
+  },
+  {
+    "source": "Eurostat lfsa_egan22d",
+    "file": "data\\raw\\eurostat_lfsa_egan22d.csv",
+    "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsa_egan22d",
+    "licence_or_terms": "Eurostat: free reuse with attribution (https://ec.europa.eu/eurostat/about-us/policies/copyright)",
+    "retrieved_at_utc": "2026-10-30T10:01:03+00:00"
+  },
+  {
+    "source": "BLS CES",
+    "file": "data\\raw\\bls_ces_employment.csv",
+    "url": "https://api.bls.gov/publicAPI/v1/timeseries/data/",
+    "licence_or_terms": "US Bureau of Labor Statistics: public domain, please cite BLS (https://www.bls.gov/opub/copyright-information.htm)",
+    "retrieved_at_utc": "2026-10-30T10:01:03+00:00"
+  },
+  {
+    "source": "BLS QCEW (national)",
+    "file": "data\\raw\\bls_qcew_it_industries.csv",
+    "url": "https://www.bls.gov/cew/",
+    "licence_or_terms": "US Bureau of Labor Statistics: public domain, please cite BLS",
+    "retrieved_at_utc": "2026-10-30T10:01:24+00:00"
+  },
+  {
+    "source": "BLS QCEW (state/county/metro)",
+    "file": "data\\raw\\bls_qcew_areas_it_industries.csv",
+    "url": "https://www.bls.gov/cew/",
+    "licence_or_terms": "US Bureau of Labor Statistics: public domain, please cite BLS",
+    "retrieved_at_utc": "2026-10-30T10:01:26+00:00"
+  },
+  {
+    "source": "ONS BRES via Nomis",
+    "file": "data\\raw\\nomis_bres_it_industries.csv",
+    "url": "https://www.nomisweb.co.uk/api/v01/dataset/NM_189_1",
+    "licence_or_terms": "Open Government Licence v3.0, Crown copyright - credit ONS / Nomis (https://www.nomisweb.co.uk/home/copyright.asp)",
+    "retrieved_at_utc": "2026-10-30T10:01:27+00:00"
+  },
+  {
+    "source": "Hacker News 'Who is hiring?' (features)",
+    "file": "data\\raw\\hn_whoishiring_posts.csv",
+    "url": "https://hn.algolia.com/api/v1",
+    "licence_or_terms": "Public Hacker News content via Algolia API: derived features for personal analysis, do not redistribute raw text",
+    "retrieved_at_utc": "2026-10-30T10:02:46+00:00"
+  },
+  {
+    "source": "Hacker News 'Who is hiring?' (text)",
+    "file": "data\\raw\\hn_whoishiring_text.csv",
+    "url": "https://hn.algolia.com/api/v1",
+    "licence_or_terms": "Public Hacker News content via Algolia API: derived features for personal analysis, do not redistribute raw text",
+    "retrieved_at_utc": "2026-10-30T10:02:46+00:00"
+  },
+  {
+    "source": "FHFA HPI (metro, all-transactions)",
+    "file": "data\\raw\\fhfa_hpi_metro_quarterly.csv",
+    "url": "https://www.fhfa.gov/hpi/download/quarterly_datasets/hpi_at_metro.csv",
+    "licence_or_terms": "US Federal Housing Finance Agency: public data, please cite FHFA House Price Index",
+    "retrieved_at_utc": "2026-10-30T10:02:46+00:00"
+  },
+  {
+    "source": "Census ACS acs1 (metro)",
+    "file": "data\\raw\\census_acs1_metro.csv",
+    "url": "https://api.census.gov/data/",
+    "licence_or_terms": "US Census Bureau American Community Survey: public data, please cite the Census Bureau",
+    "retrieved_at_utc": "2026-10-30T10:02:46+00:00"
+  },
+  {
+    "source": "Census ACS acs5 (metro)",
+    "file": "data\\raw\\census_acs5_metro.csv",
+    "url": "https://api.census.gov/data/",
+    "licence_or_terms": "US Census Bureau American Community Survey: public data, please cite the Census Bureau",
+    "retrieved_at_utc": "2026-10-30T10:02:46+00:00"
+  },
+  {
+    "source": "Indeed Hiring Lab (aggregate)",
+    "file": "data\\raw\\indeed_aggregate_postings.csv",
+    "url": "https://raw.githubusercontent.com/hiring-lab/job_postings_tracker/master",
+    "licence_or_terms": "CC BY 4.0 - attribution to Indeed Hiring Lab required (https://creativecommons.org/licenses/by/4.0/)",
+    "retrieved_at_utc": "2026-10-30T10:02:46+00:00"
+  },
+  {
+    "source": "Indeed Hiring Lab (IT sectors)",
+    "file": "data\\raw\\indeed_it_sector_postings.csv",
+    "url": "https://raw.githubusercontent.com/hiring-lab/job_postings_tracker/master",
+    "licence_or_terms": "CC BY 4.0 - attribution to Indeed Hiring Lab required (https://creativecommons.org/licenses/by/4.0/)",
+    "retrieved_at_utc": "2026-10-30T10:02:48+00:00"
+  },
+  {
+    "source": "Layoffs tracker (manual download)",
+    "file": "data\\processed\\layoffs_clean.csv",
+    "url": "data\\manual\\layoffs.csv",
+    "licence_or_terms": "Check the licence/terms of the copy you downloaded; credit Layoffs.fyi",
+    "retrieved_at_utc": "2026-10-30T10:02:48+00:00"
+  },
+  {
+    "source": "FRED (Federal Reserve Bank of St. Louis)",
+    "file": "data\\raw\\fred_series.csv",
+    "url": "https://fred.stlouisfed.org/graph/fredgraph.csv",
+    "licence_or_terms": "FRED, Federal Reserve Bank of St. Louis: public data; cite FRED and the original source",
+    "retrieved_at_utc": "2026-10-30T10:02:50+00:00"
+  },
+  {
+    "source": "BLS JOLTS",
+    "file": "data\\raw\\bls_jolts.csv",
+    "url": "https://api.bls.gov/publicAPI/v1/timeseries/data/",
+    "licence_or_terms": "US Bureau of Labor Statistics: public domain, please cite BLS (https://www.bls.gov/opub/copyright-information.htm)",
+    "retrieved_at_utc": "2026-10-30T10:02:50+00:00"
+  },
+  {
+    "source": "Census Gazetteer CBSA centroids (2023)",
+    "file": "data\\raw\\census_gazetteer_cbsa.csv",
+    "url": "https://www2.census.gov/geo/docs/maps-data/data/gazetteer/2023_Gazetteer/2023_Gaz_cbsa_national.zip",
+    "licence_or_terms": "US Census Bureau: public data (Gazetteer files); please cite the US Census Bureau",
+    "retrieved_at_utc": "2026-10-30T10:06:20+00:00"
+  },
+  {
+    "source": "SEC EDGAR company matches",
+    "file": "data\\raw\\sec_company_matches.csv",
+    "url": "https://www.sec.gov/files/company_tickers.json",
+    "licence_or_terms": "SEC EDGAR: public data (https://www.sec.gov/os/webmaster-faq#developers)",
+    "retrieved_at_utc": "2026-10-30T10:06:45+00:00"
+  },
+  {
+    "source": "SEC EDGAR XBRL frames: revenue",
+    "file": "data\\raw\\sec_revenue_quarterly.csv",
+    "url": "https://data.sec.gov/api/xbrl/frames/",
+    "licence_or_terms": "SEC EDGAR: public data (https://www.sec.gov/os/webmaster-faq#developers)",
+    "retrieved_at_utc": "2026-10-30T10:06:45+00:00"
+  },
+  {
+    "source": "SEC EDGAR submissions: SIC codes",
+    "file": "data\\raw\\sec_universe_sic.csv",
+    "url": "https://data.sec.gov/submissions/",
+    "licence_or_terms": "SEC EDGAR: public data (https://www.sec.gov/os/webmaster-faq#developers)",
+    "retrieved_at_utc": "2026-10-30T10:07:33+00:00"
+  },
+  {
+    "source": "SEC EDGAR XBRL frames: revenue of the comparison universe",
+    "file": "data\\raw\\sec_revenue_universe.csv",
+    "url": "https://data.sec.gov/api/xbrl/frames/",
+    "licence_or_terms": "SEC EDGAR: public data (https://www.sec.gov/os/webmaster-faq#developers)",
+    "retrieved_at_utc": "2026-10-30T10:07:33+00:00"
+  },
+  {
     "source": "SEC EDGAR XBRL frames: quarterly financials",
     "file": "data\\raw\\sec_financials_quarterly.csv",
     "url": "https://data.sec.gov/api/xbrl/frames/",
     "licence_or_terms": "SEC EDGAR: public data (https://www.sec.gov/os/webmaster-faq#developers)",
-    "retrieved_at_utc": "2026-10-24T09:35:47+00:00"
+    "retrieved_at_utc": "2026-10-30T10:08:01+00:00"
   }
 ]

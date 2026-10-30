@@ -64,6 +64,12 @@ One row per technology company (`is_tech`) and calendar quarter `t`. `quarter`/`
 ## `data/raw/sec_revenue_universe.csv` (written by `sec_universe`)
 Same columns as `sec_revenue_quarterly.csv` (`cik, period, revenue, tag, kind`) but for every company in `sec_universe_sic.csv` with `in_universe` (tech companies + matched layoff companies). `sec_fin` and the company panel read this file; run order: `layoffs`, `sec`, `sec_universe`, `sec_fin`, then `python -m analysis.company_panel`.
 
+## `data/raw/fred_series.csv` and `data/raw/bls_jolts.csv` (source `macro`)
+`fred_series.csv`: `series_id` (FEDFUNDS monthly, DFF daily, NASDAQCOM daily) · `date` · `value`. Missing observations ('.') are dropped.
+`bls_jolts.csv`: `series_id` · `series_name` · `date` (first of month) · `value`. Series IDs `JTS<industry 6><state 2><area 5><size 2><element 2><L|R>`:
+information sector `JTS510000000000000`, total nonfarm `JTS000000000000000`; elements `JO` openings, `HI` hires, `LD` layoffs and discharges, `QU` quits; `L` level in thousands, `R` rate in percent.
+If the BLS API is down, `macro` falls back to the flat file `download.bls.gov/pub/time.series/jt/jt.data.1.AllItems` (same series, same output columns).
+
 ## Added by Stream B (text, geography)
 - `data/processed/hn_topics_monthly.csv`: `month` (YYYY-MM, the thread month), `topic` (label `T<n>: top terms`, or a hand-written name), `share` (share of that month's posts whose strongest NMF topic it is; sums to 1 per month). Startup-skewed sample; topics depend on k (default 10) and the seed.
 - `data/raw/census_gazetteer_cbsa.csv`: `cbsa_code` (5-character string), `name`, `lsad`, `lat`, `lon` (internal point, 2023 delineation), `aland_sqmi`.
