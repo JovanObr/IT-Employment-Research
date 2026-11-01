@@ -31,7 +31,7 @@ Notes:
 Output: `notebooks/08_zgodba_SL.ipynb` (Slovenian, casual audience), exported to HTML. Palette and layout: `analysis/viz_theme.py`.
 **Every figure comes with four plain-language parts (kaj vidimo, zakaj smo to naredili, kaj to pomeni, česa ne vemo), numbers computed from the data.**
 - [~] M-A *(Stream A)* chapters 1-3 done (`analysis/viz.py`, explanations in `analysis/story_text.py`); chapter 6 (stock reaction: `collectors/prices.py`, `analysis/event_study.py`, figures and explanations) done; first real run 2026-10-31: 611 usable events, average reaction -0.5 to -0.7 % over days 0..+1 in every variant (raw, winsorised, S&P 500 benchmark, without 2020) and every 95 % interval includes zero; Patell Z over-rejects (false positives 12 % in the placebo), so the day-clustered bootstrap is the primary test; notebook 08 (Slovenian) is built: chapters 4-5 appear automatically when `analysis/viz_text_geo.py` provides `build_chapter_4_5()`
-- [ ] M-B *(Stream B)* chapters 4-5 figure functions and aggregate files: see `docs/tasks/MILESTONE_petar_ch4_ch5.md`
+- [ ] M-B *(Stream B)* chapters 4-5 figure functions and aggregate files: see `docs/tasks/MILESTONE.md`
 
 Proofreading text: `python -m analysis.story_text export` writes every explanation and the summary to `reports/zgodba_besedila.md`.
 Export the story: `jupyter nbconvert --to html --execute --no-input notebooks/08_zgodba_SL.ipynb --output-dir reports` (needs internet to open the result;
