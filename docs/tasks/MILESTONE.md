@@ -110,6 +110,6 @@ your line in `docs/STATUS.md` updated with what exists and what does not.
 
 ## Prompt to paste into the agent
 "You are the Stream B agent on this repository. Read AGENTS.md, docs/WORKSTREAMS.md, docs/STATUS.md, analysis/viz_theme.py and
-docs/tasks/MILESTONE_petar_ch4_ch5.md. Do D1, then the chapter 4 functions with their explanations, then D2 and the map with its explanation, in that order, on a branch named
+docs/tasks/MILESTONE.md. Do D1, then the chapter 4 functions with their explanations, then D2 and the map with its explanation, in that order, on a branch named
 milestone/ch4-ch5-figures. Do not edit viz_theme.py or files owned by Stream A. Test with synthetic data only, never commit raw text, keys or data/raw.
 All visible text is Slovenian; numbers in titles come from the data. Open the pull request on Monday 2 November at noon even if the stretch item is not done."
