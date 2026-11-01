@@ -173,5 +173,12 @@
     "url": "https://data.sec.gov/api/xbrl/frames/",
     "licence_or_terms": "SEC EDGAR: public data (https://www.sec.gov/os/webmaster-faq#developers)",
     "retrieved_at_utc": "2026-10-30T10:08:01+00:00"
+  },
+  {
+    "source": "Yahoo Finance via yfinance: daily adjusted prices",
+    "file": "data\\raw\\prices_daily.csv",
+    "url": "https://finance.yahoo.com/",
+    "licence_or_terms": "Yahoo Finance data: personal/research use only, do not redistribute (kept out of git)",
+    "retrieved_at_utc": "2026-10-31T08:10:24+00:00"
   }
 ]

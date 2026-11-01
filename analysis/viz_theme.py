@@ -85,3 +85,20 @@ def sl_num(x: float, digits: int = 1) -> str:
 def sl_pct(share: float, digits: int = 0) -> str:
     """A share between 0 and 1 as Slovenian percent text (0.154 -> '15 %')."""
     return f"{sl_num(100 * share, digits)} %"
+
+
+# Every figure in the story comes with the same four short explanations, for a casual audience.
+EXPLANATION_PARTS = (("kaj", "Kaj vidimo?"), ("zakaj", "Zakaj smo to naredili?"), ("pomen", "Kaj to pomeni?"),
+                     ("omejitve", "Česa ne vemo?"))
+
+
+def explanation_markdown(parts: dict) -> str:
+    """Markdown block with the four parts (keys kaj, zakaj, pomen, omejitve). A missing or empty part is an error, so no figure
+    can be shown without saying what was done, why, what it means and what we do not know."""
+    out = []
+    for key, heading in EXPLANATION_PARTS:
+        text = (parts.get(key) or "").strip()
+        if not text:
+            raise KeyError(f"explanation is missing the part '{key}' ({heading})")
+        out.append(f"**{heading}** {text}")
+    return "\n\n".join(out)

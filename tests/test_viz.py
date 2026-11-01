@@ -114,3 +114,21 @@ def test_every_figure_exports_to_html():
     assert len(figs) == 8
     for name, fig in figs.items():
         assert "plotly" in fig.to_html(include_plotlyjs="cdn"), name
+
+
+def make_boom_table(n=120, seed=0):
+    rng = np.random.default_rng(seed)
+    size, growth = rng.normal(5, 1.5, n), rng.normal(0.2, 0.3, n)
+    y = (rng.random(n) < 1 / (1 + np.exp(-(-1.5 + 0.9 * (size - 5) + 1.2 * (growth - 0.2))))).astype(int)
+    return pd.DataFrame({"cik": range(n), "name": [f"Firma {i}" for i in range(n)], "log_assets_start": size, "boom_growth": growth, "y_layoff": y})
+
+
+def test_company_scatter_has_two_groups_hover_names_and_two_median_lines():
+    t = make_boom_table()
+    t0 = t.copy()
+    fig = viz.fig_company_scatter(t)
+    assert len(fig.data) == 2 and fig.layout.xaxis.type == "log" and len(fig.layout.shapes) == 2
+    assert fig.data[1].customdata[0][0].startswith("Firma") and len(fig.data[0].x) + len(fig.data[1].x) == len(t)
+    pd.testing.assert_frame_equal(t, t0)
+    t.loc[0, "boom_growth"] = 5.0                                            # +14,700 % growth: outside the drawn range, counted in the note
+    assert any("zunaj prikazanega območja" in (a.text or "") for a in viz.fig_company_scatter(t).layout.annotations)

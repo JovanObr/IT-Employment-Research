@@ -43,3 +43,23 @@ def test_save_html_writes_a_standalone_file(tmp_path):
 def test_slovenian_number_formatting():
     assert vt.sl_num(15.43) == "15,4" and vt.sl_num(12345.6) == "12.345,6" and vt.sl_num(3, 0) == "3"
     assert vt.sl_pct(0.154) == "15 %" and vt.sl_pct(0.0541, 1) == "5,4 %"
+
+
+def test_explanation_markdown_has_four_headings_and_rejects_missing_parts():
+    parts = {"kaj": "a", "zakaj": "b", "pomen": "c", "omejitve": "d"}
+    md = vt.explanation_markdown(parts)
+    assert [h for _, h in vt.EXPLANATION_PARTS if f"**{h}**" in md] == [h for _, h in vt.EXPLANATION_PARTS]
+    assert md.index("Kaj vidimo?") < md.index("Zakaj smo") < md.index("Kaj to pomeni?") < md.index("Česa ne vemo?")
+    for missing in parts:
+        try:
+            vt.explanation_markdown({k: v for k, v in parts.items() if k != missing})
+        except KeyError as e:
+            assert missing in str(e)
+        else:
+            raise AssertionError("a missing part must raise")
+    try:
+        vt.explanation_markdown({**parts, "omejitve": "  "})
+    except KeyError:
+        pass
+    else:
+        raise AssertionError("an empty part must raise")

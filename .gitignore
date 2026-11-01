@@ -14,3 +14,7 @@ data/processed/layoffs_clean.csv
 __pycache__/
 .ipynb_checkpoints/
 *.zip
+
+# Yahoo Finance prices and results derived from them: personal/research use only, never commit
+data/raw/prices_daily.csv
+data/processed/event_study_events.csv

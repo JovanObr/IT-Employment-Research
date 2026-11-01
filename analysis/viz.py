@@ -7,7 +7,8 @@ only works where the data exists. `python -m analysis.viz preview` writes every 
 
 Chapter 1  fig_timeline, fig_layoff_calendar            (several series on one axis; heatmap)
 Chapter 2  fig_event_windows, fig_leadlag_heatmap, fig_overbuild_quartiles   (small multiples; heatmap)
-Chapter 3  fig_size_deciles, fig_model_comparison, fig_size_group_lift
+Chapter 3  fig_size_deciles, fig_company_scatter, fig_model_comparison, fig_size_group_lift
+Chapter 6  fig_car_path, fig_car_distribution, fig_car_groups   (only when prices exist: story['stock'])
 """
 from __future__ import annotations
 
@@ -161,6 +162,29 @@ def fig_size_deciles(panel: pd.DataFrame, n: int = 10) -> go.Figure:
     return fig
 
 
+def fig_company_scatter(table: pd.DataFrame, ycap: float = 400.0) -> go.Figure:
+    """One dot per tech company: size (assets at the end of 2019) against revenue growth 2019-2021; red = announced layoffs in 2022-2023."""
+    d = table.dropna(subset=["boom_growth", "log_assets_start"]).copy()
+    d["assets"] = np.exp(d["log_assets_start"])
+    d["growth_pct"] = 100 * (np.exp(d["boom_growth"]) - 1)
+    out = int((d["growth_pct"] > ycap).sum())
+    fig = go.Figure()
+    for flag, name, col, op in ((0, "brez odpuščanj 2022-2023", PALETTE["grey"], 0.45), (1, "napovedala odpuščanja 2022-2023", PALETTE["red"], 0.85)):
+        s = d[d["y_layoff"] == flag]
+        fig.add_trace(go.Scatter(x=s["assets"], y=s["growth_pct"], mode="markers", name=name, marker=dict(size=9, color=col, opacity=op),
+                                 customdata=np.c_[s["name"].astype(str), s["assets"] / 1e6, s["growth_pct"]],
+                                 hovertemplate="<b>%{customdata[0]}</b><br>sredstva: %{customdata[1]:,.0f} mio USD<br>rast prihodkov: %{customdata[2]:.0f} %<extra></extra>"))
+    fig.add_vline(x=float(d["assets"].median()), line=dict(color=PALETTE["ink"], width=1, dash="dash"))
+    fig.add_hline(y=float(d["growth_pct"].median()), line=dict(color=PALETTE["ink"], width=1, dash="dash"))
+    fig.update_layout(**base_layout("Velika in hitro rastoča podjetja: kdo je napovedal odpuščanja?", height=560))
+    fig.update_layout(xaxis=dict(title="velikost podjetja (sredstva konec 2019, lestvica se z vsako črto podeseteri)", type="log"),
+                      yaxis=dict(title="rast prihodkov 2019 do 2021 (%)", range=[-60, ycap]))
+    if out:
+        fig.add_annotation(xref="paper", yref="paper", x=1, y=1, xanchor="right", yanchor="top", showarrow=False,
+                           text=f"{out} podjetij z rastjo nad {sl_num(ycap, 0)} % je zunaj prikazanega območja")
+    return fig
+
+
 def model_comparison_table(sc: dict) -> pd.DataFrame:
     """PR-AUC rows for the figure from analysis.company_models.run_size_control(): baseline, size alone, four models."""
     o = sc["overall"].set_index("model")
@@ -208,6 +232,64 @@ def fig_size_group_lift(stratified: pd.DataFrame) -> go.Figure:
     return fig
 
 
+# ---------------------------------------------------------------------------------------- chapter 6
+def fig_car_path(path: pd.DataFrame) -> go.Figure:
+    """Average cumulative abnormal return (counted from day -5) around the announcement, with its 95 % band."""
+    p = path.sort_values("t")
+    fig = go.Figure()
+    fig.add_vrect(x0=-0.5, x1=1.5, fillcolor=PALETTE["light_grey"], opacity=0.6, line_width=0)
+    fig.add_trace(go.Scatter(x=list(p["t"]) + list(p["t"])[::-1], y=list(p["hi_pct"]) + list(p["lo_pct"])[::-1], fill="toself",
+                             fillcolor="rgba(76,120,168,0.20)", line=dict(width=0), hoverinfo="skip", showlegend=False))
+    fig.add_trace(go.Scatter(x=p["t"], y=p["mean_pct"], mode="lines+markers", line=dict(color=PALETTE["blue"], width=3), showlegend=False,
+                             customdata=np.c_[p["lo_pct"], p["hi_pct"]],
+                             hovertemplate="dan %{x}: %{y:.2f} %<br>negotovost od %{customdata[0]:.2f} % do %{customdata[1]:.2f} %<extra></extra>"))
+    fig.add_hline(y=0, line=dict(color=PALETTE["ink"], width=1, dash="dash"))
+    fig.update_layout(**base_layout("Kaj naredi borza ob novici o odpuščanjih?", height=440))
+    fig.update_layout(xaxis=dict(title="dnevi glede na objavo (0 = prvi trgovalni dan; sivo = dneva 0 in +1)", dtick=1),
+                      yaxis=dict(title="povprečni nenavadni donos od dneva -5 (%)"))
+    return fig
+
+
+def fig_car_distribution(cars: pd.DataFrame, window: str = "ann_0_1", clip: float = 20.0) -> go.Figure:
+    """How different single reactions are: histogram of the announcement-window abnormal return (per cent), extremes clipped."""
+    v = 100 * cars[f"car_{window}"].dropna()
+    out = int((v.abs() > clip).sum())
+    fig = go.Figure(go.Histogram(x=v.clip(-clip, clip), nbinsx=41, marker_color=PALETTE["blue"],
+                                 hovertemplate="%{x:.1f} %: %{y} objav<extra></extra>"))
+    lines = [(v.mean(), "povprečje", PALETTE["red"]), (v.median(), "mediana", PALETTE["orange"])]
+    left_first = sorted(lines, key=lambda t: t[0])                          # the smaller value is labelled to the left of its line
+    for rank, (val, lab, col) in enumerate(left_first):
+        fig.add_shape(type="line", xref="x", yref="paper", x0=val, x1=val, y0=0, y1=1, line=dict(color=col, width=2))
+        fig.add_annotation(xref="x", yref="paper", x=val, y=1.0 - 0.07 * lines.index((val, lab, col)), showarrow=False,
+                           xanchor="right" if rank == 0 else "left", xshift=-6 if rank == 0 else 6, yanchor="top",
+                           text=f"{lab} {sl_num(val, 1)} %", font=dict(color=col, size=12), bgcolor="rgba(255,255,255,0.8)")
+    fig.update_layout(**base_layout("Posamezne objave se zelo razlikujejo", height=420))
+    fig.update_layout(xaxis=dict(title=f"nenavadni donos v dneh 0 in +1 (%; skrajnosti skrčene na ±{sl_num(clip, 0)} %)"),
+                      yaxis=dict(title="število objav"), bargap=0.05)
+    if out:
+        fig.add_annotation(xref="paper", yref="paper", x=1, y=1, xanchor="right", yanchor="top", showarrow=False,
+                           text=f"{out} objav je zunaj prikazanega območja")
+    return fig
+
+
+def fig_car_groups(by_size: pd.DataFrame, by_year: pd.DataFrame, min_n: int = 10) -> go.Figure:
+    """Average abnormal return with 95 % intervals by company size (left) and by year (right); groups below `min_n` events are left out."""
+    order = ["najmanjša tretjina", "srednja tretjina", "največja tretjina"]
+    sz = by_size.assign(k=by_size["size_group"].astype(str)).set_index("k").reindex(order).dropna(subset=["n"])
+    yr = by_year[by_year["n"] >= min_n].sort_values("year")
+    fig = make_subplots(rows=1, cols=2, shared_yaxes=True, horizontal_spacing=0.06, subplot_titles=["po velikosti podjetja", "po letu objave"])
+    for j, (x, d) in enumerate(((sz.index.astype(str), sz), (yr["year"].astype(str), yr)), 1):
+        up = (d["ci_hi_pct"] - d["mean_pct"]).fillna(0).to_numpy()
+        dn = (d["mean_pct"] - d["ci_lo_pct"]).fillna(0).to_numpy()
+        fig.add_trace(go.Scatter(x=list(x), y=d["mean_pct"], mode="markers", marker=dict(size=11, color=PALETTE["blue"]),
+                                 error_y=dict(type="data", symmetric=False, array=up, arrayminus=dn), showlegend=False,
+                                 customdata=d["n"], hovertemplate="%{x}: %{y:.2f} %<br>%{customdata} objav<extra></extra>"), row=1, col=j)
+        fig.add_hline(y=0, line=dict(color=PALETTE["ink"], width=1, dash="dash"), row=1, col=j)
+    fig.update_layout(**base_layout("Ali je odziv borze odvisen od velikosti podjetja ali leta?", height=430))
+    fig.update_yaxes(title_text="povprečni nenavadni donos v dneh 0 in +1 (%)", row=1, col=1)
+    return fig
+
+
 # ---------------------------------------------------------------------------------------- data and preview
 def prepare_story_data(flags_path=None, n_boot: int = 300) -> dict:
     """Run the existing analyses once and return the inputs of the chapter 1-3 figures (reads local files)."""
@@ -219,9 +301,32 @@ def prepare_story_data(flags_path=None, n_boot: int = 300) -> dict:
     fp = flags_path or PROCESSED / "hn_flags_monthly.csv"
     if fp.exists():
         flags = pd.read_csv(fp)
-    return {"weekly": cs.weekly_layoffs(d["events"]), "macro": h1["macro"], "tests": h1["tests"], "flags": flags,
-            "quartiles": cs.run_h3(d["fin"], d["revenue"], d["universe"], d["matches"], d["events"])["quartiles"],
+    h3 = cs.run_h3(d["fin"], d["revenue"], d["universe"], d["matches"], d["events"])
+    return {"weekly": cs.weekly_layoffs(d["events"]), "macro": h1["macro"], "tests": h1["tests"], "flags": flags, "stock": prepare_stock_data(),
+            "quartiles": h3["quartiles"], "boom_table": h3["used"],
             "panel": panel, "size_control": cm.run_size_control(panel, embargo=True, n_boot=n_boot)}
+
+
+def prepare_stock_data(n_boot: int = 1000) -> dict | None:
+    """Chapter 6 inputs from the event study, or None if prices have not been downloaded (python collect.py --sources prices)."""
+    from analysis import event_study as es
+    from collectors.common import PROCESSED, RAW
+    need = [PROCESSED / "layoffs_clean.csv", RAW / "sec_company_matches.csv", RAW / "prices_daily.csv", RAW / "sec_financials_quarterly.csv"]
+    if not all(p.exists() for p in need):
+        log.info("chapter 6 skipped: missing %s", [p.name for p in need if not p.exists()])
+        return None
+    layoffs = pd.read_csv(need[0], parse_dates=["date"])
+    events = es.build_events(layoffs, pd.read_csv(need[1]))
+    returns, _ = es.prepare_returns(pd.read_csv(need[2], parse_dates=["date"]))
+    cars, _ = es.run_event_study(events, returns)
+    cars["year"] = cars["date"].dt.year
+    sized = es.add_size_groups(es.attach_size(cars, pd.read_csv(need[3])).dropna(subset=["log_assets"]))
+    sized["size_group"] = sized["size_group"].astype(str)
+    paths = es.ar_paths(cars[["event_id", "ticker", "date"]], returns)
+    placebo = es.placebo_test(cars[["event_id", "ticker", "date"]], returns, n_rep=100)
+    return {"cars": cars, "summary": es.summarize(cars, n_boot=n_boot), "path": es.path_summary(paths, n_boot=n_boot), "placebo": placebo,
+            "by_size": es.group_summary(sized, "size_group", n_boot=n_boot), "by_year": es.group_summary(cars, "year", n_boot=n_boot),
+            "diff": es.group_difference(sized, "size_group", "najmanjša tretjina", "največja tretjina", n_boot=n_boot)}
 
 
 def build_figures(story: dict) -> dict[str, go.Figure]:
@@ -233,7 +338,10 @@ def build_figures(story: dict) -> dict[str, go.Figure]:
             "2_rast": fig_overbuild_quartiles(story["quartiles"]),
             "3_velikost": fig_size_deciles(story["panel"]),
             "3_modeli": fig_model_comparison(model_comparison_table(sc)),
-            "3_skupine": fig_size_group_lift(sc["stratified"])}
+            "3_skupine": fig_size_group_lift(sc["stratified"]),
+            **({"3_podjetja": fig_company_scatter(story["boom_table"])} if story.get("boom_table") is not None else {}),
+            **({"6_pot": fig_car_path(story["stock"]["path"]), "6_porazdelitev": fig_car_distribution(story["stock"]["cars"]),
+                "6_skupine": fig_car_groups(story["stock"]["by_size"], story["stock"]["by_year"])} if story.get("stock") else {})}
 
 
 def main() -> None:

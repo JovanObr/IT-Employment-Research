@@ -60,8 +60,30 @@ written with a decimal comma). `analysis/viz.py` (Stream A, chapters 1-3) is a w
 - `fig_region_small_multiples(geo) -> Figure` *(stretch)*: four panels (Northeast, Midwest, South, West; region from the first state code in
   the metro name), distribution of IT growth per region (strip or box), shared axis, median marked.
 
+### D3b Explanations: every figure needs one (this is part of "done")
+For each figure function add a companion `explain_<name>(same data) -> dict` returning four **Slovenian, plain-language** parts, then
+`build_explanations(...)` returning them by figure name. The notebook shows them under the figure with `analysis.viz_theme.explanation_markdown`,
+which refuses a missing or empty part. The keys and what each part must do:
+- `kaj` (what we see): how to read the figure, in two to four short sentences: what is on each axis, what the colours or sizes mean, what to hover over.
+- `zakaj` (why we did it): the question the figure answers, in one or two sentences, in everyday words.
+- `pomen` (what it means): what the data shows, with **numbers computed from the data passed in** (use `sl_num` / `sl_pct`). If the pattern could come out
+  differently with other data, the wording must adapt (for example "narasel" or "padel" chosen by the numbers), not be typed in.
+- `omejitve` (what we do not know): the honest limits, always present, never empty: what the data cannot show, what is measured only roughly,
+  what could explain the pattern otherwise.
+- Style: no more than 3-5 sentences per part; explain every technical word the first time (for example "delež objav" not "TF-IDF", "premik skozi čas" not
+  "change point"); no jargon without a gloss; no claims about causes.
+`analysis/story_text.py` (Stream A) is the worked example for chapters 1-3; copy its structure.
+
+### D3c Entry point for the notebook (exact signature, so assembly takes minutes)
+`analysis/viz_text_geo.py` must expose `build_chapter_4_5() -> dict[str, tuple[plotly.graph_objects.Figure, dict]]`. It loads the committed CSVs itself
+(through your loaders) and returns, for every figure, `(figure, explanation)` where `explanation` has the four keys `kaj`, `zakaj`, `pomen`, `omejitve`.
+Figure names are fixed and prefixed with the chapter: `4_teme_povrsina`, `4_teme_mali_grafi`, `4_teme_toplotna`, `4_daljava_ui`, `5_zemljevid`
+(and `5_regije` if you do the stretch). The notebook shows them in the order of the names. If a CSV is missing, raise a clear error (the notebook
+catches it and shows a note in place of the chapter).
+
 ### D4 Tests and preview
-- `tests/test_viz_text_geo.py`: for each function, a smoke test on a synthetic frame (right number of traces, no exception on NaN, inputs not
+- `tests/test_viz_text_geo.py`: `build_chapter_4_5()` returns exactly the names above, each with a figure and a complete explanation (use synthetic CSVs written to the temporary data directory); for each `explain_*` function: the four parts are present and non-empty, contain no 'nan' or 'None', and contain the numbers computed
+  from the input (change the input and the text changes); a test that the wording flips when the data flips (for example growth vs decline). For each figure function, a smoke test on a synthetic frame (right number of traces, no exception on NaN, inputs not
   modified, hover text contains the metro or topic name, withheld metros are crosses and not zeros, dropdown has two entries). A test that every
   visible string is non-empty Slovenian is not needed; one that no title is hard-coded with a number is: numbers in titles must come from the data.
 - `python -m analysis.viz_text_geo preview` writes every figure as `reports/figures_sl/preview_<name>.html` (uses `viz_theme.save_html`) so John can open them.
@@ -88,6 +110,6 @@ your line in `docs/STATUS.md` updated with what exists and what does not.
 
 ## Prompt to paste into the agent
 "You are the Stream B agent on this repository. Read AGENTS.md, docs/WORKSTREAMS.md, docs/STATUS.md, analysis/viz_theme.py and
-docs/tasks/MILESTONE_petar_ch4_ch5.md. Do D1, then the chapter 4 functions, then D2 and the map, in that order, on a branch named
+docs/tasks/MILESTONE_petar_ch4_ch5.md. Do D1, then the chapter 4 functions with their explanations, then D2 and the map with its explanation, in that order, on a branch named
 milestone/ch4-ch5-figures. Do not edit viz_theme.py or files owned by Stream A. Test with synthetic data only, never commit raw text, keys or data/raw.
 All visible text is Slovenian; numbers in titles come from the data. Open the pull request on Monday 2 November at noon even if the stretch item is not done."
