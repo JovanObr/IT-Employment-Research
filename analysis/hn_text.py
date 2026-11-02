@@ -15,6 +15,7 @@ Command line (from the project root)
   python -m analysis.hn_text run            # topics + change points -> data/processed/hn_topics_monthly.csv
   python -m analysis.hn_text sample         # writes data/manual/hn_validation_sample.csv (100 random posts, to label)
   python -m analysis.hn_text validate       # reads the labelled copy and prints precision / recall
+  python -m analysis.hn_text flags          # aggregates only -> hn_flags_monthly.csv, hn_change_points.csv (remote, ai_ml)
 
 Limits to repeat whenever numbers are quoted: the posts are startup-skewed; the flags are keyword rules without
 negation handling; the NMF topics depend on k and on the seed.
@@ -314,6 +315,44 @@ def validate_flags(labelled: pd.DataFrame, posts: pd.DataFrame, flags=("remote",
     return pd.DataFrame(rows).set_index("flag")
 
 
+# ------------------------------------------------------------------ aggregates for the milestone figures (no raw text)
+MILESTONE_FLAGS = ("remote", "ai_ml")      # 'junior' left out on purpose: hand validation put its recall near 5 %
+
+
+def flags_monthly(posts: pd.DataFrame, flags=MILESTONE_FLAGS) -> pd.DataFrame:
+    """Long table month (YYYY-MM), flag, share (0-1), n_posts. Aggregates only, safe to commit."""
+    n = posts.groupby("month").size().sort_index()
+    rows = []
+    for f in flags:
+        s = monthly_share(posts, f)
+        rows.append(pd.DataFrame({"month": s.index.strftime("%Y-%m"), "flag": f, "share": s.to_numpy(dtype=float),
+                                  "n_posts": n.reindex(s.index).to_numpy(dtype=int)}))
+    return pd.concat(rows, ignore_index=True)
+
+
+def change_points_table(posts: pd.DataFrame, flags=MILESTONE_FLAGS, n_bkps: int | None = 3) -> pd.DataFrame:
+    """Segments of the monthly share between level shifts (the same call as notebook 05: n_bkps=3).
+    Columns flag, start, end (YYYY-MM), months, mean_share."""
+    out = []
+    for f in flags:
+        s = monthly_share(posts, f)
+        seg = describe_breaks(s, binary_segmentation(s.to_numpy(), n_bkps=n_bkps))
+        seg.insert(0, "flag", f)
+        out.append(seg)
+    return pd.concat(out, ignore_index=True)[["flag", "start", "end", "months", "mean_share"]]
+
+
+def write_flag_aggregates(posts: pd.DataFrame | None = None, outdir: Path | None = None) -> tuple[Path, Path]:
+    """Writes hn_flags_monthly.csv and hn_change_points.csv from the local posts file (flags only, no text)."""
+    posts = load_posts() if posts is None else posts
+    outdir = Path(outdir or PROCESSED)
+    outdir.mkdir(parents=True, exist_ok=True)
+    p1, p2 = outdir / "hn_flags_monthly.csv", outdir / "hn_change_points.csv"
+    flags_monthly(posts).to_csv(p1, index=False)
+    change_points_table(posts).to_csv(p2, index=False)
+    return p1, p2
+
+
 # ------------------------------------------------------------------ command line
 def run(k: int = 10, out: Path | None = None) -> pd.DataFrame:
     df = load_joined()
@@ -332,12 +371,15 @@ def run(k: int = 10, out: Path | None = None) -> pd.DataFrame:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("cmd", choices=["run", "sample", "validate"])
+    ap.add_argument("cmd", choices=["run", "sample", "validate", "flags"])
     ap.add_argument("-k", type=int, default=10)
     ap.add_argument("-n", type=int, default=100)
     a = ap.parse_args()
     if a.cmd == "run":
         run(a.k)
+    elif a.cmd == "flags":
+        for p in write_flag_aggregates():
+            print(f"wrote {p}")
     elif a.cmd == "sample":
         path = MANUAL / "hn_validation_sample.csv"
         MANUAL.mkdir(parents=True, exist_ok=True)

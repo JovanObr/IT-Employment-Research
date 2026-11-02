@@ -186,3 +186,37 @@ def only_one_year(stab: pd.DataFrame, names: dict[str, str] | None = None) -> pd
     if names is not None:
         x["name"] = x["cbsa_code"].map(names)
     return x.sort_values(["only_in", "area_fips"]).reset_index(drop=True)
+
+
+# ------------------------------------------------------------------ aggregate for the milestone map (committed)
+MAP_COLUMNS = ["cbsa_code", "metro_name", "lat", "lon", "size_jobs", "emp_it_2019", "emp_it_2024", "it_growth_pct", "usable",
+               "estabs_it_2019", "estab_growth_pct", "usable_estab", "wfh_share_pct_acs2019"]
+
+
+def map_data(geo: pd.DataFrame) -> pd.DataFrame:
+    """One row per panel metro with the columns the plotly map needs. Metros without a centroid keep empty lat/lon."""
+    out = geo.copy()
+    for c in MAP_COLUMNS:
+        if c not in out:
+            out[c] = np.nan
+    out = out[MAP_COLUMNS].copy()
+    out["cbsa_code"] = out["cbsa_code"].astype(str).str.zfill(5)
+    return out.sort_values("cbsa_code").reset_index(drop=True)
+
+
+def write_map_data(path: Path | None = None, **kw) -> Path:
+    path = Path(path or PROCESSED / "metro_map_data.csv")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    map_data(load_geo_panel(**kw)).to_csv(path, index=False)
+    return path
+
+
+def main() -> None:
+    import sys
+    if sys.argv[1:] != ["mapdata"]:
+        raise SystemExit("usage: python -m analysis.geo mapdata")
+    print(f"wrote {write_map_data()}")
+
+
+if __name__ == "__main__":
+    main()
