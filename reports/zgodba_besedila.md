@@ -88,7 +88,7 @@
 
 **Kaj to pomeni?** V dneh 0 in +1 se je cena v povprečju znižala za 0,6 % (negotovost od -1,3 % do 0,1 %). Ker negotovost zajema ničlo, ne moremo trditi, da je sprememba več kot naključje. V dneh pred objavo ni opaznega premika, kar je dober znak: novica očitno ni pricurljala vnaprej.
 
-**Česa ne vemo?** Podjetja odpuščanja pogosto objavijo skupaj z rezultati poslovanja ali opozorili vlagateljem, zato učinka odpuščanj ne moremo ločiti od druge novice istega dne. Datum na seznamu je lahko dan prepozen. Podjetja, ki so kasneje izginila z borze, v podatkih manjkajo. Gre za povprečje: posamezne objave se zelo razlikujejo.
+**Česa ne vemo?** Podjetja odpuščanja pogosto objavijo skupaj z rezultati poslovanja ali opozorili vlagateljem, zato učinka odpuščanj ne moremo ločiti od druge novice istega dne. Datum na seznamu je lahko dan prepozen. Podjetja, ki so kasneje izginila z borze, v podatkih manjkajo. Gre za povprečje: posamezne objave se zelo razlikujejo. Preizkus na naključnih dnevih kaže, da naš test v 9 % primerov zazna učinek, ki ga ni (pričakovanih je 5 %). Intervali so zato nekoliko preozki, kar pri rezultatu, ki že zajema ničlo, sklepa ne spremeni.
 
 ## 6_porazdelitev
 **Kaj vidimo?** Vsak stolpec šteje, koliko objav je imelo določen nenavadni donos v dneh 0 in +1 (v odstotkih). Rdeča črta je povprečje, oranžna mediana (sredinska vrednost, polovica objav je pod njo, polovica nad njo). Skrajne vrednosti smo skrčili na ±20 %, da je graf berljiv.
@@ -108,6 +108,60 @@
 
 **Česa ne vemo?** V posamezni skupini je od nekaj deset do dvesto objav, zato so razlike negotove. Hkrati primerjamo več skupin, zato je lahko katera 'opazna' razlika tudi naključna. Velikost je merjena z vrednostjo sredstev pred objavo, ne z vrednostjo podjetja na borzi.
 
+## 4_teme_povrsina
+**Kaj vidimo?** Vsaka barvna plast je ena tema, ki jo je računalnik sam našel v besedilih oglasov za delo. Debelina plasti pove, kolikšen delež objav v tistem mesecu govori predvsem o tej temi; skupaj plasti vedno dajo 100 %. Ko miško premakneš na plast, vidiš ime teme in njen delež; črtkani črti označujeta prvo zvišanje obrestne mere in ChatGPT.
+
+**Zakaj smo to naredili?** Hoteli smo videti, ali se je spremenilo, o čem delodajalci pišejo, ko iščejo ljudi: o tehnologijah, o vrsti dela ali o podjetju.
+
+**Kaj to pomeni?** V prvih 12 mesecih s podatki (1/2015 do 2/2016) je bila najpogostejša tema »razvoj poslovnih sistemov« (20 % objav), v zadnjih 12 mesecih pa »zagonska podjetja z UI in agenti« (42 %). Najbolj je narasla tema »zagonska podjetja z UI in agenti« (z 0 % na 42 %), najbolj je padla »mobilne aplikacije (iOS, Android)« (z 13 % na 2 %).
+
+**Česa ne vemo?** Hacker News je kotiček trga, kjer prevladujejo zagonska podjetja (startupi) iz ZDA, zato ne predstavlja vseh delodajalcev. Teme je določil algoritem (vsaka objava je pripisana svoji najmočnejši temi), imena tem pa smo dali mi; z drugim številom tem bi bila razdelitev nekoliko drugačna. Graf kaže, o čem se piše, ne koliko ljudi je zaposlenih.
+
+## 4_teme_mali_grafi
+**Kaj vidimo?** Vsak mali graf je ena od 10 tem. Tanka črta je delež objav v posameznem mesecu, debela pa povprečje zadnjih 12 mesecev, ki skrije mesečno nihanje. Vsi grafi imajo enako navpično os, zato so velikosti neposredno primerljive. Črtkana črta je datum izida ChatGPT (30. 11. 2022).
+
+**Zakaj smo to naredili?** Na skupnem grafu se majhne teme izgubijo. Tukaj vidimo vsako posebej in lahko primerjamo, katera je rasla in katera padala.
+
+**Kaj to pomeni?** Primerjali smo 12 mesecev pred izidom ChatGPT z zadnjimi 12 meseci (do 10/2026). Za vsaj eno odstotno točko je pridobilo 1 od 10 tem, izgubilo pa 8. Največ je pridobila »zagonska podjetja z UI in agenti« (+37,0 odstotne točke), največ izgubila »spletne tehnologije (React, Node, TypeScript)« (−7,3 odstotne točke).
+
+**Česa ne vemo?** Hacker News je kotiček trga, kjer prevladujejo zagonska podjetja (startupi) iz ZDA, zato ne predstavlja vseh delodajalcev. Sprememba po datumu izida ChatGPT ne pomeni, da jo je povzročil ChatGPT: hkrati so se zviševale obrestne mere in zmanjševalo zaposlovanje. Imena tem so naša, teme pa je določil algoritem.
+
+## 4_teme_toplotna
+**Kaj vidimo?** Vsaka vrstica je ena tema, vsak stolpec eno leto. Številka v polju je povprečen delež objav tistega leta v odstotkih; temnejše polje pomeni večji delež. Teme so razvrščene po spremembi: zgoraj tiste, ki so najbolj pridobile, spodaj tiste, ki so najbolj izgubile.
+
+**Zakaj smo to naredili?** Mesečne številke precej nihajo. Letna povprečja dajo bolj miren pregled, katere teme so v zadnjih letih dobile prostor.
+
+**Kaj to pomeni?** Primerjali smo prva leta (2015-2017) z zadnjimi (2024-2026). Najbolj je pridobila »zagonska podjetja z UI in agenti«: z 0,8 % na 31,2 % objav. Najbolj je izgubila »San Francisco in okolica«: z 13,7 % na 4,4 %.
+
+**Česa ne vemo?** Hacker News je kotiček trga, kjer prevladujejo zagonska podjetja (startupi) iz ZDA, zato ne predstavlja vseh delodajalcev. Zadnje leto je lahko nepopolno (podatki ne pokrivajo vseh mesecev), zato je njegovo povprečje manj zanesljivo. Teme je določil algoritem, zato meje med njimi niso ostre.
+
+## 4_daljava_ui
+**Kaj vidimo?** Modra črta je delež objav, ki omenjajo delo na daljavo, vijolična delež objav, ki omenjajo umetno inteligenco ali strojno učenje. Debele vodoravne stopnice so povprečna raven med dvema premikoma: računalnik je poiskal mesece, ko se je raven najbolj spremenila (»premik skozi čas«). Črtkane črte označujejo začetek pandemije, prvo zvišanje obrestne mere in ChatGPT.
+
+**Zakaj smo to naredili?** Želeli smo videti, kdaj točno sta se spremenili dve stvari, o katerih se največ govori: delo na daljavo in umetna inteligenca.
+
+**Kaj to pomeni?** Omembe dela na daljavo so v prvih 12 mesecih zajemale 21 % objav, v zadnjih 12 mesecih 54 % (delež je narasel); vrh je bil 2/2022 s 87 %. Večji premiki ravni so se zgodili 4/2020, 10/2020, 10/2023. Omembe umetne inteligence so v prvih 12 mesecih zajemale 10 % objav, v zadnjih 12 mesecih 57 % (delež je narasel); vrh je bil 8/2026 s 64 %. Večji premiki ravni so se zgodili 2/2023, 6/2024, 7/2025.
+
+**Česa ne vemo?** Hacker News je kotiček trga, kjer prevladujejo zagonska podjetja (startupi) iz ZDA, zato ne predstavlja vseh delodajalcev. Oznake temeljijo na iskanju ključnih besed: objava, ki napiše »no remote«, šteje kot omemba dela na daljavo. Premiki skozi čas so ocena (iskali smo največ tri), ne dokaz, da se je kaj zgodilo prav tisti mesec, in ne povedo, zakaj.
+
+## 5_zemljevid
+**Kaj vidimo?** Vsak krog je eno metro območje v ZDA (mesto z okolico). Velikost kroga pove, koliko ljudi je tam leta 2019 delalo v IT, barva pa, ali se je število do leta 2024 povečalo (modro) ali zmanjšalo (rdeče); bela pomeni skoraj brez spremembe. Sivi križci so območja, kjer je podatek skrit. Z menijem levo zgoraj preklopiš na rast števila IT podjetij; ko miško premakneš na krog, vidiš ime in številke.
+
+**Zakaj smo to naredili?** Zanimalo nas je, ali se je IT delo po pandemiji preselilo: ali so velika tradicionalna središča izgubljala in manjša, cenejša mesta pridobivala.
+
+**Kaj to pomeni?** Med 259 metro območji z uporabnim podatkom se je IT zaposlenost povečala v 62 % območij; pri tipičnem območju (mediana) je zrasla za 12,7 %. Med 25 največjimi je najbolj zrasel Dallas (+48 %), najslabše se je odrezal Detroit (−22 %). Število IT podjetij je pri tipičnem območju zraslo za 45 % (podatek imamo za 367 območij, ker se število podjetij ne skriva). Za 131 območij je podatek o zaposlenosti skrit ali nepopoln, med njimi Chicago, Atlanta, Minneapolis, Kansas City, Indianapolis.
+
+**Česa ne vemo?** IT tukaj pomeni samo podjetja za svetovanje in programiranje po naročilu (NAICS 5415); založniki programske opreme in velika tehnološka podjetja niso všteti. Kjer je podatek skrit, to ni nič: urad ga ne objavi, da ne bi razkril posameznega podjetja. Primerjamo le dve leti, zato zemljevid ne pokaže, kaj se je dogajalo vmes. Rast pri majhnih območjih je lahko velika že zaradi enega podjetja. Zemljevid kaže, kje se je kaj spremenilo, ne pa zakaj.
+
+## 5_regije
+**Kaj vidimo?** Štirje grafi, po eden za vsako veliko regijo ZDA. Vsaka pika je eno metro območje, njena višina pa rast IT zaposlenosti med 2019 in 2024. Škatla zajame srednjo polovico območij, črta v njej in napis pa mediano (tipično območje). Ko miško premakneš na piko, vidiš ime.
+
+**Zakaj smo to naredili?** Zemljevid kaže posamezna mesta, tukaj pa preverimo, ali je celoten jug ali zahod rasel hitreje kot severovzhod in srednji zahod.
+
+**Kaj to pomeni?** Mediana rasti po regijah: severovzhod −5,3 % (45 območij); srednji zahod −0,4 % (55 območij); jug +33,8 % (87 območij); zahod +18,5 % (76 območij). Najvišja je na jugu, najnižja na severovzhodu; razlika med njima je 39,1 odstotne točke.
+
+**Česa ne vemo?** IT tukaj pomeni samo podjetja za svetovanje in programiranje po naročilu (NAICS 5415); založniki programske opreme in velika tehnološka podjetja niso všteti. Kjer je podatek skrit, to ni nič: urad ga ne objavi, da ne bi razkril posameznega podjetja. Regijo določimo po prvi zvezni državi v imenu območja, kar pri območjih čez mejo držav ni povsem natančno. Vsako območje šteje enako, ne glede na velikost.
+
 ## povzetek
 
 **Kaj smo se naučili**
@@ -116,6 +170,8 @@
 - **Zakaj:** število napovedi sledi obrestnim meram in borzi, števila odpuščenih ljudi in uradne statistike pa isti vzorec ne ujame. Seznam torej bolj kaže, kdaj so podjetja objavljala odpuščanja, kot koliko ljudi je izgubilo delo.
 - **Katera podjetja (rast):** podjetja, ki so v letih 2019 do 2021 najhitreje rasla, so pozneje pogosteje napovedala odpuščanja (23 % proti 5 % pri najpočasnejših), vendar ne zato, ker bi jim stroški rasli hitreje od prihodkov.
 - **Katera podjetja (velikost):** največ pove velikost podjetja. Samo z njo dosežemo 0,28 (naključje 0,05), model z računovodskimi kazalniki 0,22, brez velikosti pa 0,08.
+- **Kaj iščejo delodajalci:** delež objav na Hacker Newsu, ki omenjajo delo na daljavo, je bil leta 2019 32 %, na vrhuncu (12-mesečno povprečje do 8/2022) 84 %, v zadnjih 12 mesecih pa 54 %; delež objav z umetno inteligenco je z 10 % v prvih 12 mesecih narasel na 57 % v zadnjih 12 mesecih. To je vzorec iz kotička trga s prevlado zagonskih podjetij, ne slika vseh delodajalcev.
+- **Kje:** med 259 ameriškimi metro območji z uporabnim podatkom se je IT zaposlenost (svetovanje in programiranje po naročilu) med letoma 2019 in 2024 povečala v 62 % območij; pri tipičnem območju (mediana) je zrasla za 12,7 %. Za 131 območij je podatek skrit ali nepopoln, kar ni enako nič.
 - **Borza:** ob objavi odpuščanj se cena delnice v povprečju znižala za 0,6 % (negotovost od -1,3 do 0,1 %), kar ni jasno več kot naključje.
 
 **Česa ne vemo**

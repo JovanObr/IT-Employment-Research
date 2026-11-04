@@ -39,6 +39,7 @@ def test_setup_uses_the_shared_pipeline_and_a_renderer_that_survives_html_export
     setup = next("".join(c["source"]) for c in cells() if c["cell_type"] == "code" and "prepare_story_data" in "".join(c["source"]))
     assert "viz.prepare_story_data()" in setup and "build_explanations" in setup and "notebook_connected" in setup
     assert "explanation_markdown" in setup and "build_chapter_4_5" in setup
+    assert 'story["hn"]' in setup and 'story["geo"]' in setup            # chapters 4-5 also feed the closing summary
 
 
 def test_summary_cell_uses_the_computed_summary():

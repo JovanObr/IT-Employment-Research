@@ -190,3 +190,39 @@ def test_export_texts_contains_every_figure_and_the_summary():
     names = tx.build_explanations(story)
     assert all(f"## {n}" in md for n in names) and "## 3_podjetja" in md
     assert md.count("**Kaj vidimo?**") == len(names) and "## povzetek" in md and "Česa ne vemo" in md
+
+
+def _hn_flags():
+    months = pd.date_range("2015-01-01", "2026-10-01", freq="MS")
+    rem = np.interp(np.arange(len(months)), [0, 60, 72, 96, len(months) - 1], [0.2, 0.3, 0.8, 0.8, 0.5])
+    ai = np.linspace(0.1, 0.55, len(months))
+    f = lambda flag, v: pd.DataFrame({"month": months.strftime("%Y-%m"), "flag": flag, "share": v, "n_posts": 500})
+    return pd.concat([f("remote", rem), f("ai_ml", ai)])
+
+
+def _geo(n=60, seed=0):
+    rng = np.random.default_rng(seed)
+    return pd.DataFrame({"usable": [True] * 40 + [False] * 20, "it_growth_pct": np.r_[rng.normal(15, 20, 40), [np.nan] * 20],
+                         "lat": rng.uniform(32, 44, n), "lon": rng.uniform(-100, -80, n)})                  # inside the lower 48
+
+
+def test_summary_adds_hacker_news_and_map_bullets_that_follow_the_data():
+    from test_viz_stock import make_stock
+    sc = cm.run_size_control(synthetic_panel(150), n_boot=20)
+    story = {"weekly": make_weekly(), "macro": make_macro(), "tests": make_tests(), "flags": None, "quartiles": make_quartiles(),
+             "panel": synthetic_panel(150), "size_control": sc, "stock": make_stock(0.03), "hn": {"flags": _hn_flags()}, "geo": _geo()}
+    z = tx.build_summary(story)["zakljucki"]
+    assert len(z) == 7 and z[-1].startswith("**Borza:**")
+    hn, where = [x for x in z if x.startswith("**Kaj iščejo")][0], [x for x in z if x.startswith("**Kje:**")][0]
+    assert "leta 2019" in hn and "ni povsem" not in hn and "narasel" in hn and "zagonskih podjetij" in hn
+    assert "40 ameriškimi" in where and "Za 20 območij" in where and "ni enako nič" in where and "je zrasla za" in where
+    fl = _hn_flags()
+    fl.loc[fl["flag"] == "ai_ml", "share"] = 0.2                                        # flat AI share
+    story["hn"] = {"flags": fl}
+    assert "ostal podoben" in [x for x in tx.build_summary(story)["zakljucki"] if x.startswith("**Kaj iščejo")][0]
+    story["geo"] = _geo().assign(it_growth_pct=lambda d: -d["it_growth_pct"].abs())
+    assert "je padla za" in [x for x in tx.build_summary(story)["zakljucki"] if x.startswith("**Kje:**")][0]
+    story["geo"] = _geo().assign(lat=lambda d: np.where(d.index < 5, 64.0, d["lat"]), lon=lambda d: np.where(d.index < 5, -150.0, d["lon"]))   # Alaska is not counted
+    assert "35 ameriškimi" in [x for x in tx.build_summary(story)["zakljucki"] if x.startswith("**Kje:**")][0]
+    del story["hn"], story["geo"]
+    assert len(tx.build_summary(story)["zakljucki"]) == 5                              # still works without chapters 4-5

@@ -376,6 +376,42 @@ def build_summary(story: dict) -> dict[str, list[str]]:
         out.append(f"**Katera podjetja (velikost):** največ pove velikost podjetja. Samo z njo dosežemo {sl_num(size, 2)} (naključje {sl_num(t.iloc[0]['pr_auc'], 2)}), model z računovodskimi kazalniki {sl_num(lg, 2)}, brez velikosti pa {sl_num(lg0, 2)}.")
     else:
         out.append(f"**Katera podjetja (velikost):** velikost je pomembna ({sl_num(size, 2)}), a modeli brez nje še vedno dosežejo {sl_num(lg0, 2)} (naključje {sl_num(t.iloc[0]['pr_auc'], 2)}).")
+    if story.get("hn") and story["hn"].get("flags") is not None:
+        fl = story["hn"]["flags"]
+
+        def series(flag):
+            f = fl[fl["flag"] == flag]
+            return pd.Series(f["share"].to_numpy(float), index=pd.to_datetime(f["month"])).sort_index().dropna()
+
+        def level_word(a, b):
+            return "ostal podoben" if abs(b - a) < 0.01 else ("narasel" if b > a else "padel")
+
+        rem, ai = series("remote"), series("ai_ml")
+        bits = []
+        if len(rem) >= 24:
+            base = rem[rem.index.year == 2019].mean() if (rem.index.year == 2019).any() else rem.iloc[:12].mean()
+            base_lbl = "leta 2019" if (rem.index.year == 2019).any() else "v prvih 12 mesecih"
+            roll = rem.rolling(12).mean()
+            peak_m = roll.idxmax()
+            last = rem.iloc[-12:].mean()
+            bits.append(f"delež objav na Hacker Newsu, ki omenjajo delo na daljavo, je bil {base_lbl} {sl_pct(base, 0)}, na vrhuncu (12-mesečno povprečje do {peak_m.month}/{peak_m.year}) "
+                        f"{sl_pct(roll.max(), 0)}, v zadnjih 12 mesecih pa {sl_pct(last, 0)}")
+        if len(ai) >= 24:
+            a0, a1 = ai.iloc[:12].mean(), ai.iloc[-12:].mean()
+            bits.append(f"delež objav z umetno inteligenco je z {sl_pct(a0, 0)} v prvih 12 mesecih {level_word(a0, a1)} na {sl_pct(a1, 0)} v zadnjih 12 mesecih")
+        if bits:
+            out.append("**Kaj iščejo delodajalci:** " + "; ".join(bits) + ". To je vzorec iz kotička trga s prevlado zagonskih podjetij, ne slika vseh delodajalcev.")
+    if story.get("geo") is not None:
+        from analysis.geo import in_lower48                       # the same definition as the map in chapter 5: lower 48 states, with coordinates
+        g = story["geo"].dropna(subset=["lat", "lon"])
+        g = g[in_lower48(g["lon"], g["lat"])]
+        ok = g["usable"].astype(bool) & g["it_growth_pct"].notna()
+        if ok.any():
+            share_up = float((g.loc[ok, "it_growth_pct"] > 0).mean())
+            med = float(g.loc[ok, "it_growth_pct"].median())
+            out.append(f"**Kje:** med {int(ok.sum())} ameriškimi metro območji z uporabnim podatkom se je IT zaposlenost (svetovanje in programiranje po naročilu) med letoma 2019 in 2024 "
+                       f"povečala v {sl_pct(share_up, 0)} območij; pri tipičnem območju (mediana) je {'zrasla' if med > 0 else 'padla'} za {sl_num(abs(med), 1)} %. "
+                       f"Za {int((~ok).sum())} območij je podatek skrit ali nepopoln, kar ni enako nič.")
     if story.get("stock"):
         sm = story["stock"]["summary"]
         out.append(f"**Borza:** ob objavi odpuščanj se cena delnice v povprečju {'znižala' if sm['mean_pct'] < 0 else 'zvišala'} za {sl_num(abs(sm['mean_pct']), 1)} % (negotovost od {sl_num(sm['ci_lo_pct'], 1)} do {sl_num(sm['ci_hi_pct'], 1)} %), "
@@ -424,10 +460,25 @@ def main() -> None:
     from analysis.viz_theme import ROOT
     if sys.argv[1:] != ["export"]:
         raise SystemExit("usage: python -m analysis.story_text export")
+    story = viz.prepare_story_data()
+    try:                                                   # chapters 4-5 (Stream B), as in notebook 08
+        from analysis import viz_text_geo as vtg
+        story["hn"] = {"flags": vtg.load_flags(), "change_points": vtg.load_change_points()}
+        story["geo"] = vtg.load_map_data()
+        extra = vtg.build_chapter_4_5()
+    except Exception:
+        extra = {}
     path = ROOT / "reports" / "zgodba_besedila.md"
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(export_texts(viz.prepare_story_data()), encoding="utf-8")
+    text = export_texts(story)
+    if extra:                                              # Stream B's explanations go before the summary
+        from analysis.viz_theme import EXPLANATION_PARTS
+        block = "\n".join(f"## {n}\n" + "\n".join(f"**{h}** {parts[k]}\n" for k, h in EXPLANATION_PARTS) for n, (_, parts) in extra.items())
+        text = text.replace("## povzetek", block + "\n## povzetek", 1)
+    path.write_text(text, encoding="utf-8")
     print(f"written {path}")
+    from analysis import talking_points
+    talking_points.write(story)
 
 
 if __name__ == "__main__":
