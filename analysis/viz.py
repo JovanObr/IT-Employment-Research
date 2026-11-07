@@ -5,7 +5,7 @@ titles, labels and hover text are computed from the data passed in. `prepare_sto
 (analysis.causes, analysis.company_models) once and returns everything the figures need; it reads local files, so it
 only works where the data exists. `python -m analysis.viz preview` writes every figure as an HTML file to reports/figures_sl/.
 
-Chapter 1  fig_timeline, fig_layoff_calendar            (several series on one axis; heatmap)
+Chapter 1  fig_timeline, fig_layoff_calendar, fig_people_quarterly, fig_top_announcements   (several series on one axis; heatmap; people and share of staff)
 Chapter 2  fig_event_windows, fig_leadlag_heatmap, fig_overbuild_quartiles   (small multiples; heatmap)
 Chapter 3  fig_size_deciles, fig_company_scatter, fig_model_comparison, fig_size_group_lift
 Chapter 6  fig_car_path, fig_car_distribution, fig_car_groups   (only when prices exist: story['stock'])
@@ -43,13 +43,14 @@ def _scaled(s: pd.Series) -> pd.Series:
 
 
 def fig_timeline(weekly: pd.Series, macro: pd.DataFrame, flags: pd.DataFrame | None = None,
-                 start: str = "2020-03-01") -> go.Figure:
-    """Layoff announcements, Fed rate, NASDAQ and (if given) the Hacker News remote and AI shares on ONE axis.
-    Each line is rescaled to 0-100 over the period shown; hover shows the real value."""
+                 start: str = "2020-03-01", people: pd.Series | None = None) -> go.Figure:
+    """Layoff announcements (or people laid off, via the dropdown), Fed rate, NASDAQ and (if given) the Hacker News remote and AI shares on
+    ONE axis. Each line is rescaled to 0-100 over the period shown; hover shows the real value."""
     t0 = pd.Timestamp(start)
-    series = [("napovedi odpuščanj na teden (4-tedensko povprečje)", weekly.rolling(4).mean(), "", PALETTE["red"], 1),
-              ("obrestna mera Fed", macro["fedfunds"], " %", PALETTE["orange"], 1),
-              ("borza NASDAQ", macro["nasdaq"], "", PALETTE["green"], 0)]
+    series = [("napovedi odpuščanj na teden (4-tedensko povprečje)", weekly.rolling(4).mean(), "", PALETTE["red"], 1)]
+    if people is not None:
+        series.append(("odpuščeni ljudje na teden (4-tedensko povprečje)", people.rolling(4).mean(), " ljudi", PALETTE["red"], 0))
+    series += [("obrestna mera Fed", macro["fedfunds"], " %", PALETTE["orange"], 1), ("borza NASDAQ", macro["nasdaq"], "", PALETTE["green"], 0)]
     if flags is not None and len(flags):
         f = flags.assign(month=pd.to_datetime(flags["month"]))
         for flag, name, col in (("remote", "objave z delom na daljavo", PALETTE["blue"]),
@@ -58,54 +59,119 @@ def fig_timeline(weekly: pd.Series, macro: pd.DataFrame, flags: pd.DataFrame | N
             if len(sub):
                 series.append((name, sub, " %", col, 1))
     fig = go.Figure()
-    for name, s, unit, col, digits in series:
-        s = s[s.index >= t0].dropna()
-        if s.empty:
+    for name, s_, unit, col, digits in series:
+        s_ = s_[s_.index >= t0].dropna()
+        if s_.empty:
             continue
-        fig.add_trace(go.Scatter(x=s.index, y=_scaled(s), name=name, mode="lines", line=dict(color=col, width=2),
-                                 customdata=[f"{sl_num(v, digits)}{unit}" for v in s],
+        fig.add_trace(go.Scatter(x=s_.index, y=_scaled(s_), name=name, mode="lines", line=dict(color=col, width=2),
+                                 customdata=[f"{sl_num(v, digits)}{unit}" for v in s_],
                                  hovertemplate="%{customdata}<extra>" + name + "</extra>"))
-    fig.update_layout(**base_layout("Odpuščanja, obrestne mere, borza in iskani delavci: vse na isti osi", height=520))
+    fig.update_layout(**base_layout("Odpuščanja, obrestne mere, borza in iskani delavci: vse na isti osi", height=540))
     fig.update_layout(hovermode="x unified", yaxis=dict(title="indeks (0 = najnižja, 100 = najvišja vrednost v obdobju)"),
                       xaxis=dict(rangeslider=dict(visible=True, thickness=0.06), tickformat="%Y", hoverformat=HOVER_DATE))
+    is_people = [t.name.startswith("odpuščeni ljudje") for t in fig.data]
+    is_events = [t.name.startswith("napovedi") for t in fig.data]
+    if any(is_people):
+        for t, hide in zip(fig.data, is_people):
+            t.visible = not hide
+        fig.update_layout(margin=dict(t=110), updatemenus=[dict(
+            type="dropdown", direction="down", x=0, xanchor="left", y=1.13, yanchor="top", showactive=True,
+            buttons=[dict(label="Merilo odpuščanj: število napovedi", method="update", args=[{"visible": [not p for p in is_people]}]),
+                     dict(label="Merilo odpuščanj: število odpuščenih ljudi", method="update", args=[{"visible": [not e for e in is_events]}])])])
     add_event_lines(fig, keys=("fed", "chatgpt"))
     return fig
 
 
-def fig_layoff_calendar(weekly: pd.Series) -> go.Figure:
-    """Heatmap: one row per year, one column per week of the year, colour = announcements that week."""
+def _calendar_z(weekly: pd.Series) -> pd.DataFrame:
     iso = weekly.index.isocalendar()
     d = pd.DataFrame({"leto": iso["year"].to_numpy(), "teden": iso["week"].to_numpy(), "n": weekly.to_numpy()})
-    z = d.pivot_table(index="leto", columns="teden", values="n", aggfunc="sum")
+    return d.pivot_table(index="leto", columns="teden", values="n", aggfunc="sum")
+
+
+def fig_layoff_calendar(weekly: pd.Series, people: pd.Series | None = None) -> go.Figure:
+    """Heatmap: one row per year, one column per week of the year, colour = announcements that week (or, via the dropdown, people laid off;
+    that colour scale stops at the 95th percentile so one huge week does not wash out the rest, the hover shows the real number)."""
+    z = _calendar_z(weekly)
     fig = go.Figure(go.Heatmap(
         z=z.to_numpy(), x=z.columns, y=z.index.astype(str), colorscale="YlOrRd", xgap=1, ygap=1,
         colorbar=dict(title="napovedi<br>na teden"), hoverongaps=False,
         hovertemplate="leto %{y}, teden %{x}: %{z} napovedi<extra></extra>"))
-    fig.update_layout(**base_layout("Koledar odpuščanj: kdaj so podjetja napovedovala odpuščanja", height=330))
+    fig.update_layout(**base_layout("Koledar odpuščanj: kdaj so podjetja napovedovala odpuščanja", height=350))
     fig.update_layout(xaxis=dict(title="teden v letu", dtick=4), yaxis=dict(autorange="reversed"))
+    if people is not None:
+        zp = _calendar_z(people)
+        pos = zp.to_numpy()[zp.to_numpy() > 0]
+        zmax = float(np.percentile(pos, 95)) if len(pos) else 1.0
+        fig.add_trace(go.Heatmap(z=zp.to_numpy(), x=zp.columns, y=zp.index.astype(str), colorscale="YlOrRd", xgap=1, ygap=1, zmin=0, zmax=zmax,
+                                 colorbar=dict(title="odpuščeni<br>ljudje na teden"), hoverongaps=False, visible=False,
+                                 hovertemplate="leto %{y}, teden %{x}: %{z:,.0f} ljudi<extra></extra>"))
+        fig.update_layout(margin=dict(t=100), updatemenus=[dict(
+            type="dropdown", direction="down", x=0, xanchor="left", y=1.25, yanchor="top", showactive=True,
+            buttons=[dict(label="Število napovedi", method="update", args=[{"visible": [True, False]}]),
+                     dict(label="Število odpuščenih ljudi", method="update", args=[{"visible": [False, True]}])])])
+    return fig
+
+
+def fig_people_quarterly(q: pd.DataFrame, min_share_n: int = 3) -> go.Figure:
+    """Two panels sharing the quarters: people laid off per quarter (announcements with a known number; hover lists the biggest ones) and,
+    below, the median share of the workforce per announcement (quarters with fewer than `min_share_n` known shares are left out)."""
+    fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.1, row_heights=[0.62, 0.38])
+    tops = ["<br>".join(f"{c}: {sl_num(n, 0)}" for c, n in t) for t in q["top"]]
+    fig.add_trace(go.Bar(x=q["quarter"], y=q["people"], marker_color=PALETTE["red"], showlegend=False,
+                         customdata=np.c_[q["events_with_people"], q["events"], tops],
+                         hovertemplate="%{x}: %{y:,.0f} ljudi<br>število znano pri %{customdata[0]} od %{customdata[1]} napovedi<br>največje:<br>%{customdata[2]}<extra></extra>"),
+                  row=1, col=1)
+    m = q[q["n_share"] >= min_share_n]
+    fig.add_trace(go.Scatter(x=m["quarter"], y=100 * m["median_share"], mode="lines+markers", line=dict(color=PALETTE["blue"], width=3),
+                             showlegend=False, customdata=m["n_share"],
+                             hovertemplate="%{x}: sredina %{y:.0f} % zaposlenih<br>delež znan pri %{customdata} napovedih<extra></extra>"), row=2, col=1)
+    fig.update_layout(**base_layout("Koliko ljudi in kolikšen del zaposlenih so podjetja napovedala odpustiti", height=620))
+    fig.update_yaxes(title_text="odpuščeni ljudje v četrtletju", row=1, col=1)
+    fig.update_yaxes(title_text="sredina deleža zaposlenih (%)", rangemode="tozero", row=2, col=1)
+    fig.update_xaxes(title_text="četrtletje", row=2, col=1)
+    return fig
+
+
+def fig_top_announcements(top: pd.DataFrame) -> go.Figure:
+    """The biggest single announcements, as horizontal bars (people; hover adds the date and the share of the workforce when known)."""
+    t = top.sort_values("people", ascending=False).reset_index(drop=True)
+    labels = [f"{c} ({d.year})" for c, d in zip(t["company"], pd.to_datetime(t["date"]))]
+    share = [sl_pct(x, 0) if pd.notna(x) else "ni podatka" for x in t["share"]]
+    fig = go.Figure(go.Bar(y=labels, x=t["people"], orientation="h", marker_color=PALETTE["red"], text=[sl_num(v, 0) for v in t["people"]], textposition="outside",
+                           customdata=np.c_[[pd.Timestamp(d).strftime("%d.%m.%Y") for d in t["date"]], share],
+                           hovertemplate="%{y}<br>%{x:,.0f} ljudi<br>datum: %{customdata[0]}<br>delež zaposlenih: %{customdata[1]}<extra></extra>"))
+    fig.update_layout(**base_layout(f"Največjih {len(t)} napovedi odpuščanj", height=140 + 38 * len(t)))
+    fig.update_layout(xaxis=dict(title="napovedani odpuščeni ljudje"), yaxis=dict(autorange="reversed", automargin=True))
     return fig
 
 
 # ---------------------------------------------------------------------------------------- chapter 2
-def fig_event_windows(weekly: pd.Series, keys=("fed", "chatgpt"), before: int = 26, after: int = 26) -> go.Figure:
-    """One panel per dated moment, shared y axis: weekly announcements before (grey) and after (blue) with the two averages."""
-    studies = {k: cs.event_study(weekly, EVENTS[k][0], before, after) for k in keys}
-    fig = make_subplots(rows=1, cols=len(keys), shared_yaxes=True, horizontal_spacing=0.04,
-                        subplot_titles=[EVENTS[k][1][0].upper() + EVENTS[k][1][1:] for k in keys])
+def fig_event_windows(weekly: pd.Series, keys=("fed", "chatgpt"), before: int = 26, after: int = 26, people: pd.Series | None = None) -> go.Figure:
+    """One column per dated moment, shared y axis per row: weekly announcements (top row) and, if given, people laid off (bottom row) before
+    (grey) and after (blue) the date, with the two averages."""
+    rows = [("napovedi", weekly, "napovedi odpuščanj na teden", 1)]
+    if people is not None:
+        rows.append(("ljudje", people, "odpuščeni ljudje na teden", 0))
+    nc = len(keys)
+    titles = [EVENTS[k][1][0].upper() + EVENTS[k][1][1:] for k in keys] + [""] * (nc * (len(rows) - 1))
+    fig = make_subplots(rows=len(rows), cols=nc, shared_yaxes=True, horizontal_spacing=0.04, vertical_spacing=0.14, subplot_titles=titles)
+    for r, (_, series, ylabel, digits) in enumerate(rows, 1):
+        for j, k in enumerate(keys, 1):
+            idx = (r - 1) * nc + j
+            xa, ya = ("x", "y") if idx == 1 else (f"x{idx}", f"y{idx}")
+            date, st = EVENTS[k][0], cs.event_study(series, EVENTS[k][0], before, after)
+            w = series[(series.index >= date - pd.Timedelta(weeks=before + 1)) & (series.index < date + pd.Timedelta(weeks=after))]
+            is_after = w.index >= date.normalize() - pd.Timedelta(days=date.weekday())
+            fig.add_trace(go.Bar(x=w.index, y=w, marker_color=np.where(is_after, PALETTE["blue"], PALETTE["light_grey"]), showlegend=False,
+                                 hovertemplate="%{x|" + HOVER_DATE + "}: %{y:,.0f} " + ("napovedi" if r == 1 else "ljudi") + "<extra></extra>"), row=r, col=j)
+            for lvl, x0, x1 in ((st["before_mean"], w.index.min(), date), (st["after_mean"], date, w.index.max())):
+                fig.add_shape(type="line", xref=xa, yref=ya, x0=x0, x1=x1, y0=lvl, y1=lvl, line=dict(color=PALETTE["ink"], width=2))
+            fig.add_annotation(xref=f"{xa} domain", yref=f"{ya} domain", x=0.02, y=0.98, showarrow=False, xanchor="left", yanchor="top", align="left",
+                               text=f"povprečno na teden:<br>pred {sl_num(st['before_mean'], digits)} → po {sl_num(st['after_mean'], digits)}")
+        fig.update_yaxes(title_text=ylabel, row=r, col=1)
     for j, k in enumerate(keys, 1):
-        date, st = EVENTS[k][0], studies[k]
-        w = weekly[(weekly.index >= date - pd.Timedelta(weeks=before + 1)) & (weekly.index < date + pd.Timedelta(weeks=after))]
-        is_after = w.index >= date.normalize() - pd.Timedelta(days=date.weekday())
-        fig.add_trace(go.Bar(x=w.index, y=w, marker_color=np.where(is_after, PALETTE["blue"], PALETTE["light_grey"]),
-                             showlegend=False, hovertemplate="%{x|" + HOVER_DATE + "}: %{y} napovedi<extra></extra>"), row=1, col=j)
-        for lvl, x0, x1, lab in ((st["before_mean"], w.index.min(), date, "pred"), (st["after_mean"], date, w.index.max(), "po")):
-            fig.add_shape(type="line", xref=f"x{j}", yref=f"y{j}" if j > 1 else "y", x0=x0, x1=x1, y0=lvl, y1=lvl,
-                          line=dict(color=PALETTE["ink"], width=2))
-        fig.add_annotation(xref="x domain" if j == 1 else f"x{j} domain", yref="paper", x=0.02, y=0.98, showarrow=False, xanchor="left", yanchor="top",
-                           align="left", text=f"povprečno na teden:<br>pred {sl_num(st['before_mean'])} → po {sl_num(st['after_mean'])}")
-        add_event_lines(fig, keys=(k,), xref=f"x{j}" if j > 1 else "x")
-    fig.update_layout(**base_layout("Se je kaj spremenilo ob dveh znanih datumih?", height=420))
-    fig.update_yaxes(title_text="napovedi odpuščanj na teden", row=1, col=1)
+        add_event_lines(fig, keys=(k,), xref="x" if j == 1 else f"x{j}")
+    fig.update_layout(**base_layout("Se je kaj spremenilo ob dveh znanih datumih?", height=420 if len(rows) == 1 else 720))
     return fig
 
 
@@ -302,7 +368,9 @@ def prepare_story_data(flags_path=None, n_boot: int = 300) -> dict:
     if fp.exists():
         flags = pd.read_csv(fp)
     h3 = cs.run_h3(d["fin"], d["revenue"], d["universe"], d["matches"], d["events"])
-    return {"weekly": cs.weekly_layoffs(d["events"]), "macro": h1["macro"], "tests": h1["tests"], "flags": flags, "stock": prepare_stock_data(),
+    people = {"people_weekly": cs.weekly_people(d["events"]), "quarterly": cs.quarterly_layoffs(d["events"]),
+              "top": cs.top_announcements(d["events"]), "coverage": cs.people_coverage(d["events"])}
+    return {**people, "weekly": cs.weekly_layoffs(d["events"]), "macro": h1["macro"], "tests": h1["tests"], "flags": flags, "stock": prepare_stock_data(),
             "quartiles": h3["quartiles"], "boom_table": h3["used"],
             "panel": panel, "size_control": cm.run_size_control(panel, embargo=True, n_boot=n_boot)}
 
@@ -331,9 +399,12 @@ def prepare_stock_data(n_boot: int = 1000) -> dict | None:
 
 def build_figures(story: dict) -> dict[str, go.Figure]:
     sc = story["size_control"]
-    return {"1_casovnica": fig_timeline(story["weekly"], story["macro"], story["flags"]),
-            "1_koledar": fig_layoff_calendar(story["weekly"]),
-            "2_datumi": fig_event_windows(story["weekly"]),
+    pw = story.get("people_weekly")
+    return {"1_casovnica": fig_timeline(story["weekly"], story["macro"], story["flags"], people=pw),
+            "1_koledar": fig_layoff_calendar(story["weekly"], people=pw),
+            **({"1_ljudje": fig_people_quarterly(story["quarterly"])} if story.get("quarterly") is not None else {}),
+            **({"1_najvecje": fig_top_announcements(story["top"])} if story.get("top") is not None else {}),
+            "2_datumi": fig_event_windows(story["weekly"], people=pw),
             "2_zamiki": fig_leadlag_heatmap(story["tests"]),
             "2_rast": fig_overbuild_quartiles(story["quartiles"]),
             "3_velikost": fig_size_deciles(story["panel"]),

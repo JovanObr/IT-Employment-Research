@@ -11,10 +11,14 @@ from test_viz import make_macro, make_quartiles, make_tests, make_weekly
 from test_viz_stock import make_stock
 
 
-def make_story(stock=True, hn=True, geo=True):
+def make_story(stock=True, hn=True, geo=True, people=False):
     sc = cm.run_size_control(synthetic_panel(150), n_boot=20)
     s = {"weekly": make_weekly(), "macro": make_macro(), "tests": make_tests(), "flags": None, "quartiles": make_quartiles(),
          "panel": synthetic_panel(150), "size_control": sc}
+    if people:
+        from test_viz import people_story
+        ps = people_story()
+        s.update(weekly=ps["weekly"], people_weekly=ps["people"], quarterly=ps["quarterly"], top=ps["top"], coverage=ps["coverage"])
     if stock:
         s["stock"] = make_stock(0.03)
     if hn:
@@ -76,3 +80,26 @@ def test_chapters_without_data_are_left_out_not_invented():
 def test_markdown_lists_word_counts():
     md = tp.to_markdown(tp.render(tp.collect_facts(make_story())))
     assert md.count("## ") == 8 and "besed)" in md
+
+
+def test_people_script_appears_with_the_numbers_and_the_caveat():
+    story = make_story(people=True)
+    f = tp.collect_facts(story)
+    pts = dict(tp.render(real_like(f)))
+    assert list(pts)[:3] == ["Uvod", "1. Kdaj", "1b. Koliko ljudi"]
+    t = pts["1b. Koliko ljudi"]
+    assert sl_num(f["people_total"], 0) in t and f["peak_quarter"] in t and sl_pct(f["top10_share"]) in t and f["top1_name"] in t
+    assert "prava številka večja" in t and 40 <= len(t.split()) <= 115
+    assert "median_share" in f and "Sredina deleža" in t
+    no_share = dict(tp.render(real_like({k: v for k, v in f.items() if k != "median_share"})))["1b. Koliko ljudi"]
+    assert "Sredina deleža" not in no_share
+    assert "1b. Koliko ljudi" not in dict(tp.render(real_like(tp.collect_facts(make_story()))))                   # no people data: no such script
+
+
+def test_chatgpt_sentence_changes_when_people_move_but_announcements_do_not():
+    f = real_like(tp.collect_facts(make_story(people=True)))
+    flat = dict(f, gpt_before=20.0, gpt_after=20.5, hike_before=1.0, hike_after=15.0, gpt_people_before=500.0, gpt_people_after=510.0)
+    assert "ne ob ChatGPT" in dict(tp.render(flat))["1. Kdaj"]
+    jumped = dict(flat, gpt_people_after=5000.0)
+    k = dict(tp.render(jumped))["1. Kdaj"]
+    assert "ne ob ChatGPT" not in k and "Pri številu ljudi je slika drugačna" in k and "5.000" in k

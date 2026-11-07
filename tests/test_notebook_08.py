@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 NB = Path(__file__).resolve().parent.parent / "notebooks" / "08_zgodba_SL.ipynb"
-KNOWN = {"1_casovnica", "1_koledar", "2_datumi", "2_zamiki", "2_rast", "3_velikost", "3_podjetja", "3_modeli", "3_skupine",
+KNOWN = {"1_casovnica", "1_koledar", "1_ljudje", "1_najvecje", "2_datumi", "2_zamiki", "2_rast", "3_velikost", "3_podjetja", "3_modeli", "3_skupine",
          "4_teme_povrsina", "4_teme_mali_grafi", "4_teme_toplotna", "4_daljava_ui", "5_zemljevid", "5_regije",
          "6_pot", "6_porazdelitev", "6_skupine"}
 

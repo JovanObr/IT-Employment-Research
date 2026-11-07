@@ -34,7 +34,7 @@ def _times(x: float) -> str:
 
 
 # ---------------------------------------------------------------------------------------- chapter 1
-def explain_timeline(weekly: pd.Series, macro: pd.DataFrame) -> dict:
+def explain_timeline(weekly: pd.Series, macro: pd.DataFrame, people: pd.Series | None = None) -> dict:
     st = cs.event_study(weekly, cs.FED_HIKE)
     before_hike = macro["fedfunds"][macro.index < "2022-03-01"].iloc[-1]
     peak_rate = macro["fedfunds"][macro.index >= "2022-03-01"].max()
@@ -51,22 +51,28 @@ def explain_timeline(weekly: pd.Series, macro: pd.DataFrame) -> dict:
                  else f"obrestna mera se je spremenila le z {sl_num(before_hike)} % na {sl_num(peak_rate)} %")
     facts.append(f"borzni indeks NASDAQ je od vrha do dna izgubil {sl_num(drop, 0)} %" if market_down
                  else "borzni indeks NASDAQ ni bistveno padel")
+    ppl = ""
+    if people is not None:
+        ph = cs.event_study(people, cs.FED_HIKE)
+        ppl = (f" Če namesto napovedi štejemo ljudi, je bilo povprečno {sl_num(ph['before_mean'], 0)} napovedanih odpuščenih na teden pred zvišanjem obrestne mere "
+               f"in {sl_num(ph['after_mean'], 0)} po njem.")
     together = (" Dražji denar, padec borze in val napovedanih odpuščanj so se torej zgodili v istem obdobju." if surge and rate_up and market_down
                 else " V teh podatkih se stvari ne ujemajo tako jasno, da bi lahko govorili o skupnem valu.")
     return {
         "kaj": "Na enem grafu je več črt: koliko odpuščanj so podjetja napovedala na teden, obrestna mera ameriške centralne banke (Fed), "
                "borzni indeks NASDAQ in, če so podatki na voljo, delež objav za delo na Hacker Newsu, ki omenjajo delo na daljavo "
                "oziroma umetno inteligenco. Vsako črto smo preračunali na lestvico od 0 do 100, da jih lahko primerjamo; ko miško "
-               "premakneš na črto, vidiš pravo vrednost. Črtkani črti označujeta prvo zvišanje obrestne mere in izid ChatGPT.",
+               "premakneš na črto, vidiš pravo vrednost. Črtkani črti označujeta prvo zvišanje obrestne mere in izid ChatGPT."
+               + (" S spustnim menijem nad grafom preklopiš med številom napovedi in številom odpuščenih ljudi." if people is not None else ""),
         "zakaj": "Hoteli smo videti, ali se te stvari dogajajo ob istem času. Številke imajo različne enote (število, odstotki, točke), "
                  "zato jih brez preračuna ne bi mogli narisati na isto os.",
-        "pomen": (facts[0][0].upper() + facts[0][1:] + "; " + "; ".join(facts[1:]) + "." + together),
+        "pomen": (facts[0][0].upper() + facts[0][1:] + "; " + "; ".join(facts[1:]) + "." + ppl + together),
         "omejitve": "Dogajanje ob istem času še ne dokazuje vzroka. Seznam odpuščanj beleži napovedi, ne števila dejansko odpuščenih ljudi, "
                     "in je po letu 2022 postal bolj znan, zato se je lahko povečalo tudi samo beleženje.",
     }
 
 
-def explain_layoff_calendar(weekly: pd.Series) -> dict:
+def explain_layoff_calendar(weekly: pd.Series, people: pd.Series | None = None) -> dict:
     iso = weekly.index.isocalendar()
     by_year = weekly.groupby(iso["year"].to_numpy()).sum()
     top_year = int(by_year.idxmax())
@@ -75,31 +81,74 @@ def explain_layoff_calendar(weekly: pd.Series) -> dict:
     k = int(np.searchsorted(np.cumsum(ordered), 0.5 * ordered.sum()) + 1)
     return {
         "kaj": "Vsaka vrstica je eno leto, vsak stolpec en teden v letu. Čim temnejše je polje, tem več odpuščanj so podjetja v tistem tednu napovedala. "
-               "Prazna polja pomenijo, da za tisti teden nimamo podatkov. Ko miško premakneš na polje, vidiš točno število.",
+               "Prazna polja pomenijo, da za tisti teden nimamo podatkov. Ko miško premakneš na polje, vidiš točno število."
+               + (" S spustnim menijem preklopiš na število odpuščenih ljudi; pri tem se barva ustavi pri 95. percentilu, da en sam teden ne zasenči ostalih, točno število pa vidiš ob premiku miške."
+                  if people is not None else ""),
         "zakaj": "Hoteli smo videti, ali so napovedi razporejene enakomerno ali pridejo v valovih.",
         "pomen": f"Največ napovedi je bilo leta {top_year} ({sl_num(by_year.max(), 0)}). Najbolj pretresljiv je bil teden z začetkom {_date(top_week)}, "
                  f"ko je bilo napovedanih {sl_num(weekly.max(), 0)} odpuščanj. Polovica vseh napovedi je padla v samo {k} od {len(weekly)} tednov, "
-                 f"{'torej v zelo kratkih valovih.' if k < 0.25 * len(weekly) else 'torej so bile razmeroma enakomerno razporejene.'}",
+                 f"{'torej v zelo kratkih valovih.' if k < 0.25 * len(weekly) else 'torej so bile razmeroma enakomerno razporejene.'}"
+                 + ("" if people is None or not (people > 0).any() else
+                    f" Po številu ljudi je najbolj pretresljiv teden z začetkom {_date(people.idxmax())}: napovedanih je bilo {sl_num(people.max(), 0)} odpuščenih."),
         "omejitve": "Seznam odpuščanj se je začel marca 2020, zato so prvi tedni prazni. Pozna se tudi to, da se beležijo predvsem znana podjetja.",
     }
 
 
+def explain_people_quarterly(q: pd.DataFrame, cov: dict) -> dict:
+    peak = q.loc[q["people"].idxmax()]
+    names = ", ".join(f"{c} ({sl_num(n, 0)})" for c, n in peak["top"])
+    med = cov.get("median_share")
+    share_txt = (f" Sredina deleža zaposlenih, ki ga je prizadela posamezna napoved, je {sl_pct(med, 0)}." if med is not None and pd.notna(med) else "")
+    return {
+        "kaj": "Zgornji graf kaže, koliko ljudi so podjetja v ZDA v posameznem četrtletju napovedala odpustiti; ko miško premakneš na stolpec, vidiš največje napovedi tistega četrtletja. "
+               "Spodnji graf kaže sredino (mediano) deleža zaposlenih, ki ga je prizadela posamezna napoved: polovica napovedi je pod črto, polovica nad njo. "
+               "Četrtletij s premalo znanimi deleži ne kažemo.",
+        "zakaj": "Število napovedi ne pove, koliko ljudi je izgubilo delo: ena velika napoved je lahko težja od desetin majhnih. Zato smo šteli tudi ljudi in delež zaposlenih.",
+        "pomen": f"Skupaj je bilo napovedanih {sl_num(cov['people_known'], 0)} odpuščenih ljudi (pri napovedih, kjer je število znano). Največ jih je bilo v četrtletju {peak['quarter']}: "
+                 f"{sl_num(peak['people'], 0)}, med njimi {names}." + share_txt,
+        "omejitve": f"Število ljudi je znano pri {sl_pct(cov['share_with_people'], 0)} napovedi, delež zaposlenih pri {sl_pct(cov['share_with_share'], 0)}; pri ostalih manjka, zato so vsote spodnja meja. "
+                    "Števila so tisto, kar so podjetja ali mediji objavili ob napovedi: gre za napovedi, ne za preverjene odhode. Seznam beleži predvsem znana podjetja in je zato nepopoln.",
+    }
+
+
+def explain_top_announcements(top: pd.DataFrame, cov: dict) -> dict:
+    first = top.sort_values("people", ascending=False).iloc[0]
+    sh = f" ({sl_pct(first['share'], 0)} zaposlenih)" if pd.notna(first["share"]) else ""
+    return {
+        "kaj": "Vsak stolpec je ena napoved odpuščanj: dolžina pove, koliko ljudi naj bi podjetje odpustilo. Ko miško premakneš na stolpec, vidiš datum in delež zaposlenih (če je znan).",
+        "zakaj": "Skupna številka skriva, kako neenakomerno so odpuščanja razporejena: nekaj velikih podjetij lahko odtehta stotine majhnih.",
+        "pomen": f"Deset največjih napovedi je skupaj {sl_num(cov['top10_people'], 0)} ljudi, to je {sl_pct(cov['top10_share'], 0)} vseh napovedanih odpuščenih z znanim številom, "
+                 f"čeprav je vseh napovedi {sl_num(cov['events_with_people'], 0)}. Največja je {first['company']} ({pd.Timestamp(first['date']).year}) z {sl_num(first['people'], 0)} ljudmi{sh}.",
+        "omejitve": "Gre za napovedana števila ob objavi, ne za dejansko izgubljena delovna mesta; podjetja jih pogosto razporedijo čez več mesecev ali držav. "
+                    "Delež zaposlenih ni znan pri vseh napovedih, seznam pa beleži predvsem znana podjetja.",
+    }
+
+
 # ---------------------------------------------------------------------------------------- chapter 2
-def explain_event_windows(weekly: pd.Series) -> dict:
+def explain_event_windows(weekly: pd.Series, people: pd.Series | None = None) -> dict:
     f, c = cs.event_study(weekly, cs.FED_HIKE), cs.event_study(weekly, cs.CHATGPT)
     jump = f["largest_jump_date"]
     weeks = int(round((jump - cs.FED_HIKE).days / 7))
     where = f"približno {abs(weeks)} tednov {'po' if weeks >= 0 else 'pred'} prvem zvišanju obrestne mere"
+    ppl, ppl_limit = "", ""
+    if people is not None:
+        pf, pc = cs.event_study(people, cs.FED_HIKE), cs.event_study(people, cs.CHATGPT)
+        w_ev, w_pe = _change(c["before_mean"], c["after_mean"]), _change(pc["before_mean"], pc["after_mean"])
+        ppl = (f" Če namesto napovedi štejemo ljudi: okoli zvišanja obrestne mere je bilo povprečno {sl_num(pf['before_mean'], 0)} napovedanih odpuščenih na teden pred datumom in "
+               f"{sl_num(pf['after_mean'], 0)} po njem, okoli izida ChatGPT {sl_num(pc['before_mean'], 0)} pred in {sl_num(pc['after_mean'], 0)} po, torej {w_pe}.")
+        if w_ev == "skoraj nespremenjeno" and w_pe != "skoraj nespremenjeno":
+            ppl += f" Število napovedi se ob ChatGPT torej ni spremenilo, število ljudi pa je {w_pe}: nekaj zelo velikih napovedi odtehta število."
+        ppl_limit = " Povprečje ljudi je zelo občutljivo na nekaj velikih napovedi, število ljudi pa ni znano pri vseh napovedih."
     return {
         "kaj": "Dva grafa: levi kaže tedne okoli prvega zvišanja obrestne mere Fed (16. 3. 2022), desni okoli izida ChatGPT (30. 11. 2022). "
                "Vsak stolpec je en teden, 26 tednov pred in 26 tednov po datumu. Siva polja so pred datumom, modra po njem, vodoravni črti "
-               "pa kažeta povprečje pred in po.",
+               "pa kažeta povprečje pred in po." + (" Zgornja vrstica šteje napovedi, spodnja odpuščene ljudi." if people is not None else ""),
         "zakaj": "Pogosto slišimo, da sta ta dva trenutka prelomnici za odpuščanja. Preverili smo, ali se je število napovedi res spremenilo prav takrat.",
         "pomen": f"Okoli zvišanja obrestne mere je bilo povprečje {sl_num(f['before_mean'])} napovedi na teden pred datumom in {sl_num(f['after_mean'])} po njem. "
                  f"Okoli izida ChatGPT {sl_num(c['before_mean'])} pred in {sl_num(c['after_mean'])} po datumu, torej {_change(c['before_mean'], c['after_mean'])}. "
-                 f"Če za vsak teden v celotnem obdobju izračunamo enako primerjavo, je največji skok v tednu z začetkom {_date(jump)}, {where}.",
+                 f"Če za vsak teden v celotnem obdobju izračunamo enako primerjavo, je največji skok števila napovedi v tednu z začetkom {_date(jump)}, {where}." + ppl,
         "omejitve": "Datuma sta le osem mesecev narazen in v istem obdobju padanja borze, zato ju podatki ne morejo ločiti. Poleg tega seznam odpuščanj ne pove, "
-                    "ali je bil razlog umetna inteligenca, zato lahko le rečemo, kdaj se je število napovedi spremenilo, ne zakaj.",
+                    "ali je bil razlog umetna inteligenca, zato lahko le rečemo, kdaj se je število napovedi spremenilo, ne zakaj." + ppl_limit,
     }
 
 
@@ -353,6 +402,13 @@ def build_summary(story: dict) -> dict[str, list[str]]:
                    f"Ob izidu ChatGPT se je število {_change(c['before_mean'], c['after_mean'])} ({sl_num(c['before_mean'])} pred, {sl_num(c['after_mean'])} po).")
     else:
         out.append(f"**Kdaj:** ob prvem zvišanju obrestne mere se število napovedi ni jasno povečalo ({sl_num(f['before_mean'])} na teden pred, {sl_num(f['after_mean'])} po).")
+    if story.get("coverage") and story.get("quarterly") is not None:
+        cov, qq = story["coverage"], story["quarterly"]
+        pk = qq.loc[qq["people"].idxmax()]
+        med = cov.get("median_share")
+        out.append(f"**Koliko ljudi:** napovedanih je bilo skupaj {sl_num(cov['people_known'], 0)} odpuščenih (število je znano pri {sl_pct(cov['share_with_people'], 0)} napovedi, zato je prava številka večja). "
+                   f"Deset največjih napovedi je {sl_pct(cov['top10_share'], 0)} vseh, največ ljudi pa je bilo napovedanih v četrtletju {pk['quarter']} ({sl_num(pk['people'], 0)})."
+                   + (f" Sredina deleža zaposlenih na napoved je {sl_pct(med, 0)}." if med is not None and pd.notna(med) else ""))
     ev = {x: r for (x, y), r in story["tests"].items() if y == "tracker events (3-month sum)"}
     other = [r for (x, y), r in story["tests"].items() if y != "tracker events (3-month sum)"]
     ev_sig = [r for r in ev.values() if r["p_value"] < 0.05]
@@ -425,9 +481,12 @@ def build_summary(story: dict) -> dict[str, list[str]]:
 
 def build_explanations(story: dict) -> dict[str, dict]:
     sc = story["size_control"]
-    return {"1_casovnica": explain_timeline(story["weekly"], story["macro"]),
-            "1_koledar": explain_layoff_calendar(story["weekly"]),
-            "2_datumi": explain_event_windows(story["weekly"]),
+    pw = story.get("people_weekly")
+    return {"1_casovnica": explain_timeline(story["weekly"], story["macro"], pw),
+            "1_koledar": explain_layoff_calendar(story["weekly"], pw),
+            **({"1_ljudje": explain_people_quarterly(story["quarterly"], story["coverage"])} if story.get("quarterly") is not None and story.get("coverage") else {}),
+            **({"1_najvecje": explain_top_announcements(story["top"], story["coverage"])} if story.get("top") is not None and story.get("coverage") else {}),
+            "2_datumi": explain_event_windows(story["weekly"], pw),
             "2_zamiki": explain_leadlag(story["tests"]),
             "2_rast": explain_overbuild(story["quartiles"]),
             "3_velikost": explain_size_deciles(story["panel"]),
@@ -442,6 +501,7 @@ def build_explanations(story: dict) -> dict[str, dict]:
 
 def export_texts(story: dict) -> str:
     """Every explanation and the summary as one Markdown text, for proofreading outside the notebook."""
+    from analysis.data_sources import sources_markdown
     from analysis.viz_theme import EXPLANATION_PARTS
     out = ["# Besedila zgodbe (za lektoriranje)", ""]
     for name, parts in build_explanations(story).items():
@@ -449,6 +509,7 @@ def export_texts(story: dict) -> str:
         for key, heading in EXPLANATION_PARTS:
             out.append(f"**{heading}** {parts[key]}")
             out.append("")
+        out += [sources_markdown(name), ""]
     summ = build_summary(story)
     out += ["## povzetek", "", "**Kaj smo se naučili**", ""] + [f"- {x}" for x in summ["zakljucki"]] + ["", "**Česa ne vemo**", ""] + [f"- {x}" for x in summ["odprto"]]
     return "\n".join(out) + "\n"
@@ -472,8 +533,10 @@ def main() -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     text = export_texts(story)
     if extra:                                              # Stream B's explanations go before the summary
+        from analysis.data_sources import sources_markdown
         from analysis.viz_theme import EXPLANATION_PARTS
-        block = "\n".join(f"## {n}\n" + "\n".join(f"**{h}** {parts[k]}\n" for k, h in EXPLANATION_PARTS) for n, (_, parts) in extra.items())
+        block = "\n".join(f"## {n}\n" + "\n".join(f"**{h}** {parts[k]}\n" for k, h in EXPLANATION_PARTS) + f"\n{sources_markdown(n)}\n"
+                           for n, (_, parts) in extra.items())
         text = text.replace("## povzetek", block + "\n## povzetek", 1)
     path.write_text(text, encoding="utf-8")
     print(f"written {path}")

@@ -132,3 +132,91 @@ def test_company_scatter_has_two_groups_hover_names_and_two_median_lines():
     pd.testing.assert_frame_equal(t, t0)
     t.loc[0, "boom_growth"] = 5.0                                            # +14,700 % growth: outside the drawn range, counted in the note
     assert any("zunaj prikazanega območja" in (a.text or "") for a in viz.fig_company_scatter(t).layout.annotations)
+
+
+def make_events(n=900, seed=0):
+    """Tracker-like table: US mostly, some numbers of people and shares of the workforce missing, a few huge announcements."""
+    rng = np.random.default_rng(seed)
+    dates = pd.to_datetime(np.concatenate([rng.choice(pd.date_range("2020-03-11", "2026-10-10"), n),
+                                           rng.choice(pd.date_range("2022-11-01", "2023-03-01"), n // 3)]))
+    m = len(dates)
+    ev = pd.DataFrame({"company": [f"Firma {i}" for i in range(m)], "date": dates,
+                       "region": np.where(rng.random(m) < 0.85, "US", "Europe"),
+                       "total_laid_off": np.round(rng.lognormal(4.5, 1.2, m)),
+                       "percentage_laid_off": np.round(rng.uniform(0.02, 0.4, m), 2)})
+    ev.loc[rng.random(m) < 0.35, "total_laid_off"] = np.nan
+    ev.loc[rng.random(m) < 0.40, "percentage_laid_off"] = np.nan
+    big = pd.DataFrame({"company": ["Gigant A", "Gigant B", "Gigant C"], "date": pd.to_datetime(["2023-01-20", "2022-11-09", "2023-01-18"]),
+                        "region": "US", "total_laid_off": [18000.0, 11000.0, 12000.0], "percentage_laid_off": [0.06, 0.13, 0.06]})
+    return pd.concat([ev, big], ignore_index=True)
+
+
+# ----------------------------------------------------------------------------- people and share of staff
+def people_story(n=900):
+    ev = make_events(n)
+    return {"events": ev, "weekly": cs.weekly_layoffs(ev), "people": cs.weekly_people(ev), "quarterly": cs.quarterly_layoffs(ev),
+            "top": cs.top_announcements(ev), "coverage": cs.people_coverage(ev)}
+
+
+def test_timeline_can_switch_between_announcements_and_people():
+    ps = people_story()
+    fig = viz.fig_timeline(ps["weekly"], make_macro(), None, people=ps["people"])
+    names = [t.name for t in fig.data]
+    assert names[0].startswith("napovedi") and names[1].startswith("odpuščeni ljudje") and len(fig.data) == 4
+    assert fig.data[0].visible is True and fig.data[1].visible is False                    # announcements first, people on request
+    buttons = fig.layout.updatemenus[0].buttons
+    assert [b.args[0]["visible"] for b in buttons] == [[True, False, True, True], [False, True, True, True]]
+    assert "ljudi" in fig.data[1].customdata[0]                                              # real value with unit in the hover text
+    assert not viz.fig_timeline(ps["weekly"], make_macro()).layout.updatemenus                # without people: no dropdown
+
+
+def test_calendar_dropdown_and_colour_scale_stop_at_the_95th_percentile():
+    ps = people_story()
+    fig = viz.fig_layoff_calendar(ps["weekly"], people=ps["people"])
+    assert len(fig.data) == 2 and fig.data[1].visible is False and len(fig.layout.updatemenus[0].buttons) == 2
+    z = np.array(fig.data[1].z, dtype=float)
+    assert fig.data[1].zmax == pytest.approx(np.percentile(z[z > 0], 95)) and fig.data[1].zmax < np.nanmax(z)   # the huge week does not set the scale
+    assert len(viz.fig_layoff_calendar(ps["weekly"]).data) == 1
+
+
+def test_event_windows_gets_a_people_row_with_its_own_averages():
+    ps = people_story()
+    fig = viz.fig_event_windows(ps["weekly"], people=ps["people"])
+    assert len(fig.data) == 4 and len(fig.layout.shapes) == 2 + 8                           # 2 date lines + 2 mean lines in each of 4 panels
+    st = cs.event_study(ps["people"], cs.FED_HIKE)
+    texts = [a.text for a in fig.layout.annotations if "povprečno" in (a.text or "")]
+    assert len(texts) == 4 and any(f"pred {viz.sl_num(st['before_mean'], 0)}" in t for t in texts)
+    assert len(viz.fig_event_windows(ps["weekly"]).data) == 2                                  # unchanged without people
+
+
+def test_people_quarterly_lists_the_biggest_announcements_in_the_hover():
+    ps = people_story()
+    q = ps["quarterly"]
+    fig = viz.fig_people_quarterly(q)
+    assert len(fig.data) == 2 and list(fig.data[0].y) == list(q["people"])
+    peak = q.loc[q["people"].idxmax()]
+    assert peak["top"][0][0] in fig.data[0].customdata[int(q["people"].idxmax())][2]
+    shown = q[q["n_share"] >= 3]
+    assert len(fig.data[1].x) == len(shown)                                                     # quarters with too few known shares are left out
+
+
+def test_top_announcements_figure_is_sorted_and_says_when_the_share_is_unknown():
+    ps = people_story()
+    top = ps["top"].copy()
+    top.loc[0, "share"] = np.nan
+    fig = viz.fig_top_announcements(top)
+    assert list(fig.data[0].x) == sorted(top["people"], reverse=True) and "ni podatka" in list(fig.data[0].customdata[:, 1])
+    assert fig.data[0].text[0] == viz.sl_num(top["people"].max(), 0)
+
+
+def test_story_builder_adds_the_people_figures_when_the_data_exist():
+    ps = people_story()
+    sc = cm.run_size_control(synthetic_panel(150), n_boot=20)
+    story = {"weekly": ps["weekly"], "macro": make_macro(), "tests": make_tests(), "flags": None, "quartiles": make_quartiles(),
+             "panel": synthetic_panel(150), "size_control": sc}
+    assert "1_ljudje" not in viz.build_figures(story)
+    story.update(people_weekly=ps["people"], quarterly=ps["quarterly"], top=ps["top"], coverage=ps["coverage"])
+    figs = viz.build_figures(story)
+    assert {"1_ljudje", "1_najvecje"} <= set(figs) and len(figs["2_datumi"].data) == 4
+    for name, fig in figs.items():
+        assert "plotly" in fig.to_html(include_plotlyjs="cdn"), name

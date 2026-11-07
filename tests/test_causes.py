@@ -227,3 +227,51 @@ def test_collect_jolts_falls_back_to_flat_file_when_api_fails(monkeypatch):
     monkeypatch.setattr(macro, "fetch", fake)
     df = macro.collect_jolts(2015, 2026)
     assert len(df) == 1 and df["series_id"].iloc[0].endswith("LDR")
+
+
+# ----------------------------------------------------------------------------- people and share of staff
+def test_parse_share_reads_fractions_percents_and_text_and_drops_nonsense():
+    frac = cs.parse_share(pd.Series([0.1, 0.5, 1.0, np.nan, 0.0, 1.5, 0.2, 0.15, 0.3, 0.05]))
+    assert frac.dropna().tolist() == [0.1, 0.5, 1.0, 0.2, 0.15, 0.3, 0.05]                  # 0 and 1.5 are not valid shares
+    assert cs.parse_share(pd.Series([10, 25, 100, np.nan, 5, 12, 30])).dropna().tolist() == [0.1, 0.25, 1.0, 0.05, 0.12, 0.3]
+    assert cs.parse_share(pd.Series(["10%", "25%", "", "n/a", "0.3"])).dropna().tolist() == [0.1, 0.25, 0.3]
+
+
+def _small_events():
+    return pd.DataFrame({
+        "company": ["A", "B", "C", "D", "E", "F"],
+        "date": pd.to_datetime(["2020-03-11", "2020-05-05", "2020-05-20", "2020-08-10", "2020-11-30", "2021-01-05"]),
+        "region": ["US", "US", "US", "Europe", "US", "US"],
+        "total_laid_off": [100.0, 5000.0, np.nan, 700.0, 300.0, 50.0],
+        "percentage_laid_off": [0.5, 0.2, 0.1, np.nan, np.nan, 0.05]})
+
+
+def test_weekly_people_sums_known_numbers_per_week_on_the_same_weeks_as_events():
+    ev = _small_events()
+    w, p = cs.weekly_layoffs(ev), cs.weekly_people(ev)
+    assert list(p.index) == list(w.index) and p.loc[pd.Timestamp("2020-05-04")] == 5000.0   # C has no number: counted as an event, adds no people
+    assert w.loc[pd.Timestamp("2020-05-04")] == 1 and w.loc[pd.Timestamp("2020-05-18")] == 1 and p.loc[pd.Timestamp("2020-05-18")] == 0.0
+    assert p.sum() == 300.0 + 5000.0                                                         # Europe (D) is excluded; A and F are outside the complete weeks
+
+
+def test_coverage_reports_how_much_is_known():
+    c = cs.people_coverage(_small_events())
+    assert c["events"] == 5 and c["events_with_people"] == 4 and c["people_known"] == 5450.0
+    assert c["share_with_people"] == pytest.approx(0.8) and c["events_with_share"] == 4 and c["median_share"] == pytest.approx(0.15)
+    assert c["top10_share"] == pytest.approx(1.0)
+
+
+def test_quarterly_uses_complete_quarters_and_lists_the_biggest_announcements():
+    ev = pd.concat([_small_events(), pd.DataFrame({"company": ["G", "H"], "date": pd.to_datetime(["2020-05-25", "2021-02-10"]),
+                                                    "region": "US", "total_laid_off": [9000.0, 10.0], "percentage_laid_off": [0.4, 0.5]})])
+    q = cs.quarterly_layoffs(ev, top=2).set_index("quarter")
+    assert list(q.index) == ["2020Q2", "2020Q3", "2020Q4"]                                  # 2020Q1 and 2021Q1 hold the first/last (partial) events
+    assert q.loc["2020Q2", "people"] == 14000.0 and q.loc["2020Q2", "events"] == 3 and q.loc["2020Q2", "events_with_people"] == 2
+    assert q.loc["2020Q2", "top"] == [("G", 9000.0), ("B", 5000.0)]
+    assert q.loc["2020Q2", "median_share"] == pytest.approx(0.2) and q.loc["2020Q3", "n_share"] == 0 and np.isnan(q.loc["2020Q3", "median_share"])
+
+
+def test_top_announcements_are_sorted_and_skip_unknown_numbers():
+    t = cs.top_announcements(_small_events(), k=3)
+    assert list(t["company"]) == ["B", "E", "A"] and list(t["people"]) == [5000.0, 300.0, 100.0]
+    assert pd.isna(t.loc[t["company"] == "E", "share"].iloc[0]) and t.loc[t["company"] == "B", "share"].iloc[0] == pytest.approx(0.2)

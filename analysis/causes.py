@@ -24,7 +24,7 @@ import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
 
-from analysis.company_panel import qindex, quarterly_table
+from analysis.company_panel import qindex, qindex_of_date, quarterly_table, tracker_window
 from collectors.common import PROCESSED, RAW
 
 log = logging.getLogger("covid_it_data")
@@ -54,6 +54,75 @@ def weekly_layoffs(events: pd.DataFrame, region: str = "US") -> pd.Series:
     last = hi - pd.Timedelta(days=hi.weekday()) - pd.Timedelta(days=7)
     idx = pd.date_range(first, last, freq="7D")
     return wk.value_counts().reindex(idx, fill_value=0).sort_index().rename("events")
+
+
+# ---------------------------------------------------------------------------------------- people and share of staff
+def parse_share(s: pd.Series) -> pd.Series:
+    """Share of the workforce laid off, as 0..1, from a column that may hold fractions (0.1), percents (10) or text ('10%').
+    Rows with a % sign are percents; otherwise the column is read as fractions if its median is at most 1 (so a few stray values, such as 100 % shutdowns, do not flip it), else as percents.
+    Anything outside (0, 1] becomes missing: it is better to show no number than a wrong one."""
+    t = s.astype(str).str.strip()
+    marked = t.str.contains("%", regex=False)
+    x = pd.to_numeric(t.str.replace("%", "", regex=False), errors="coerce")
+    unmarked = x[~marked].dropna()
+    as_fraction = len(unmarked) > 0 and float(unmarked.median()) <= 1.0
+    out = x.copy()
+    out[marked] = x[marked] / 100
+    if not as_fraction:
+        out[~marked] = x[~marked] / 100
+    return out.where((out > 0) & (out <= 1))
+
+
+def _us(events: pd.DataFrame, region: str) -> pd.DataFrame:
+    return events[events["region"] == region].dropna(subset=["date"])
+
+
+def weekly_people(events: pd.DataFrame, region: str = "US") -> pd.Series:
+    """People laid off per week (announcements with a known number only; a lower bound), on the same weeks as weekly_layoffs."""
+    e = _us(events, region)
+    wk = (e["date"] - pd.to_timedelta(e["date"].dt.day_of_week, unit="D")).dt.normalize()
+    idx = weekly_layoffs(events, region).index
+    return e.assign(week=wk).groupby("week")["total_laid_off"].sum().reindex(idx, fill_value=0).rename("people")
+
+
+def people_coverage(events: pd.DataFrame, region: str = "US") -> dict:
+    """How complete the numbers are: how many announcements say how many people, and what share of the workforce."""
+    e = _us(events, region)
+    known = e["total_laid_off"].fillna(0) > 0
+    share = parse_share(e["percentage_laid_off"]) if "percentage_laid_off" in e else pd.Series(np.nan, index=e.index)
+    top10 = e.loc[known, "total_laid_off"].nlargest(10).sum()
+    total = float(e.loc[known, "total_laid_off"].sum())
+    return {"events": len(e), "events_with_people": int(known.sum()), "share_with_people": float(known.mean()) if len(e) else np.nan,
+            "people_known": total, "top10_people": float(top10), "top10_share": float(top10 / total) if total else np.nan,
+            "events_with_share": int(share.notna().sum()), "share_with_share": float(share.notna().mean()) if len(e) else np.nan,
+            "median_share": float(share.median()) if share.notna().any() else np.nan}
+
+
+def quarterly_layoffs(events: pd.DataFrame, region: str = "US", top: int = 3) -> pd.DataFrame:
+    """Per complete quarter: announcements, people (known numbers only), median share of the workforce, and the biggest announcements."""
+    first, last = tracker_window(events)
+    e = _us(events, region).copy()
+    e["qi"] = qindex_of_date(e["date"])
+    e = e[(e["qi"] >= first) & (e["qi"] <= last)]
+    e["share"] = parse_share(e["percentage_laid_off"]) if "percentage_laid_off" in e else np.nan
+    rows = []
+    for qi in range(first, last + 1):
+        g = e[e["qi"] == qi]
+        known = g[g["total_laid_off"].fillna(0) > 0]
+        big = known.nlargest(top, "total_laid_off")
+        rows.append({"qi": qi, "quarter": f"{qi // 4}Q{qi % 4 + 1}", "events": len(g), "events_with_people": len(known),
+                     "people": float(known["total_laid_off"].sum()),
+                     "median_share": float(g["share"].median()) if g["share"].notna().any() else np.nan, "n_share": int(g["share"].notna().sum()),
+                     "top": [(str(c), float(n)) for c, n in zip(big["company"], big["total_laid_off"])]})
+    return pd.DataFrame(rows)
+
+
+def top_announcements(events: pd.DataFrame, k: int = 10, region: str = "US") -> pd.DataFrame:
+    """The k announcements with the most people (company, date, people, share of the workforce if known)."""
+    e = _us(events, region).copy()
+    e = e[e["total_laid_off"].fillna(0) > 0]
+    e["share"] = parse_share(e["percentage_laid_off"]) if "percentage_laid_off" in e else np.nan
+    return e.nlargest(k, "total_laid_off")[["company", "date", "total_laid_off", "share"]].rename(columns={"total_laid_off": "people"}).reset_index(drop=True)
 
 
 def monthly_macro(fred: pd.DataFrame) -> pd.DataFrame:

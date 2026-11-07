@@ -28,6 +28,17 @@ def collect_facts(story: dict) -> dict:
     w = story["weekly"]
     fh, gp = cs.event_study(w, cs.FED_HIKE), cs.event_study(w, cs.CHATGPT)
     f.update(hike_before=fh["before_mean"], hike_after=fh["after_mean"], gpt_before=gp["before_mean"], gpt_after=gp["after_mean"])
+    if story.get("people_weekly") is not None:
+        ph, pg = cs.event_study(story["people_weekly"], cs.FED_HIKE), cs.event_study(story["people_weekly"], cs.CHATGPT)
+        f.update(hike_people_before=ph["before_mean"], hike_people_after=ph["after_mean"], gpt_people_before=pg["before_mean"], gpt_people_after=pg["after_mean"])
+    if story.get("coverage") and story.get("quarterly") is not None:
+        cov, qq = story["coverage"], story["quarterly"]
+        pk = qq.loc[qq["people"].idxmax()]
+        top = story["top"].sort_values("people", ascending=False).iloc[0] if story.get("top") is not None and len(story["top"]) else None
+        f.update(people_total=cov["people_known"], people_known_share=cov["share_with_people"], top10_share=cov["top10_share"],
+                 peak_quarter=pk["quarter"], peak_people=float(pk["people"]),
+                 **({"median_share": cov["median_share"]} if pd.notna(cov.get("median_share")) else {}),
+                 **({"top1_name": str(top["company"]), "top1_people": float(top["people"])} if top is not None else {}))
     ev = {x: r for (x, y), r in story["tests"].items() if y == "tracker events (3-month sum)"}
     other = [r for (x, y), r in story["tests"].items() if y != "tracker events (3-month sum)"]
     f["ev_sig"] = any(r["p_value"] < 0.05 for r in ev.values())
@@ -85,9 +96,20 @@ def render(f: dict) -> list[tuple[str, str]]:
     flat_gpt = f["gpt_before"] > 0 and abs(f["gpt_after"] - f["gpt_before"]) / f["gpt_before"] < 0.10
     t1 = (f"Prvi graf postavi na isto os odpuščanja, obrestno mero in borzo. Pred prvim zvišanjem obrestne mere je bilo povprečno {sl_num(f['hike_before'])} napovedi odpuščanj na teden, "
           f"po njem {sl_num(f['hike_after'])}. Ob izidu ChatGPT {_gpt_phrase(f['gpt_before'], f['gpt_after'])}. ")
-    t1 += ("Val je torej prišel spomladi 2022, ne ob ChatGPT. " if surge and flat_gpt else "")
+    people_flat = "gpt_people_before" not in f or (f["gpt_people_before"] > 0 and abs(f["gpt_people_after"] - f["gpt_people_before"]) / f["gpt_people_before"] < 0.10)
+    t1 += ("Val je torej prišel spomladi 2022, ne ob ChatGPT. " if surge and flat_gpt and people_flat else "")
+    if surge and flat_gpt and not people_flat:
+        t1 += (f"Pri številu ljudi je slika drugačna: {sl_num(f['gpt_people_before'], 0)} odpuščenih na teden pred ChatGPT in {sl_num(f['gpt_people_after'], 0)} po, "
+               f"ker so bile nekatere napovedi zelo velike. ")
     t1 += "Pozor: seznam beleži napovedi znanih podjetij, ne vseh odpuščanj."
     out.append(("1. Kdaj", t1))
+    if "people_total" in f:
+        t1b = (f"Število napovedi ne pove, koliko ljudi je izgubilo delo, zato smo šteli tudi ljudi. Skupaj je bilo napovedanih {sl_num(f['people_total'], 0)} odpuščenih, "
+               f"največ v četrtletju {f['peak_quarter']}: {sl_num(f['peak_people'], 0)}. Deset največjih napovedi je {sl_pct(f['top10_share'])} vseh"
+               + (f", največja je {f['top1_name']} z {sl_num(f['top1_people'], 0)} ljudmi. " if "top1_name" in f else ". ")
+               + (f"Sredina deleža zaposlenih na napoved je {sl_pct(f['median_share'])}. " if "median_share" in f else "")
+               + f"Pozor: število je znano le pri {sl_pct(f['people_known_share'])} napovedi, zato je prava številka večja.")
+        out.append(("1b. Koliko ljudi", t1b))
     if f["ev_sig"] and not f["other_sig"] and "corr_fed" in f:
         a = (f"Število napovedi sledi obrestnim meram (korelacija {_say(f['corr_fed'], 2)}) in borzi"
              + (f", a v nasprotni smeri: ko borza pade, je napovedi več (korelacija {_say(f['corr_nasdaq'], 2)}). " if f["corr_nasdaq"] < 0

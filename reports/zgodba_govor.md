@@ -4,9 +4,13 @@
 
 Zanimalo nas je, kaj se je zgodilo s tehnološkimi službami po koronavirusu. Pogledali smo šest stvari: kdaj so podjetja napovedovala odpuščanja, zakaj ravno takrat, katera podjetja so bila na udaru, kaj iščejo delodajalci, kje v ZDA se je delo spremenilo in kako se je odzvala borza. Grafi so interaktivni, pod vsakim so štiri kratke razlage, med njimi tudi: česa ne vemo.
 
-## 1. Kdaj  (57 besed)
+## 1. Kdaj  (70 besed)
 
-Prvi graf postavi na isto os odpuščanja, obrestno mero in borzo. Pred prvim zvišanjem obrestne mere je bilo povprečno 1,0 napovedi odpuščanj na teden, po njem 15,4. Ob izidu ChatGPT se število skoraj ni spremenilo (21,3 pred, 21,6 po). Val je torej prišel spomladi 2022, ne ob ChatGPT. Pozor: seznam beleži napovedi znanih podjetij, ne vseh odpuščanj.
+Prvi graf postavi na isto os odpuščanja, obrestno mero in borzo. Pred prvim zvišanjem obrestne mere je bilo povprečno 1,0 napovedi odpuščanj na teden, po njem 15,4. Ob izidu ChatGPT se število skoraj ni spremenilo (21,3 pred, 21,6 po). Pri številu ljudi je slika drugačna: 3.244 odpuščenih na teden pred ChatGPT in 5.730 po, ker so bile nekatere napovedi zelo velike. Pozor: seznam beleži napovedi znanih podjetij, ne vseh odpuščanj.
+
+## 1b. Koliko ljudi  (60 besed)
+
+Število napovedi ne pove, koliko ljudi je izgubilo delo, zato smo šteli tudi ljudi. Skupaj je bilo napovedanih 662.971 odpuščenih, največ v četrtletju 2023Q1: 124.185. Deset največjih napovedi je 22 % vseh, največja je Intel z 22.000 ljudmi. Sredina deleža zaposlenih na napoved je 15 %. Pozor: število je znano le pri 63 % napovedi, zato je prava številka večja.
 
 ## 2. Zakaj  (88 besed)
 

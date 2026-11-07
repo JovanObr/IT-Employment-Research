@@ -190,6 +190,7 @@ def test_export_texts_contains_every_figure_and_the_summary():
     names = tx.build_explanations(story)
     assert all(f"## {n}" in md for n in names) and "## 3_podjetja" in md
     assert md.count("**Kaj vidimo?**") == len(names) and "## povzetek" in md and "Česa ne vemo" in md
+    assert md.count("**Viri podatkov:**") == len(names)                       # a source line under every figure
 
 
 def _hn_flags():
@@ -226,3 +227,67 @@ def test_summary_adds_hacker_news_and_map_bullets_that_follow_the_data():
     assert "35 ameriškimi" in [x for x in tx.build_summary(story)["zakljucki"] if x.startswith("**Kje:**")][0]
     del story["hn"], story["geo"]
     assert len(tx.build_summary(story)["zakljucki"]) == 5                              # still works without chapters 4-5
+
+
+# ----------------------------------------------------------------------------- people and share of staff
+def _people_story():
+    from test_viz import people_story
+    return people_story()
+
+
+def test_people_quarterly_text_has_the_totals_the_peak_and_the_coverage():
+    ps = _people_story()
+    e = tx.explain_people_quarterly(ps["quarterly"], ps["coverage"])
+    check(e)
+    q, cov = ps["quarterly"], ps["coverage"]
+    peak = q.loc[q["people"].idxmax()]
+    assert sl_num(cov["people_known"], 0) in e["pomen"] and peak["quarter"] in e["pomen"] and sl_num(peak["people"], 0) in e["pomen"]
+    assert sl_pct(cov["share_with_people"], 0) in e["omejitve"] and "spodnja meja" in e["omejitve"]
+    no_share = tx.explain_people_quarterly(q, dict(cov, median_share=float("nan")))
+    assert "Sredina deleža" in e["pomen"] and "Sredina deleža" not in no_share["pomen"]
+
+
+def test_top_announcements_text_follows_the_concentration():
+    ps = _people_story()
+    e = tx.explain_top_announcements(ps["top"], ps["coverage"])
+    check(e)
+    first = ps["top"].sort_values("people", ascending=False).iloc[0]
+    assert sl_pct(ps["coverage"]["top10_share"], 0) in e["pomen"] and first["company"] in e["pomen"] and sl_num(first["people"], 0) in e["pomen"]
+    unknown = ps["top"].copy()
+    unknown["share"] = float("nan")
+    assert "zaposlenih)" not in tx.explain_top_announcements(unknown, ps["coverage"])["pomen"]
+
+
+def test_event_window_text_says_when_announcements_are_flat_but_people_are_not():
+    w = make_weekly()                                                        # flat after May 2022
+    flat_people = pd.Series(100.0, index=w.index)
+    assert "ni spremenilo, število ljudi" not in tx.explain_event_windows(w, flat_people)["pomen"]
+    jump = flat_people.copy()
+    jump[jump.index >= "2022-11-28"] = 900.0
+    e = tx.explain_event_windows(w, jump)
+    assert "Število napovedi se ob ChatGPT torej ni spremenilo, število ljudi pa je naraslo" in e["pomen"]
+    assert "občutljivo na nekaj velikih napovedi" in e["omejitve"] and "spodnja vrstica" in e["kaj"].lower() or "Spodnja vrstica" in e["kaj"] or "spodnja" in e["kaj"]
+    assert "ljudi" not in tx.explain_event_windows(w)["pomen"].split("Okoli izida ChatGPT")[-1]            # no people sentence without people
+
+
+def test_timeline_and_calendar_texts_mention_the_switch_only_with_people():
+    ps = _people_story()
+    base = tx.explain_timeline(ps["weekly"], make_macro())
+    withp = tx.explain_timeline(ps["weekly"], make_macro(), ps["people"])
+    assert "spustnim menijem" not in base["kaj"] and "spustnim menijem" in withp["kaj"] and "odpuščenih na teden" in withp["pomen"]
+    cal = tx.explain_layoff_calendar(ps["weekly"], ps["people"])
+    assert "95. percentilu" in cal["kaj"] and "Po številu ljudi" in cal["pomen"] and "95. percentilu" not in tx.explain_layoff_calendar(ps["weekly"])["kaj"]
+
+
+def test_summary_has_a_people_bullet_with_the_coverage_caveat():
+    from test_viz_stock import make_stock
+    ps = _people_story()
+    sc = cm.run_size_control(synthetic_panel(150), n_boot=20)
+    story = {"weekly": ps["weekly"], "macro": make_macro(), "tests": make_tests(), "flags": None, "quartiles": make_quartiles(),
+             "panel": synthetic_panel(150), "size_control": sc, "people_weekly": ps["people"], "quarterly": ps["quarterly"], "top": ps["top"],
+             "coverage": ps["coverage"], "stock": make_stock(0.03)}
+    z = tx.build_summary(story)["zakljucki"]
+    people = [x for x in z if x.startswith("**Koliko ljudi:**")][0]
+    assert z.index(people) == 1 and "prava številka večja" in people and sl_num(ps["coverage"]["people_known"], 0) in people
+    ex = tx.build_explanations(story)
+    assert {"1_ljudje", "1_najvecje"} <= set(ex)
