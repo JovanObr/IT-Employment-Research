@@ -501,6 +501,21 @@ def run(k: int = 10, out: Path | None = None) -> pd.DataFrame:
     return shares
 
 
+def read_labels(path: Path) -> pd.DataFrame:
+    """Read a hand-labelled sample. Excel on Windows saves CSV as cp1252 (or with ';'), so fall back to that, and
+    warn about labels that are not 0/1 (they are ignored by the validators)."""
+    try:
+        lab = pd.read_csv(path, dtype={"post_id": str}, keep_default_na=False, encoding="utf-8-sig")
+    except UnicodeDecodeError:
+        lab = pd.read_csv(path, dtype={"post_id": str}, keep_default_na=False, encoding="cp1252",
+                          sep=None, engine="python")
+    for col in [c for c in lab.columns if c.startswith("label_")]:
+        bad = lab.loc[~lab[col].astype(str).str.strip().isin(["0", "1", ""]), ["post_id", col]]
+        if len(bad):
+            print(f"WARNING: {len(bad)} rows in {col} are not 0/1 and are ignored: {bad.to_dict('records')}")
+    return lab
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("cmd", choices=["run", "sample", "validate", "flags", "sample2", "validate2"])
@@ -521,7 +536,7 @@ def main() -> None:
         make_stratified_sample(load_joined(), max(a.n, 200)).to_csv(path, index=False)
         print(f"Wrote {path}. Fill label_junior with 1/0 (guide: make_validation_sample), then: python -m analysis.hn_text validate2")
     elif a.cmd == "validate2":
-        lab = pd.read_csv(MANUAL / V2_SAMPLE, dtype={"post_id": str}, keep_default_na=False)
+        lab = read_labels(MANUAL / V2_SAMPLE)
         table, weighted, ok = validate_junior_v2(lab)
         print(table.to_string())
         print("weighted by stratum:", {k: round(v, 3) for k, v in weighted.items()})
@@ -534,7 +549,7 @@ def main() -> None:
         make_validation_sample(load_joined(), a.n).to_csv(path, index=False)
         print(f"Wrote {path}. Fill label_remote and label_junior with 1/0, then run: python -m analysis.hn_text validate")
     else:
-        lab = pd.read_csv(MANUAL / "hn_validation_sample.csv", dtype={"post_id": str}, keep_default_na=False)
+        lab = read_labels(MANUAL / "hn_validation_sample.csv")
         print(validate_flags(lab, load_posts()).to_string())
 
 
