@@ -187,5 +187,12 @@
     "url": "https://www.sec.gov/Archives/edgar/data/",
     "licence_or_terms": "SEC EDGAR: public data (https://www.sec.gov/os/webmaster-faq#developers); cite SEC EDGAR",
     "retrieved_at_utc": "2026-11-07T14:39:12+00:00"
+  },
+  {
+    "source": "Indeed Hiring Lab remote/hybrid tracker",
+    "file": "data\\raw\\indeed_remote_postings.csv",
+    "url": "https://raw.githubusercontent.com/hiring-lab/remote-tracker/main/",
+    "licence_or_terms": "CC BY 4.0 - attribution to Indeed Hiring Lab required (https://creativecommons.org/licenses/by/4.0/)",
+    "retrieved_at_utc": "2026-11-10T09:35:50+00:00"
   }
 ]

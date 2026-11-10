@@ -261,6 +261,113 @@ NEGATED_JUNIOR = re.compile(
     re.I)
 
 
+# ------------------------------------------------------------------ 4b. junior_v2: a second, transparent junior rule (Milestone 2, D1)
+# The old `junior` flag (collectors/hn.py) stays as it is because other code reads it. junior_v2 is computed from the text:
+# a post counts when at least one entry-level phrase survives two checks on the ~60 characters before it:
+#   * negation   ("no juniors", "not hiring interns or new grads", "can't do internships")
+#   * mentoring  ("you will mentor junior engineers": a senior role that talks ABOUT juniors)
+# Phrases found by reading the real posts (2026-11-10): junior / jr., intern(ship), entry-level, new or recent grad(uate)s,
+# early career, "graduate" only as a role (graduate engineer/developer/programme/role/scheme), Engineer I, 0-2 years,
+# bootcamp grads, apprentice(ship), trainee, starting (your) career, no experience required.
+# Left out on purpose: "all levels", "mid-level", "mentorship", "student", "college" alone (they rarely invite juniors), and
+# "1+ years" (in the real posts it is mostly a per-technology requirement inside senior ads, e.g. "7+ years C#, 1+ years Go").
+# Found while reading: the old hand labels in data/manual/hn_validation_sample.csv mark 81 of 100 posts junior = 1, including
+# staff and senior roles, so the "recall about 5 %" of the old flag reflects the labels more than the rule.
+JUNIOR_V2_TERMS = re.compile(
+    r"\bjuniors?\b|\bjr\b\.?(?=\s*(software|front|back|full|web|dev|eng|data|ios|android|python|java|ruby|php|\w+ (developer|engineer)))"
+    r"|\binterns?\b|\binternships?\b|\bentry[- ]level\b"
+    r"|\b(new|recent|fresh|college|university|bootcamp|boot camp|coding school)[- ](college |university )?grad(uate)?s?\b"
+    r"|\bgrad(uate)?s? (from (a )?)?(boot ?camps?|coding (schools?|bootcamps?))"
+    r"|\bgraduate ([a-z+#.]+ ){0,2}(engineers?|developers?|programmers?|programmes?|programs?|roles?|positions?|schemes?|placements?|hires?|jobs?)\b"
+    r"|\bgraduating (in )?(19|20)\d\d\b"
+    r"|\bearly[- ]career\b|\bapprentice(ship)?s?\b|\btrainees?\b"
+    r"|\b(engineer|developer|programmer|analyst|scientist)[ \t]+(?-i:I)(?=[ \t]*([|,)(\-–/&]|$|\b(and|or|position|role)\b))(?![ \t]*[/\-][ \t]*(?-i:I))"
+    r"|\b0\s*(-|to|–)\s*[1-3]\+?\s*(years?|yrs)\b|\b0\+\s*(years?|yrs)\b"
+    r"|\bstart(ing)? (your|their|a) (tech |software |engineering |professional )?career\b"
+    r"|\bno (prior |previous |professional )?experience (is )?(required|necessary|needed)\b",
+    re.I)
+JUNIOR_V2_NEGATION = re.compile(
+    r"\b(no|not|non|nor|without|never|isn'?t|aren'?t|cannot|can'?t|don'?t|doesn'?t|won'?t|unable to|unfortunately|sorry)\b[^.!?\n]{0,45}$"
+    r"|\b(not|no)\s+(hiring|looking|accepting|considering|taking|offering|open to|able to (hire|take|consider|accept))\b[^.!?\n]{0,40}$",
+    re.I)
+JUNIOR_V2_MENTOR = re.compile(
+    r"\b(mentor(s|ing)?|coach(es|ing)?|guid(e|es|ing)|lead(s|ing)?|manag(e|es|ing)|support(s|ing)?|grow(s|ing)?|train(s|ing)?|"
+    r"teach(es|ing)?|oversee(s|ing)?|supervis(e|es|ing))[ \t]+([\w-]+[ \t]+){0,3}$",
+    re.I)
+_JUNIOR_V2_WINDOW = 60
+
+
+def junior_v2_matches(text: str) -> list[str]:
+    """The entry-level phrases in `text` that are neither negated nor about mentoring juniors (empty list = not junior)."""
+    t = str(text or "")
+    keep = []
+    for m in JUNIOR_V2_TERMS.finditer(t):
+        before = t[max(0, m.start() - _JUNIOR_V2_WINDOW):m.start()]
+        if JUNIOR_V2_NEGATION.search(before) or JUNIOR_V2_MENTOR.search(before):
+            continue
+        keep.append(m.group(0))
+    return keep
+
+
+def junior_v2(text: str) -> int:
+    """1 if the post invites entry-level, intern or new-graduate applicants by the rule above, else 0."""
+    return int(bool(junior_v2_matches(text)))
+
+
+def add_junior_v2(df: pd.DataFrame) -> pd.DataFrame:
+    """Copy of df (needs a `text` column) with a `junior_v2` column."""
+    out = df.copy()
+    out["junior_v2"] = out["text"].fillna("").map(junior_v2).astype(int)
+    return out
+
+
+# Any seniority word at all: used only to oversample the fresh validation sample, so that it contains enough true juniors.
+SENIORITY_ANY = re.compile(
+    r"\b(junior|jr|intern|internships?|entry[- ]level|grads?|graduates?|early[- ]career|apprentice|trainee|bootcamp|college|"
+    r"students?|all levels|any level|mid[- ]level|engineer i|years? of experience|mentor(ship|ing)?)\b", re.I)
+
+
+def make_stratified_sample(df: pd.DataFrame, n: int = 240, share_seniority: float = 0.5, seed: int = 20261110) -> pd.DataFrame:
+    """Fresh validation sample for junior_v2 (a NEW seed, so it is not the sample the rule was designed on).
+    Half the posts (share_seniority) come from posts that mention any seniority word (stratum 'seniority'), the rest are a
+    simple random draw from the other posts (stratum 'other'). `weight` = posts in the stratum / posts drawn, so that population
+    precision and recall can be estimated (`validate_weighted`). No flag values are shown, so the labeller is blind to the rule."""
+    has = df["text"].fillna("").map(lambda t: bool(SENIORITY_ANY.search(t)))
+    a, b = df[has], df[~has]
+    na = min(len(a), int(round(n * share_seniority)))
+    nb = min(len(b), n - na)
+    parts = []
+    for name, pool, k in (("seniority", a, na), ("other", b, nb)):
+        s = pool.sample(n=k, random_state=seed)[["post_id", "thread_month", "text"]].copy()
+        s["stratum"], s["weight"] = name, len(pool) / k if k else float("nan")
+        parts.append(s)
+    out = pd.concat(parts).sample(frac=1, random_state=seed).reset_index(drop=True)
+    out["label_junior"] = ""
+    return out
+
+
+def validate_weighted(labelled: pd.DataFrame, pred_col: str = "junior_v2", label_col: str = "label_junior") -> dict:
+    """Precision and recall with the stratum weights of make_stratified_sample (point estimates; the Wilson intervals of
+    validate_flags are unweighted). Rows without a 0/1 label are ignored."""
+    g = labelled[pd.to_numeric(labelled[label_col], errors="coerce").isin([0, 1])]
+    y, yhat, w = pd.to_numeric(g[label_col]).astype(int), g[pred_col].astype(int), g["weight"].astype(float)
+    tp, fp, fn = float(w[(y == 1) & (yhat == 1)].sum()), float(w[(y == 0) & (yhat == 1)].sum()), float(w[(y == 1) & (yhat == 0)].sum())
+    return {"precision_w": tp / (tp + fp) if tp + fp else float("nan"), "recall_w": tp / (tp + fn) if tp + fn else float("nan"),
+            "prevalence_w": float(w[y == 1].sum() / w.sum()) if w.sum() else float("nan")}
+
+
+# Decision rule for using junior_v2 in a figure, written down 2026-11-10 BEFORE any junior_v2 trend was looked at (brief D1.4).
+JUNIOR_V2_RULE = {"min_precision": 0.8, "min_recall": 0.5, "min_recall_ci_low": 0.35}
+
+
+def junior_v2_decision(row: pd.Series | dict) -> bool:
+    """True if a validate_flags row for junior_v2 passes JUNIOR_V2_RULE."""
+    r = dict(row)
+    lo = r["recall_ci"][0] if isinstance(r.get("recall_ci"), (tuple, list)) else float("nan")
+    return bool(r["precision"] >= JUNIOR_V2_RULE["min_precision"] and r["recall"] >= JUNIOR_V2_RULE["min_recall"]
+                and lo >= JUNIOR_V2_RULE["min_recall_ci_low"])
+
+
 def negation_diagnostic(df: pd.DataFrame) -> pd.DataFrame:
     """How many flagged posts contain an obvious negation next to the keyword? Needs no hand labels.
     A lower bound on false positives: negations phrased in other ways are not caught."""
@@ -342,15 +449,40 @@ def change_points_table(posts: pd.DataFrame, flags=MILESTONE_FLAGS, n_bkps: int 
     return pd.concat(out, ignore_index=True)[["flag", "start", "end", "months", "mean_share"]]
 
 
-def write_flag_aggregates(posts: pd.DataFrame | None = None, outdir: Path | None = None) -> tuple[Path, Path]:
-    """Writes hn_flags_monthly.csv and hn_change_points.csv from the local posts file (flags only, no text)."""
-    posts = load_posts() if posts is None else posts
+def write_flag_aggregates(posts: pd.DataFrame | None = None, outdir: Path | None = None,
+                          with_junior_v2: bool = False) -> tuple[Path, Path]:
+    """Writes hn_flags_monthly.csv and hn_change_points.csv from the local posts file (flags only, no text).
+    with_junior_v2=True also adds the junior_v2 share (computed from the local text file; only if it passed JUNIOR_V2_RULE)."""
+    flags = MILESTONE_FLAGS
+    if posts is None:
+        posts = load_posts()
+        if with_junior_v2:
+            posts = add_junior_v2(posts.merge(load_text(), on="post_id", how="left")).drop(columns="text")
+    if with_junior_v2:
+        flags = (*MILESTONE_FLAGS, "junior_v2")
     outdir = Path(outdir or PROCESSED)
     outdir.mkdir(parents=True, exist_ok=True)
     p1, p2 = outdir / "hn_flags_monthly.csv", outdir / "hn_change_points.csv"
-    flags_monthly(posts).to_csv(p1, index=False)
-    change_points_table(posts).to_csv(p2, index=False)
+    flags_monthly(posts, flags).to_csv(p1, index=False)
+    change_points_table(posts, flags).to_csv(p2, index=False)
     return p1, p2
+
+
+V2_SAMPLE = "hn_validation_sample_junior_v2.csv"
+
+
+def validate_junior_v2(labelled: pd.DataFrame) -> tuple[pd.DataFrame, dict, bool]:
+    """(validate_flags table for junior and junior_v2, weighted point estimates, decision) from a labelled V2_SAMPLE.
+    Both rules are recomputed from the text in the file, so no other file is needed."""
+    lab = labelled.copy()
+    lab["post_id"] = lab["post_id"].astype(str)
+    from collectors.hn import features
+    pred = add_junior_v2(lab[["post_id", "text"]])
+    pred["junior"] = lab["text"].map(lambda t: features(str(t))["junior"])
+    lab["label_junior_v2"] = lab["label_junior"]
+    table = validate_flags(lab, pred, flags=("junior", "junior_v2"))
+    weighted = validate_weighted(lab.assign(junior_v2=pred["junior_v2"].to_numpy()))
+    return table, weighted, junior_v2_decision(table.loc["junior_v2"])
 
 
 # ------------------------------------------------------------------ command line
@@ -371,15 +503,29 @@ def run(k: int = 10, out: Path | None = None) -> pd.DataFrame:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("cmd", choices=["run", "sample", "validate", "flags"])
+    ap.add_argument("cmd", choices=["run", "sample", "validate", "flags", "sample2", "validate2"])
     ap.add_argument("-k", type=int, default=10)
     ap.add_argument("-n", type=int, default=100)
+    ap.add_argument("--with-junior-v2", action="store_true", help="flags: add junior_v2 (only after it passed validate2)")
     a = ap.parse_args()
     if a.cmd == "run":
         run(a.k)
     elif a.cmd == "flags":
-        for p in write_flag_aggregates():
+        for p in write_flag_aggregates(with_junior_v2=a.with_junior_v2):
             print(f"wrote {p}")
+    elif a.cmd == "sample2":
+        path = MANUAL / V2_SAMPLE
+        MANUAL.mkdir(parents=True, exist_ok=True)
+        if path.exists():
+            raise SystemExit(f"{path} exists already (it may hold your labels). Move it first if you want a new sample.")
+        make_stratified_sample(load_joined(), max(a.n, 200)).to_csv(path, index=False)
+        print(f"Wrote {path}. Fill label_junior with 1/0 (guide: make_validation_sample), then: python -m analysis.hn_text validate2")
+    elif a.cmd == "validate2":
+        lab = pd.read_csv(MANUAL / V2_SAMPLE, dtype={"post_id": str}, keep_default_na=False)
+        table, weighted, ok = validate_junior_v2(lab)
+        print(table.to_string())
+        print("weighted by stratum:", {k: round(v, 3) for k, v in weighted.items()})
+        print(f"decision rule {JUNIOR_V2_RULE}: {'PASS, junior_v2 may be used in a figure' if ok else 'FAIL, junior hiring cannot be compared'}")
     elif a.cmd == "sample":
         path = MANUAL / "hn_validation_sample.csv"
         MANUAL.mkdir(parents=True, exist_ok=True)

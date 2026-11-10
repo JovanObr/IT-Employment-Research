@@ -52,6 +52,8 @@ SOURCE_LABELS = {
     "data/raw/eurostat_lfsa_egan22d.csv": _EUROSTAT,
     "data/raw/indeed_aggregate_postings.csv": _INDEED,
     "data/raw/indeed_it_sector_postings.csv": _INDEED,
+    # Stream B, Milestone 2
+    "data/raw/indeed_remote_postings.csv": "Indeed Hiring Lab, delež oglasov v ZDA, ki ponujajo delo na daljavo ali hibridno delo",
 }
 
 # Derived files: how they are built and from what. Only the inputs whose numbers reach the file are listed.
@@ -68,9 +70,15 @@ DERIVED = {
                                         "data/raw/fhfa_hpi_metro_quarterly.csv", "data/raw/census_acs5_metro.csv"]),
     "data/processed/event_study_events.csv": ("python -m analysis.event_study",
                                               ["data/processed/layoffs_clean.csv", "data/raw/sec_company_matches.csv", "data/raw/prices_daily.csv"]),
-    # The map table keeps only the QCEW job and establishment columns of metro_panel.csv plus the Gazetteer coordinates.
+    # The map table keeps the QCEW job and establishment columns of metro_panel.csv plus the Gazetteer coordinates, and one ACS
+    # column (wfh_share_pct_acs2019, kept for the chapter 4-5 brief; no figure draws it). Stream B 2026-11-10: ACS added below
+    # because its numbers reach the file.
     "data/processed/metro_map_data.csv": ("python build_metro_panel.py, nato python -m analysis.geo mapdata",
-                                          ["data/raw/bls_qcew_areas_it_industries.csv", "data/raw/census_gazetteer_cbsa.csv"]),
+                                          ["data/raw/bls_qcew_areas_it_industries.csv", "data/raw/census_gazetteer_cbsa.csv",
+                                           "data/raw/census_acs5_metro.csv"]),
+    # Stream B, Milestone 2
+    "data/processed/indeed_remote_monthly.csv": ("python -m analysis.compare_text_geo aggregates",
+                                                 ["data/raw/indeed_remote_postings.csv"]),
 }
 
 _LAYOFFS = "data/processed/layoffs_clean.csv"
@@ -107,6 +115,11 @@ FIGURE_SOURCES = {
     "9a_borza_delez": ["data/processed/event_study_events.csv", _LAYOFFS, "data/raw/sec_company_matches.csv"],
     "9a_znotraj": ["data/processed/company_panel.csv"],
     "9a_zaposlovanje": ["data/raw/sec_headcount.csv"] + _H3,
+    # notebook 09, Stream B (analysis/compare_text_geo.py); published numbers are named in the text
+    "9b_daljava_primerjava": ["data/processed/hn_flags_monthly.csv", "data/processed/indeed_remote_monthly.csv"],
+    "9b_ui_primerjava": ["data/processed/hn_flags_monthly.csv"],
+    "9b_mladi": ["data/processed/hn_flags_monthly.csv"],      # shown only once junior_v2 passed its validation (D1)
+    "9b_regije_primerjava": ["data/processed/metro_map_data.csv"],
 }
 
 

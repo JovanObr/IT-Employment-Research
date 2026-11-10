@@ -9,6 +9,7 @@ All data are public. Collectors use official APIs or published downloads. `data/
 | US Bureau of Labor Statistics (CES, QCEW) | US employment, establishments, wages, metro detail | Public domain; cite BLS |
 | UK Office for National Statistics via Nomis (BRES) | Great Britain jobs by detailed industry | Open Government Licence v3.0, Crown copyright |
 | Indeed Hiring Lab | Job-postings index | CC BY 4.0: "Indeed Hiring Lab" |
+| Indeed Hiring Lab remote/hybrid tracker (github.com/hiring-lab/remote-tracker) | US share of postings advertising remote or hybrid work, all postings and by occupational category (`indeed_remote`; monthly aggregate `data/processed/indeed_remote_monthly.csv` committed), for the remote-work comparison in notebook 09 | CC BY 4.0: "Indeed Hiring Lab" |
 | Hacker News "Who is hiring?" via Algolia API | Remote/skills/seniority trends | Public content; **raw text is not redistributed** |
 | Layoffs.fyi (CSV downloaded manually) | Layoff events | Credit Layoffs.fyi; check the terms of the copy you downloaded; **raw file not redistributed** |
 | SEC EDGAR (XBRL frames) | Public-company revenue; quarterly net income, operating income, gross profit, R&D, SG&A, cash, assets, equity (`sec_fin`); SIC industry codes for the comparison universe (`sec_universe`) | Public SEC data |
