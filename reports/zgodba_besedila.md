@@ -207,7 +207,7 @@
 
 **Česa ne vemo?** IT tukaj pomeni samo podjetja za svetovanje in programiranje po naročilu (NAICS 5415); založniki programske opreme in velika tehnološka podjetja niso všteti. Kjer je podatek skrit, to ni nič: urad ga ne objavi, da ne bi razkril posameznega podjetja. Primerjamo le dve leti, zato zemljevid ne pokaže, kaj se je dogajalo vmes. Rast pri majhnih območjih je lahko velika že zaradi enega podjetja. Zemljevid kaže, kje se je kaj spremenilo, ne pa zakaj.
 
-**Viri podatkov:** ameriški statistični urad za delo (BLS), popis zaposlenih in podjetij QCEW: `data/raw/bls_qcew_areas_it_industries.csv`; ameriški urad za popis prebivalstva (Census), lega mestnih območij (Gazetteer): `data/raw/census_gazetteer_cbsa.csv`. Graf bere obdelano datoteko `data/processed/metro_map_data.csv` (izdela jo `python build_metro_panel.py, nato python -m analysis.geo mapdata`).
+**Viri podatkov:** ameriški statistični urad za delo (BLS), popis zaposlenih in podjetij QCEW: `data/raw/bls_qcew_areas_it_industries.csv`; ameriški urad za popis prebivalstva (Census), lega mestnih območij (Gazetteer): `data/raw/census_gazetteer_cbsa.csv`; ameriški urad za popis prebivalstva (Census), raziskava ACS: `data/raw/census_acs5_metro.csv`. Graf bere obdelano datoteko `data/processed/metro_map_data.csv` (izdela jo `python build_metro_panel.py, nato python -m analysis.geo mapdata`).
 
 ## 5_regije
 **Kaj vidimo?** Štirje grafi, po eden za vsako veliko regijo ZDA. Vsaka pika je eno metro območje, njena višina pa rast IT zaposlenosti med 2019 in 2024. Škatla zajame srednjo polovico območij, črta v njej in napis pa mediano (tipično območje). Ko miško premakneš na piko, vidiš ime.
@@ -218,7 +218,7 @@
 
 **Česa ne vemo?** IT tukaj pomeni samo podjetja za svetovanje in programiranje po naročilu (NAICS 5415); založniki programske opreme in velika tehnološka podjetja niso všteti. Kjer je podatek skrit, to ni nič: urad ga ne objavi, da ne bi razkril posameznega podjetja. Regijo določimo po prvi zvezni državi v imenu območja, kar pri območjih čez mejo držav ni povsem natančno. Vsako območje šteje enako, ne glede na velikost.
 
-**Viri podatkov:** ameriški statistični urad za delo (BLS), popis zaposlenih in podjetij QCEW: `data/raw/bls_qcew_areas_it_industries.csv`; ameriški urad za popis prebivalstva (Census), lega mestnih območij (Gazetteer): `data/raw/census_gazetteer_cbsa.csv`. Graf bere obdelano datoteko `data/processed/metro_map_data.csv` (izdela jo `python build_metro_panel.py, nato python -m analysis.geo mapdata`).
+**Viri podatkov:** ameriški statistični urad za delo (BLS), popis zaposlenih in podjetij QCEW: `data/raw/bls_qcew_areas_it_industries.csv`; ameriški urad za popis prebivalstva (Census), lega mestnih območij (Gazetteer): `data/raw/census_gazetteer_cbsa.csv`; ameriški urad za popis prebivalstva (Census), raziskava ACS: `data/raw/census_acs5_metro.csv`. Graf bere obdelano datoteko `data/processed/metro_map_data.csv` (izdela jo `python build_metro_panel.py, nato python -m analysis.geo mapdata`).
 
 ## povzetek
 

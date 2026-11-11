@@ -319,21 +319,22 @@ def fig_ai_compare(flags: pd.DataFrame) -> go.Figure:
     """Bars: HN posts per month (right axis). Line: share of posts mentioning AI/ML (left axis). Shaded: Bernard's two periods."""
     s = ai_summary(flags)
     fig = make_subplots(specs=[[{"secondary_y": True}]])
-    fig.add_trace(go.Bar(x=s["n"].index, y=s["n"], name="vse objave na mesec (desna os)", marker_color=PALETTE["light_grey"],
-                         hovertemplate=f"%{{x|{HOVER_MONTH}}}: %{{y:.0f}} objav<extra></extra>"), secondary_y=True)
-    fig.add_trace(go.Scatter(x=s["ai"].index, y=s["ai"] * 100, mode="lines", name="delež objav, ki omenjajo UI (leva os)",
+    fig.add_trace(go.Bar(x=s["n"].index, y=s["n"], name="vse objave na mesec (leva os)", marker_color=PALETTE["light_grey"],
+                         hovertemplate=f"%{{x|{HOVER_MONTH}}}: %{{y:.0f}} objav<extra></extra>"), secondary_y=False)
+    fig.add_trace(go.Scatter(x=s["ai"].index, y=s["ai"] * 100, mode="lines", name="delež objav, ki omenjajo UI (desna os)",
                              line=dict(color=PALETTE["purple"], width=2.4),
-                             hovertemplate=f"%{{x|{HOVER_MONTH}}}: %{{y:.1f}} % objav<extra></extra>"), secondary_y=False)
+                             hovertemplate=f"%{{x|{HOVER_MONTH}}}: %{{y:.1f}} % objav<extra></extra>"), secondary_y=True)   # right axis: drawn above the bars
     for w, label in ((s["w0"], "začetek 2020"), (s["w1"], "začetek 2025")):
         x0, x1 = pd.Timestamp(w[0]), pd.Timestamp(w[1]) + pd.offsets.MonthEnd(0)
         fig.add_shape(type="rect", xref="x", yref="paper", x0=x0, x1=x1, y0=0, y1=1, fillcolor="rgba(245,133,24,0.15)", line=dict(width=0))
         fig.add_annotation(xref="x", yref="paper", x=x0, y=1, yanchor="bottom", showarrow=False, text=label, font=dict(size=10))
     b = STUDIES["bernard"]
     fig.update_layout(**base_layout("Umetna inteligenca: vedno večji delež vedno manj objav", height=500), bargap=0)
-    fig.update_yaxes(title_text="delež objav z omembo UI (%)", rangemode="tozero", secondary_y=False)
-    fig.update_yaxes(title_text="objav na mesec", rangemode="tozero", showgrid=False, secondary_y=True)
+    fig.update_yaxes(title_text="objav na mesec", rangemode="tozero", showgrid=False, secondary_y=False)
+    fig.update_yaxes(title_text="delež objav z omembo UI (%)", rangemode="tozero", tickmode="linear", tick0=0, dtick=10, secondary_y=True)
+    fig.update_layout(margin=dict(b=130), legend=dict(y=-0.1))
     fig.update_xaxes(tickformat="%Y")
-    fig.add_annotation(xref="paper", yref="paper", x=0, y=-0.22, xanchor="left", showarrow=False, align="left", font=dict(size=10),
+    fig.add_annotation(xref="paper", yref="paper", x=0, y=-0.3, xanchor="left", showarrow=False, align="left", font=dict(size=10),
                        text=f"Oranžna pasova = obdobji, ki ju primerja Bernard (2025): oglasi za inženirje strojnega učenja "
                             f"{_signed(b['ml_pct'])}, za programske inženirje {_signed(b['swe_pct'])}.")
     add_event_lines(fig, keys=("chatgpt",))
@@ -363,8 +364,8 @@ def explain_ai_compare(flags: pd.DataFrame) -> dict:
             pomen += "Naši podatki v teh mesecih ne kažejo iste slike kot Indeed."
         pomen += (f" Celotno obdobje: delež UI v prvih 12 mesecih {sl_pct(s['first12'])}, v zadnjih 12 mesecih {sl_pct(s['last12'])}.")
     return {
-        "kaj": "Sivi stolpci so število vseh objav v mesečni niti »Who is hiring?« (desna os), vijolična črta pa delež objav, ki omenjajo "
-               "umetno inteligenco ali strojno učenje (leva os). Oranžna pasova označujeta prve tri mesece let 2020 in 2025, ki ju primerja študija.",
+        "kaj": "Sivi stolpci so število vseh objav v mesečni niti »Who is hiring?« (leva os), vijolična črta pa delež objav, ki omenjajo "
+               "umetno inteligenco ali strojno učenje (desna os). Oranžna pasova označujeta prve tri mesece let 2020 in 2025, ki ju primerja študija.",
         "zakaj": "Bernard (2025, Indeed Hiring Lab) je ugotovil, da se je zaposlovanje v tehnologiji ohladilo povsod razen pri vlogah z UI. "
                  "Že Acemoglu, Autor, Hazell in Restrepo (2022) so iz ameriških oglasov pokazali, da podjetja, kjer je veliko nalog primernih "
                  "za UI, objavljajo več oglasov za UI in manj drugih oglasov. Preverili smo, ali Hacker News kaže isto.",
