@@ -1,0 +1,90 @@
+{
+  "inputs_sha256": {
+    "data/processed/layoffs_clean.csv": "4bf17b5b8b0d14cacc823278e55262fdc8c1d33278896271c853f1b3bd5a81b5",
+    "data/raw/sec_company_matches.csv": "25d613e2c5c58d674ee38d1b9a4169284b1811528677be103ff59b8f8d98c4b2",
+    "data/raw/sec_headcount.csv": "09c36c170cafa3773328451ccb217cdce0614ed1df063ff27757bc8bdcf8cbb3",
+    "data/raw/sec_universe_sic.csv": "40ebb06a91527885c73db0aef089d37568d15a0ff48e1cfa897f946ac6dbacd2",
+    "data/processed/company_panel.csv": "60068117b304d6a8625c6ecb7a2de1c8fd7efe589d74986bf3692e5704250909",
+    "data/processed/event_study_events.csv": "b32288b564cae63f2d4512d577a85e71408e6975b0a84f8d69654f1da803a796",
+    "data/raw/prices_daily.csv": "9c65cb1ba28005b2820e19c301dc91e80c1d15401c5218dd8ec07999ed6aeef3"
+  },
+  "C": {
+    "primary": {
+      "n_announced": 102,
+      "n_not": 321,
+      "median_announced": 0.04409603414261479,
+      "median_not": 0.07389724620204122,
+      "diff_median": -0.02980121205942643,
+      "ci_lo": -0.08654045633105646,
+      "ci_hi": 0.02877163681451325,
+      "p": 0.3477129019268067,
+      "predicted_sign": true,
+      "mde_log": 0.1228983164583838
+    },
+    "secondary_ols": {
+      "n": 414,
+      "coef_announced": -0.08249078410560688,
+      "ci_lo": -0.17320958454538232,
+      "ci_hi": 0.008228016334168559,
+      "p": 0.07471142856532498
+    },
+    "secondary_2022_2023": {
+      "n_announced": 105,
+      "n_not": 349,
+      "median_announced": -0.07000600331970465,
+      "median_not": 0.0,
+      "diff_median": -0.07000600331970465,
+      "ci_lo": -0.09705750789227056,
+      "ci_hi": -0.019665460723813654,
+      "p": 2.348337351860513e-05,
+      "predicted_sign": true,
+      "mde_log": 0.08718540827083543
+    },
+    "placebo": {
+      "n_rep": 1000,
+      "false_positive_rate": 0.045
+    }
+  },
+  "D": {
+    "primary": {
+      "n_repeat": 383,
+      "n_first": 228,
+      "mean_repeat_pct": -0.14490151300355683,
+      "mean_first_pct": -1.3053326819871343,
+      "diff_pct": 1.1604311689835773,
+      "p": 0.12638736126387362,
+      "predicted_sign": false,
+      "mde_pct": 2.108157601309778
+    },
+    "secondary": {
+      "day_bootstrap": {
+        "group_a": "repeat",
+        "group_b": "first",
+        "n_a": 383,
+        "n_b": 228,
+        "diff_pct": 1.1604311689835773,
+        "ci_lo_pct": -0.3841089348874767,
+        "ci_hi_pct": 2.6153293597292553
+      },
+      "mannwhitney_p_raw": 0.009010179266447264,
+      "without_first_6_months": {
+        "n_repeat": 381,
+        "n_first": 214,
+        "diff_pct": 1.285070575229729,
+        "p": 0.09058188362327535
+      },
+      "without_2020": {
+        "n_repeat": 381,
+        "n_first": 214,
+        "diff_pct": 1.285070575229729,
+        "p": 0.09058188362327535
+      }
+    },
+    "placebo": {
+      "n_rep": 100,
+      "false_positive_rate": 0.04,
+      "mean_diff_pct": -0.03298752715296354,
+      "sd_diff_pct": 0.40744429607438815
+    }
+  }
+}

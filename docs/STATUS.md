@@ -66,8 +66,9 @@ Four hypotheses, one primary test each, Holm correction across the four (`analys
 vs. software within-firm (power 60 % for a large effect, only 10 semiconductor firms with variation).
 - [ ] A Slovenia ICT specialists 2021-2024 vs. EU-27 (Stream B, brief `docs/tasks/MILESTONE_3.md`)
 - [ ] B San Francisco vs. Austin IT employment after the first rate hike (Stream B)
-- [~] C Announced layoffs vs. 10-K headcount 2021-2023 (Stream A, `analysis/hypotheses.py`, tests `tests/test_hypotheses.py`): code and synthetic tests done; real run waits for the registration commit
-- [~] D Repeat announcements vs. stock reaction (Stream A, same files): as C
+- [x] C Announced layoffs vs. 10-K headcount 2021-2023 (Stream A, `analysis/hypotheses.py`, tests `tests/test_hypotheses.py`). Registration commit `1de58cb` (2026-11-14 09:05 +01); single real run 2026-11-14, results `reports/hypotheses_a_results.json` (with input hashes). **Primary:** 102 announced vs. 321 not; median log change 2021-2023 +0.044 vs. +0.074, difference -0.030 (95 % bootstrap -0.087 to +0.029), Mann-Whitney p = 0.348; predicted sign, not significant (minimum detectable shift 0.12). Placebo false-positive rate 4.5 % (1,000 shuffles). Secondary: size-controlled OLS -0.082 (-0.173 to +0.008), p = 0.075; **2022 -> 2023 window** -0.070 (-0.097 to -0.020), p = 0.00002 (secondary: cannot change the verdict; reported as exploratory).
+- [x] D Repeat announcements vs. stock reaction (Stream A, same files, same run). **Primary:** 383 repeat vs. 228 first; winsorised mean abnormal return -0.14 % vs. -1.31 %, difference +1.16 percentage points, permutation p = 0.126; **opposite to the predicted sign**, not significant (minimum detectable 2.1). Placebo false-positive rate 4 % (100 runs of random dates). Secondary: day-clustered bootstrap -0.38 to +2.62; Mann-Whitney on raw values p = 0.009 (same opposite direction); without events before 2020-09-11 +1.29, p = 0.091 (identical to "without 2020": every 2020 event is before 2020-09-11).
+  - C and D cannot be supported whatever A and B give: their raw p-values are already above 0.05, and the Holm correction only raises them.
 - [ ] Results notebook (Stream A) after all four primary p-values exist
 
 ## Requests between streams
