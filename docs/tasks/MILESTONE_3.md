@@ -1,4 +1,4 @@
-# Milestone 3: test two pre-registered hypotheses (Stream B agent): A (Slovenia, ICT specialists) and B (San Francisco vs. Austin)
+# Milestone 3 (due Thursday 2026-11-19): test two pre-registered hypotheses (Stream B agent): A (Slovenia, ICT specialists) and B (San Francisco vs. Austin)
 
 ## Context
 Milestone 3 tests four narrow hypotheses with statistical tests. They are **pre-registered** in `docs/hypotheses/PREREGISTRATION.md`:
@@ -54,16 +54,18 @@ After H2 is green, run `python -m analysis.hypotheses_b` on the real data once. 
 p for A and B; whether the pre-trend check added a trend; the placebo results; anything unexpected in the data (estimated values, disclosed
 quarters). **Do not write a conclusion** ("supported" or not): that needs the Holm correction across all four tests, which Stream A does.
 
-## Schedule
+## Schedule (milestone due Thursday 2026-11-19)
 | When | What |
 |---|---|
-| Day 1 | H1 for A and its tests; push |
-| Day 2 | H1 for B and its tests (Newey-West checked); push |
-| Day 3 | H3 single run, STATUS line, **pull request** |
+| Sun 15 Nov | H1 for A (`test_a`, `secondary_a`, `placebo_a`) and its tests; push the branch |
+| Mon 16 Nov | H1 for B (`quarterly_series`, `test_b` with Newey-West checked, `placebo_b`, `secondary_b`) and its tests; push |
+| Tue 17 Nov, noon | H3: one real run, STATUS line with estimates, intervals, p-values; **open the pull request** |
+| Wed 18 Nov | Review fixes only; Stream A combines all four tests (Holm) and finishes the results notebook |
+| Thu 19 Nov | Milestone |
 
 ## Prompt to paste into the agent
 "You are the Stream B agent on this repository. Read AGENTS.md, docs/STATUS.md, docs/hypotheses/PREREGISTRATION.md (Common rules, A, B),
 analysis/hypotheses.py and docs/tasks/MILESTONE_3.md. Work on branch milestone3/hypotheses-b. Implement A and B exactly as registered; do not
 look at the outcome data (Slovenia's ICT share vs. other countries, the San Francisco and Austin quarterly series) until the synthetic tests
-pass; then run the real analysis once. Never change a registered test, sample or threshold because of a result; a bug fix goes in a dated
+pass; then run the real analysis once. Open the pull request on Tuesday 17 November at noon. Never change a registered test, sample or threshold because of a result; a bug fix goes in a dated
 amendment at the end of the registration. Do not edit Stream A's files. Report estimates, intervals and p-values in STATUS but no conclusion."
