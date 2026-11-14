@@ -60,6 +60,16 @@ switch the renderer in the setup cell to "notebook" for an offline file). Print 
   - Headcount result is **sensitive to the parser**: before the stricter rules (251 companies) the size-controlled odds ratio for hiring growth was 1.81 (1.18-2.87); after them, with 79 filings not yet re-read (240 companies), 1.38 (0.91-2.35). The text and verdict follow whatever the data give; re-check after the re-read.
 - [ ] Statista: probably not used for layoffs (its layoff statistics are Layoffs.fyi); licensed files must never be committed
 
+## Milestone 3: narrow hypotheses with statistical tests
+Pre-registration: `docs/hypotheses/PREREGISTRATION.md` (2026-11-14). **Commit it before any test is run; the commit is the registration.**
+Four hypotheses, one primary test each, Holm correction across the four (`analysis.hypotheses.holm`). Dropped before testing: semiconductors
+vs. software within-firm (power 60 % for a large effect, only 10 semiconductor firms with variation).
+- [ ] A Slovenia ICT specialists 2021-2024 vs. EU-27 (Stream B, brief `docs/tasks/MILESTONE_3.md`)
+- [ ] B San Francisco vs. Austin IT employment after the first rate hike (Stream B)
+- [~] C Announced layoffs vs. 10-K headcount 2021-2023 (Stream A, `analysis/hypotheses.py`, tests `tests/test_hypotheses.py`): code and synthetic tests done; real run waits for the registration commit
+- [~] D Repeat announcements vs. stock reaction (Stream A, same files): as C
+- [ ] Results notebook (Stream A) after all four primary p-values exist
+
 ## Requests between streams
 (Write "A asks B: ..." or "B asks A: ..." here; the owner of the file makes the change.)
 - 2026-10-30 A asks B (and everyone, `collect.py` is frozen): `collect.py` overwrote `data/manifest.json` with only the sources of that run, so every partial run (`--sources sec_fin`, `macro`, ...) wiped the other entries. Proposed change, already in this commit: `merge_manifest()` keeps old entries and replaces the ones that were re-run (test: `tests/test_collect_manifest.py`). The committed manifest currently holds only one entry; run `python collect.py` once (everything is cached) to rebuild it.
