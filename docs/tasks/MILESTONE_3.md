@@ -14,11 +14,12 @@ analysis **once**. If you find a bug after that, fix it, add a dated amendment a
 and rerun; never change a test, sample or threshold because of the result. Checking that the data exist (columns, codes, years) is fine.
 
 ## Rules (as before)
-- Branch `milestone3/hypotheses-b`. Pull `main` first; read `AGENTS.md`, `docs/STATUS.md`, `docs/hypotheses/PREREGISTRATION.md` (sections
+- **Work directly on `main`, no branch.** Before you start and before every push: `git pull --rebase origin main` (Stream A also commits to `main`);
+  then push to `main`. Commit only your own files (below), never with `git add -A`. Read `AGENTS.md`, `docs/STATUS.md`, `docs/hypotheses/PREREGISTRATION.md` (sections
   Common rules, A, B), `analysis/hypotheses.py` (for the style and for `holm`, `file_hashes`, `mde`).
 - **Files you own:** `analysis/hypotheses_b.py` (new), `tests/test_hypotheses_b.py` (new), your section of `docs/STATUS.md`, and amendments
   to the registration (append only). Do not edit Stream A's files; requests go under *Requests between streams* in `docs/STATUS.md`.
-- Tests: synthetic data only, no network. `pytest -q` and `python -m compileall -q .` green before you push. Never commit `data/raw/`.
+- Tests: synthetic data only, no network. `pytest -q` and `python -m compileall -q .` green before every push to `main` (a red `main` blocks Stream A). Never commit `data/raw/`.
 
 ## Deliverables
 ### H1 `analysis/hypotheses_b.py`
@@ -67,15 +68,15 @@ quarters). **Do not write a conclusion** ("supported" or not): that needs the Ho
 ## Schedule (milestone due Thursday 2026-11-19)
 | When | What |
 |---|---|
-| Sun 15 Nov | H1 for A (`test_a`, `secondary_a`, `placebo_a`) and its tests; push the branch |
-| Mon 16 Nov | H1 for B (`quarterly_series`, `test_b` with Newey-West checked, `placebo_b`, `secondary_b`) and its tests; push |
-| Tue 17 Nov, noon | H3: one real run, STATUS line with estimates, intervals, p-values; **open the pull request** |
+| Sun 15 Nov | H1 for A (`test_a`, `secondary_a`, `placebo_a`) and its tests; pull, then push to `main` |
+| Mon 16 Nov | H1 for B (`quarterly_series`, `test_b` with Newey-West checked, `placebo_b`, `secondary_b`) and its tests; pull, then push to `main` |
+| Tue 17 Nov, noon | H3: one real run, STATUS line with estimates, intervals, p-values; **push to `main`** and tell John |
 | Wed 18 Nov | Review fixes only; Stream A combines all four tests (Holm) and finishes the results notebook |
 | Thu 19 Nov | Milestone |
 
 ## Prompt to paste into the agent
 "You are the Stream B agent on this repository. Read AGENTS.md, docs/STATUS.md, docs/hypotheses/PREREGISTRATION.md (Common rules, A, B),
-analysis/hypotheses.py and docs/tasks/MILESTONE_3.md. Work on branch milestone3/hypotheses-b. Implement A and B exactly as registered; do not
+analysis/hypotheses.py and docs/tasks/MILESTONE_3.md. Work directly on main: run `git pull --rebase origin main` before you start and before every push, commit only your own files, and push to main only when pytest is green. Implement A and B exactly as registered; do not
 look at the outcome data (Slovenia's ICT share vs. other countries, the San Francisco and Austin quarterly series) until the synthetic tests
-pass; then run the real analysis once. Open the pull request on Tuesday 17 November at noon. Never change a registered test, sample or threshold because of a result; a bug fix goes in a dated
+pass; then run the real analysis once. Push the finished work to main by Tuesday 17 November at noon. Never change a registered test, sample or threshold because of a result; a bug fix goes in a dated
 amendment at the end of the registration. Do not edit Stream A's files. Report estimates, intervals and p-values in STATUS but no conclusion."
