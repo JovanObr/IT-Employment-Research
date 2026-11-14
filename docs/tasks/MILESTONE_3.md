@@ -41,6 +41,16 @@ and rerun; never change a test, sample or threshold because of the result. Check
 - `run()` -> dict with `inputs_sha256` (`hypotheses.file_hashes`), `A` and `B` (primary, secondary, placebo); `main()` writes
   `reports/hypotheses_b_results.json` (`python -m analysis.hypotheses_b`).
 
+### H1b The results file Stream A reads (exact keys; the results notebook draws A and B from it)
+`reports/hypotheses_b_results.json` = `{"inputs_sha256": {...}, "A": {"primary": ..., "secondary": ..., "placebo": ...}, "B": {...same...}}`, with:
+- `A.primary`: `x_si`, `mean_others`, `sd_others`, `t`, `p`, `predicted_sign`, `rank`, `n_countries`, and `values` = `{"AT": 0.3, ...}`
+  (change in percentage points 2021 -> 2024 for all 27 countries, ISO codes as in Eurostat).
+- `A.placebo`: `share_p_below_005`.
+- `B.primary`: `b`, `se`, `ci_lo`, `ci_hi`, `p`, `predicted_sign`, `trend_added`, `pretrend_p`, `n_pre`, `n_post`, and `series` = a list of
+  `{"quarter": "2019Q1", "sf": <employment>, "austin": <employment>}` (missing quarters as null).
+- `B.placebo`: `n_pairs`, `rank_of_sf_austin`, `share_abs_b_at_least`.
+Numbers as plain floats (no NaN: use null). Secondary results may use any keys; Stream A only prints them.
+
 ### H2 Tests (`tests/test_hypotheses_b.py`, synthetic only)
 - A: a planted outlier country is found (p < 0.01, positive t) and a country drawn from the same distribution is not; rank and placebo behave;
   a missing country raises.

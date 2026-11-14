@@ -115,6 +115,12 @@ FIGURE_SOURCES = {
     "9a_borza_delez": ["data/processed/event_study_events.csv", _LAYOFFS, "data/raw/sec_company_matches.csv"],
     "9a_znotraj": ["data/processed/company_panel.csv"],
     "9a_zaposlovanje": ["data/raw/sec_headcount.csv"] + _H3,
+    # notebook 10, pre-registered hypotheses (analysis/hypotheses_viz.py); A and B are drawn from Stream B's results file
+    "10a_slovenija": ["data/raw/eurostat_isoc_sks_itspt.csv"],
+    "10b_sf_austin": ["data/raw/bls_qcew_areas_it_industries.csv"],
+    "10c_zaposleni": ["data/raw/sec_headcount.csv", "data/raw/sec_universe_sic.csv", _LAYOFFS, "data/raw/sec_company_matches.csv",
+                      "data/processed/company_panel.csv"],
+    "10d_borza": ["data/processed/event_study_events.csv", _LAYOFFS, "data/raw/sec_company_matches.csv"],
     # notebook 09, Stream B (analysis/compare_text_geo.py); published numbers are named in the text
     "9b_daljava_primerjava": ["data/processed/hn_flags_monthly.csv", "data/processed/indeed_remote_monthly.csv"],
     "9b_ui_primerjava": ["data/processed/hn_flags_monthly.csv"],

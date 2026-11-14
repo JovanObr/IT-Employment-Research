@@ -16,7 +16,7 @@ NB = ROOT / "notebooks" / "08_zgodba_SL.ipynb"
 
 def figure_names_in(module) -> set[str]:
     """Figure names returned by a module's build_figures (read from the source, so no data is needed)."""
-    return set(re.findall(r'"([1-9][a-z]?_[a-z_]+)":', inspect.getsource(module.build_figures)))
+    return set(re.findall(r'"([1-9]\d?[a-z]?_[a-z_]+)":', inspect.getsource(module.build_figures)))
 
 
 def test_committed_manifest_covers_every_figure():
@@ -25,8 +25,8 @@ def test_committed_manifest_covers_every_figure():
 
 def test_every_figure_the_story_can_show_has_sources():
     import importlib
-    from analysis import compare_viz, viz, viz_text_geo
-    names = figure_names_in(viz) | figure_names_in(viz_text_geo) | figure_names_in(compare_viz)
+    from analysis import compare_viz, hypotheses_viz, viz, viz_text_geo
+    names = figure_names_in(viz) | figure_names_in(viz_text_geo) | figure_names_in(compare_viz) | figure_names_in(hypotheses_viz)
     try:                                                          # Stream B's comparisons, once they exist
         names |= figure_names_in(importlib.import_module("analysis.compare_text_geo"))
     except ModuleNotFoundError:
