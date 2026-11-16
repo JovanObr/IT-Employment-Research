@@ -279,6 +279,21 @@ def test_placebo_metros_picks_the_biggest_in_2019():
     assert hb.placebo_metros(q, n=2) == ["41860", "12420"]
 
 
+def test_unpublished_trailing_quarters_do_not_end_the_sample():
+    """Real QCEW files hold placeholder rows (levels 0, code '-') for quarters not yet published, in every metro.
+    The sample must end at the last published quarter, or no metro is complete and the placebo is empty (bug found 2026-11-16)."""
+    m = _metros()
+    tail = {(c, q) for c in m for q in ("2025Q3", "2025Q4")}
+    q = _qcew(m, disclosed=tail)
+    q.loc[q["disclosure_code"] == "N", "disclosure_code"] = "-"
+    sf, au = hb.quarterly_series(q, "41860"), hb.quarterly_series(q, "12420")
+    assert hb.last_published_quarter(sf, au) == "2025Q2"
+    res = hb.run_b(q)
+    assert res["primary"]["last_quarter"] == "2025Q2" and res["primary"]["series"][-1]["quarter"] == "2025Q2"
+    assert res["primary"]["n_missing"] == 0
+    assert res["placebo"]["n_metros"] == 8 and res["placebo"]["n_pairs"] == 8 * 7 // 2 - 1
+
+
 def test_secondary_b_keys():
     q = _qcew(_metros())
     s = hb.secondary_b(q)

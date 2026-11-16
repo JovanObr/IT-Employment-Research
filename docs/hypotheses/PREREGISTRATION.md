@@ -93,4 +93,11 @@ tech companies that did not announce one.
 - **Limits.** "First" means first in the tracker, not first ever; repeat announcers may differ from one-time announcers in other ways.
 
 ## Amendments
-(none)
+
+- **2026-11-16, B (Stream B): end of the sample = last published quarter.** The first real run (code at commit `40f4e25`) took the
+  last row of the QCEW file (2025Q4) as the end. The file holds placeholder rows for 2025Q3 and 2025Q4 in all 393 metros (levels 0,
+  disclosure code `-`: not yet published). They were already treated as missing, so the primary SF-Austin estimate did not change,
+  but the placebo requires a complete series up to the end and therefore found no metro at all (0 pairs). Fix: the end is the last
+  quarter in which San Francisco or Austin has a value (2025Q2), which is what the registration means by "the last published
+  quarter"; the placebo, the secondary checks and the `series` list use the same end. Test, sample rule and thresholds unchanged.
+  Regression test: `test_unpublished_trailing_quarters_do_not_end_the_sample`. Rerun the same day.

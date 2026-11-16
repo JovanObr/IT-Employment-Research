@@ -364,9 +364,18 @@ def run_a(eurostat: pd.DataFrame) -> dict:
     return {"primary": test_a(eurostat), "secondary": secondary_a(eurostat), "placebo": placebo_a(eurostat)}
 
 
+def last_published_quarter(*series: pd.Series) -> str:
+    """Last quarter in which any of the series has a value. QCEW files carry placeholder rows for quarters not yet published
+    (all levels 0, disclosure code '-'); those are missing, so they must not set the end of the sample (amendment 2026-11-16)."""
+    last = [s.dropna().index.max() for s in series if s.notna().any()]
+    if not last:
+        raise ValueError("no published quarter in either series")
+    return str(max(last))
+
+
 def run_b(qcew: pd.DataFrame, crosswalk: pd.DataFrame | None = None) -> dict:
     sf, au = (quarterly_series(qcew, c, crosswalk) for c in (SF_CBSA, AUSTIN_CBSA))
-    end = str(max(sf.index.max(), au.index.max()))
+    end = last_published_quarter(sf, au)
     primary = test_b(sf, au, end=end)
     primary["series"] = series_records(sf, au, end=end)
     primary["last_quarter"] = end
@@ -398,7 +407,8 @@ def main() -> None:
     res = run()
     path = ROOT / "reports" / "hypotheses_b_results.json"
     path.write_text(json.dumps(res, indent=2), encoding="utf-8")
-    show = {k: {kk: ({x: y for x, y in vv.items() if x not in ("series", "values", "pairs", "p", "disclosure_codes")}
+    show = {k: {kk: ({x: y for x, y in vv.items()
+                      if x not in ("series", "values", "pairs", "disclosure_codes", "flagged_cells") and not (x == "p" and isinstance(y, dict))}
                      if isinstance(vv, dict) else vv) for kk, vv in v.items()} for k, v in res.items() if k != "inputs_sha256"}
     print(json.dumps(show, indent=2))
     print(f"written {path}")
