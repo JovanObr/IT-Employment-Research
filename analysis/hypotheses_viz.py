@@ -80,7 +80,9 @@ def verdict_markdown(v: pd.DataFrame) -> str:
 def _verdict_sentence(v: pd.DataFrame, k: str) -> str:
     r = v.set_index("hipoteza").loc[k]
     if r["sklep"] in ("potrjena", "ni potrjena") and not np.isnan(r["p_holm"]):
-        return f"Po popravku za štiri teste je p {_p(r['p_holm'])}, zato je hipoteza **{r['sklep']}**."
+        verdict = "je hipoteza **potrjena**" if r["sklep"] == "potrjena" else "hipoteza **ni potrjena**"
+        why = " (učinek je v nasprotni smeri od napovedi)" if r["sklep"] == "ni potrjena" and r["p_holm"] < ALPHA else ""
+        return f"Po popravku za štiri teste je p {_p(r['p_holm'])}, zato {verdict}{why}."
     if not np.isnan(r["p"]) and r["p"] >= ALPHA:
         return (f"Že brez popravka je p {_p(r['p'])}, kar je več kot 0,05; popravek p-vrednosti le poveča, zato hipoteza **ni potrjena**, "
                 "ne glede na ostale teste.")
@@ -202,7 +204,12 @@ def explain_a(res: dict, v: pd.DataFrame) -> dict:
                  "bila podobna kot drugje.",
         "pomen": (f"Delež se je v Sloveniji spremenil za {_pp(p['x_si'])} odstotne točke, v povprečju ostalih držav za {_pp(p['mean_others'])} "
                   f"(standardni odklon {sl_num(p['sd_others'], 2)}). Slovenija je po rasti na {int(p['rank'])}. mestu od {int(p['n_countries'])}. "
-                  f"Test, ali Slovenija izstopa, da p {_p(p['p'])}. " + _verdict_sentence(v, "A")),
+                  f"Test, ali Slovenija izstopa, da p {_p(p['p'])}. "
+                  + ("" if p["predicted_sign"] else
+                     ("Brez popravka bi torej rekli, da Slovenija izstopa, a **navzdol**: delež je padel, medtem ko je v večini drugih držav zrasel, "
+                      "kar je nasprotno od napovedi. "
+                      if p["p"] < ALPHA else "Sprememba je v nasprotni smeri od napovedi. "))
+                  + _verdict_sentence(v, "A")),
         "omejitve": "Eurostat je leta 2021 spremenil metodo ankete o delovni sili, zato primerjamo šele od leta 2021; nekatere vrednosti so ocene. "
                     "Test pove le, ali Slovenija izstopa, ne pa zakaj. "
                     + (f"Isti test za vsako drugo državo da p pod 0,05 v {sl_num(100 * pl['share_p_below_005'], 0)} % primerov (pričakovano okoli 5 %)."
@@ -225,7 +232,7 @@ def fig_b(primary: dict) -> go.Figure:
     q = list(s["quarter"])
     if "2022Q2" in q:
         for r in (1, 2):
-            fig.add_vrect(x0="2022Q2", x1=q[-1], fillcolor=PALETTE["light_grey"], opacity=0.5, line_width=0, row=r, col=1)
+            fig.add_vrect(x0="2022Q2", x1=q[-1], fillcolor=PALETTE["light_grey"], opacity=0.5, line_width=0, layer="below", row=r, col=1)
     fig.update_layout(**base_layout("San Francisco in Austin: zaposlenost v IT pred in po prvem zvišanju obrestne mere", height=620))
     fig.update_xaxes(type="category", row=2, col=1)
     fig.update_xaxes(type="category", row=1, col=1)
@@ -248,6 +255,9 @@ def explain_b(res: dict, v: pd.DataFrame) -> dict:
         "omejitve": f"Le dve območji in kratke vrste ({p.get('n_pre', '?')} četrtletij pred, {p.get('n_post', '?')} po). Podatki zajemajo računalniške "
                     "storitve (NAICS 5415), ne pa programskih založnikov in velikih tehnoloških podjetij. Dogajanje v istem času (delo na daljavo, "
                     "selitve) lahko pojasni razliko. "
+                    + (f"Pozor: isti test na parih drugih velikih mestnih območij najde »značilen« premik v {sl_num(100 * pl['share_p_below_005'], 0)} % parov "
+                       "namesto v okoli 5 %, ker so vrste kratke; tudi značilen rezultat bi bil zato vprašljiv. "
+                       if pl.get("share_p_below_005", 0) > 0.1 else "")
                     + (f"Med {pl['n_pairs']} pari velikih mestnih območij jih ima {sl_num(100 * pl['share_abs_b_at_least'], 0)} % vsaj tako velik "
                        "premik, zato premik San Francisca ni nenavaden." if pl.get("n_pairs") and pl.get("share_abs_b_at_least", 0) > 0.1 else
                        (f"Med {pl['n_pairs']} pari velikih mestnih območij jih ima le {sl_num(100 * pl['share_abs_b_at_least'], 0)} % vsaj tako velik premik."

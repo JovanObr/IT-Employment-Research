@@ -74,8 +74,14 @@ def test_explanations_are_complete_and_follow_the_numbers():
         assert all(t.strip() and "nan" not in t.lower().split() and "None" not in t for t in parts.values())
     assert "nasprotni smeri od napovedi" in hv.explain_d(res_d(), v)["pomen"]
     assert "napovedani smeri" in hv.explain_d(res_d(p=0.01, sign=True), v)["pomen"]
-    assert "**potrjena**" in hv.explain_a(res_a(), v)["pomen"]
+    assert "je hipoteza **potrjena**" in hv.explain_a(res_a(), v)["pomen"]
+    assert "hipoteza **ni potrjena**" in hv.explain_c(res_c(), v)["pomen"] and "je hipoteza **ni" not in hv.explain_c(res_c(), v)["pomen"]
+    down = res_a(p=0.027, sign=False)
+    v_down = hv.verdicts(all_res(A=down))
+    assert "**navzdol**" in hv.explain_a(down, v_down)["pomen"]
     assert "odmik od tega prejšnjega trenda" in hv.explain_b(res_b(trend=True), v)["pomen"]
+    eager = res_b(); eager["placebo"]["share_p_below_005"] = 0.29
+    assert "29 % parov" in hv.explain_b(eager, v)["omejitve"] and "Pozor" not in hv.explain_b(res_b(), v)["omejitve"]
 
 
 def test_partial_results_say_c_and_d_cannot_pass_anyway():
