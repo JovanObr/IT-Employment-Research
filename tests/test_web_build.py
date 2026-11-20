@@ -105,3 +105,31 @@ def test_the_real_site_passes_its_checks():
     r = wb.check()
     assert r.errors == [], r.errors
     assert r.minutes <= wb.MAX_MINUTES
+
+
+def test_big_number_and_takeaway_render_and_unknown_elements_fail(tmp_path):
+    body = ("{{stevilka: 178.725 | ljudi so podjetja v ZDA napovedala odpustiti leta 2023}}\n\n"
+            "{{poudarek: Val se je začel **po** zvišanju [[obrestna mera|obrestne mere]].}}\n\n---\n\n{{stevlka: 1 | tipkarska napaka}}")
+    web = site(tmp_path, {"01_a": ch(body=body)})
+    r = wb.check(web, sources=SOURCES)
+    assert any("unknown element" in e and "stevlka" in e for e in r.errors)
+    web2 = site(tmp_path / "ok", {"01_a": ch(body=body.split("\n\n---")[0])})
+    assert wb.check(web2, sources=SOURCES).errors == []
+    doc = wb.build(web2, out=tmp_path / "o.html", sources_md=lambda n: "").read_text(encoding="utf-8")
+    assert '<span class="value">178.725</span>' in doc and 'class="takeaway"' in doc and "<strong>po</strong>" in doc and 'class="term"' in doc
+
+
+def test_theme_helpers():
+    import numpy as np
+    f = go.Figure([go.Scatter(x=[1, 2, 3], y=[1, 2, 3], name="ZDA", line=dict(color="#4C78A8")),
+                   go.Scatter(x=[1, 2, 3], y=[3, 2, None], name="EU", line=dict(color="#F58518"))])
+    web_theme.direct_labels(f)
+    texts = [a.text for a in f.layout.annotations]
+    assert "<b>ZDA</b>" in texts and "<b>EU</b>" in texts and f.layout.showlegend is False
+    assert [a.y for a in f.layout.annotations] == [3, 2]                      # last non-missing point
+    web_theme.highlight(f, "ZDA")
+    assert f.data[0].line.color == "#4C78A8" and f.data[1].line.color == web_theme.ROLE["muted"]
+    web_theme.title(f, "Zaključek", "kaj graf kaže")
+    assert f.layout.title.text.startswith("Zaključek<br>") and "kaj graf kaže" in f.layout.title.text
+    web_theme.callout(f, 2, 2, "tukaj")
+    assert f.layout.annotations[-1].showarrow and f.layout.annotations[-1].text == "tukaj"

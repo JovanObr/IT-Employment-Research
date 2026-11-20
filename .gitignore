@@ -18,3 +18,6 @@ __pycache__/
 # Yahoo Finance prices and results derived from them: personal/research use only, never commit
 data/raw/prices_daily.csv
 data/processed/event_study_events.csv
+
+# style guide (python -m analysis.web_build --sample), for authors only
+web/build/

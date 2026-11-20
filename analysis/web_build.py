@@ -3,6 +3,7 @@
     python -m analysis.web_build            # build (missing figure JSON = warning, grey box on the page)
     python -m analysis.web_build --check    # checks only
     python -m analysis.web_build --check --strict   # missing figures are errors too (before the final freeze)
+    python -m analysis.web_build --sample   # also writes web/build/vzorec.html, the style guide (not published)
 """
 from __future__ import annotations
 
@@ -22,6 +23,10 @@ REQUIRED = ("title", "question", "minutes", "owner")
 FIG_RE = re.compile(r"^\{\{\s*figure:\s*([^}\s]+)\s*\}\}\s*$", re.M)
 NOTE_RE = re.compile(r"\{\{\s*govor:\s*(.*?)\}\}", re.S)
 TERM_RE = re.compile(r"\[\[([^\]|]+)(?:\|([^\]]+))?\]\]")
+NUMBER_RE = re.compile(r"^\{\{\s*stevilka:\s*([^|}]+?)\s*\|\s*([^}]+?)\s*\}\}\s*$", re.M)
+TAKEAWAY_RE = re.compile(r"^\{\{\s*poudarek:\s*(.+?)\s*\}\}\s*$", re.M | re.S)
+ANY_TAG_RE = re.compile(r"\{\{\s*([a-zčšž]+)\s*:")
+KNOWN_TAGS = {"figure", "govor", "stevilka", "poudarek"}
 
 
 @dataclass
@@ -128,6 +133,9 @@ def check(web: Path = WEB, sources: dict | None = None, strict: bool = False) ->
                     r.errors.append(f"{c.folder}: figure '{n}' has no FIGURE_SOURCES row in analysis/data_sources.py")
                 if n not in figs:
                     (r.errors if strict else r.warnings).append(f"{c.folder}: figure '{n}' has no JSON in web/figures/ yet")
+            for tag in ANY_TAG_RE.findall(s):
+                if tag not in KNOWN_TAGS:
+                    r.errors.append(f"{c.folder} screen {i}: unknown element {{{{{tag}: ...}}}} (known: {sorted(KNOWN_TAGS)})")
             for t, _ in TERM_RE.findall(s):
                 if t.strip().lower() not in terms:
                     r.errors.append(f"{c.folder}: glossary term '{t.strip()}' is not in web/glossary/")
@@ -140,7 +148,7 @@ def check(web: Path = WEB, sources: dict | None = None, strict: bool = False) ->
 
 # ---------------------------------------------------------------------------------------- rendering
 def _md(text: str) -> str:
-    return markdown.markdown(text, extensions=["extra", "sane_lists"], output_format="html")
+    return markdown.markdown(text, extensions=["extra", "sane_lists", "md_in_html"], output_format="html")
 
 
 def render_text(text: str, terms: dict[str, str]) -> tuple[str, list[str], list[str]]:
@@ -149,6 +157,9 @@ def render_text(text: str, terms: dict[str, str]) -> tuple[str, list[str], list[
     text = NOTE_RE.sub("", text)
     names = FIG_RE.findall(text)
     text = FIG_RE.sub(lambda m: f'\n\n<div class="figure-slot" data-figure="{html.escape(m.group(1))}"></div>\n\n', text)
+    text = NUMBER_RE.sub(lambda m: f'\n\n<div class="big-number"><span class="value">{html.escape(m.group(1))}</span>'
+                                   f'<span class="label">{html.escape(m.group(2))}</span></div>\n\n', text)
+    text = TAKEAWAY_RE.sub(lambda m: f'\n\n<div class="takeaway" markdown="1">\n\n{m.group(1)}\n\n</div>\n\n', text)
 
     def term(m):
         key, shown = m.group(1).strip(), (m.group(2) or m.group(1)).strip()
@@ -222,22 +233,71 @@ def build(web: Path = WEB, out: Path | None = None, sources_md=None) -> Path:
     gloss = "".join(f"<dt>{html.escape(t)}</dt><dd>{html.escape(d)}</dd>" for t, d in sorted(terms.items()))
     body.append(f'<section class="chapter appendix" id="za-radovedne"><div class="screen long"><h2>Za radovedne</h2>{back}'
                 f'<h3>Slovarček</h3><dl class="glossary">{gloss}</dl></div></section>')
-    fig_json = "".join(f'<script type="application/json" id="fig-{html.escape(n)}">{_inline(web_theme.apply(figs[n]).to_json())}</script>'
-                       for n in dict.fromkeys(used) if n in figs)
+    figures = {n: figs[n] for n in dict.fromkeys(used) if n in figs}
+    return _write(out, _document(intro_meta.get("title", "Predstavitev"), toc, body, figures, web))
+
+
+def _document(page_title: str, toc: list[str], body: list[str], figures: dict, web: Path) -> str:
+    """The whole self-contained page: styles, contents, sections, figure data, plotly.js and the presenter script."""
+    from analysis import web_theme
     import plotly
+    fig_json = "".join(f'<script type="application/json" id="fig-{html.escape(n)}">{_inline(web_theme.apply(f).to_json())}</script>'
+                       for n, f in figures.items())
     plotly_js = (Path(plotly.__file__).parent / "package_data" / "plotly.min.js").read_text(encoding="utf-8")
     css = (web / "assets" / "theme.css").read_text(encoding="utf-8")
     app = (web / "assets" / "app.js").read_text(encoding="utf-8")
-    doc = f"""<!DOCTYPE html>
+    return f"""<!DOCTYPE html>
 <html lang="sl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{html.escape(intro_meta.get("title", "Predstavitev"))}</title><style>{css}</style></head>
+<title>{html.escape(page_title)}</title><style>{css}</style></head>
 <body><div id="progress"></div><nav id="toc" aria-label="Kazalo"><button id="toc-toggle" aria-expanded="false">Kazalo</button><ol>{"".join(toc)}</ol></nav>
 <div id="timer" hidden></div><main>{"".join(body)}</main>
 {fig_json}<script id="plot-config" type="application/json">{_inline(json.dumps(web_theme.CONFIG))}</script>
 <script>{_inline(plotly_js)}</script><script>{_inline(app)}</script></body></html>"""
+
+
+def _write(out: Path, doc: str) -> Path:
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(doc, encoding="utf-8")
     return out
+
+
+# ---------------------------------------------------------------------------------------- style guide
+def sample_figures() -> dict:
+    """Example charts made with the theme helpers, on invented numbers (the style guide needs no data)."""
+    import plotly.graph_objects as go
+    from analysis import web_theme as wt
+    from analysis.viz_theme import base_layout
+    q = [f"{y}Q{k}" for y in (2021, 2022, 2023) for k in (1, 2, 3, 4)]
+    line = go.Figure([go.Scatter(x=q, y=[5, 6, 8, 9, 14, 30, 42, 60, 120, 40, 25, 22], name="napovedana odpuščanja", mode="lines+markers",
+                                 line=dict(color=wt.ROLE["loss"], width=3)),
+                      go.Scatter(x=q, y=[60, 64, 70, 76, 80, 78, 72, 66, 60, 58, 57, 56], name="oglasi za delo", mode="lines",
+                                 line=dict(color=wt.ROLE["context"], width=2))])
+    line.update_layout(**base_layout(None, height=480))
+    wt.title(line, "Ko je oglasov za delo zmanjkalo, so se odpuščanja začela", "izmišljeni podatki, samo za prikaz sloga")
+    wt.direct_labels(line)
+    wt.callout(line, "2023Q1", 120, "vrh vala<br>(1. četrtletje 2023)", ax=-80, ay=10)
+    bars = go.Figure(go.Bar(x=["Austin", "Dallas", "Denver", "Boston", "Seattle", "San Francisco"], y=[40, 25, 18, -18, -9, -2],
+                            marker_color=[wt.ROLE["main"]] * 3 + [wt.ROLE["context"]] * 3))
+    bars.update_layout(**base_layout(None, height=440))
+    wt.title(bars, "Nova središča so rasla, stara so stala ali padala", "rast delovnih mest v IT, %, izmišljeni podatki")
+    return {"vzorec_crta": line, "vzorec_stolpci": bars}
+
+
+def build_sample(web: Path = WEB, out: Path | None = None) -> Path:
+    """web/build/vzorec.html: every component and chart helper of the theme on one page (for authors, not published)."""
+    out = out or web / "build" / "vzorec.html"
+    terms, _ = load_glossary(web)
+    figs = sample_figures()
+    text = (web / "vzorec.md").read_text(encoding="utf-8")
+    screens = []
+    for s in split_screens(text):
+        h, notes, names = render_text(s, terms)
+        for n in names:
+            h = h.replace(f'<div class="figure-slot" data-figure="{html.escape(n)}"></div>',
+                          _figure_html(n, figs, "**Viri podatkov:** izmišljeni podatki (vzorec sloga)."))
+        screens.append(f'<div class="screen">{h}{"".join(f"<aside class=note>{html.escape(x)}</aside>" for x in notes)}</div>')
+    body = [f'<section class="chapter">{"".join(screens)}</section>']
+    return _write(out, _document("Vzorec sloga", [], body, figs, web))
 
 
 def main() -> None:
@@ -252,6 +312,8 @@ def main() -> None:
         raise SystemExit(1)
     if "--check" not in args:
         print("written", build())
+    if "--sample" in args:
+        print("written", build_sample())
 
 
 if __name__ == "__main__":

@@ -9,6 +9,7 @@ python -m analysis.web_figures_a      # Stream A: computes its figures from loca
 python -m analysis.web_figures_b      # Stream B: the same for its figures            -> web/figures/b/*.json
 python -m analysis.web_build          # assembles everything -> web/dist/index.html (fast, needs no data, only the JSON files)
 python -m analysis.web_build --check  # checks only: time budget, figures, glossary terms, sources (also run by pytest)
+python -m analysis.web_build --sample # also writes the style guide web/build/vzorec.html (for authors)
 ```
 Open `web/dist/index.html` by double-clicking: it is one self-contained file (styles, scripts, plotly.js and all figures inside), so it
 works offline on any laptop. GitHub Pages serves the same file (`.github/workflows/pages.yml` deploys `web/dist/` on every push to `main`;
@@ -24,7 +25,7 @@ data that GitHub does not have.
 | `analysis/web_figures_a.py`, `analysis/web_figures_b.py` | Figure builders | A / B |
 | `web/glossary/a.yml`, `web/glossary/b.yml` | Glossary terms | A / B |
 | `web/background/a.md`, `web/background/b.md` | Background page "Za radovedne" (questions and answers, methods) | A / B |
-| `web/assets/`, `analysis/web_theme.py`, `analysis/web_build.py`, this file | Theme, scripts, build | A |
+| `web/assets/`, `analysis/web_theme.py`, `analysis/web_build.py`, `web/vzorec.md`, this file | Theme, scripts, build, style guide | A |
 New chapters later: a new folder with the next free number (e.g. `09_...`), owner in its front matter. Chapters are shown in folder-name order.
 
 ## Chapter format (`chapter.md`)
@@ -66,6 +67,25 @@ Drugi zaslon ...
   po tednih"). Label lines and points directly on the chart where possible; numbers with a decimal comma (`sl_num`, `sl_pct`); no jargon
   in titles or axes (or a glossary term in the text next to it).
 - Only aggregates go into the JSON (it is published). Never per-event Yahoo prices or raw Hacker News text.
+
+## Theme (look and feel)
+See it all on one page: `python -m analysis.web_build --sample` writes `web/build/vzorec.html` (the style guide; not published, not committed).
+- **Colour roles** (`analysis.web_theme.ROLE`), one meaning per colour on every screen: `main` blue = our data, the thing the screen is about;
+  `contrast` orange = the one thing it is compared with; `loss` red = layoffs, declines; `context` grey and `muted` light grey = everything else.
+  **Never let red vs. green be the only difference** (colour-blind viewers); blue vs. orange is safe.
+- **Chart helpers** (`analysis.web_theme`, use them in your figure builder; they only add to a normal `viz_theme` figure):
+  `title(fig, "Sklep", "kaj graf kaže")` conclusion-first title with a small grey subtitle; `direct_labels(fig)` names each line at its end and hides the
+  legend; `highlight(fig, "ime serije")` keeps one series in colour and greys the rest; `callout(fig, x, y, "besedilo")` an arrow note at the point the
+  speaker talks about.
+- **One message per chart:** at most two coloured series; everything else grey. If a notebook figure has several panels, make a simpler web version.
+- Text: system fonts (works offline); numbers with a decimal comma; no unexplained abbreviations.
+
+## Components for chapter text
+- `{{stevilka: 178.725 | ljudi so podjetja v ZDA napovedala odpustiti leta 2023}}` on its own line: a big number with a one-line label. Use it when the
+  number itself is the message; the same number must also appear in a figure or in text that names its source.
+- `{{poudarek: Val se je začel **po** zvišanju obrestne mere.}}` on its own line: the chapter's key takeaway (normally one per chapter, on its last screen).
+  Markdown and glossary terms work inside.
+- Any other `{{...: }}` element is an error in `--check` (catches typos such as `{{stevlka: ...}}`).
 
 ## Glossary (`web/glossary/a.yml`, `b.yml`)
 One term per line, `izraz: razlaga v enem ali dveh stavkih.` Lowercase term, no colon inside the term. The same term must not be in both files.

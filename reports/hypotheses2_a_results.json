@@ -1,0 +1,150 @@
+{
+  "inputs_sha256": {
+    "data/processed/layoffs_clean.csv": "4bf17b5b8b0d14cacc823278e55262fdc8c1d33278896271c853f1b3bd5a81b5",
+    "data/raw/sec_company_matches.csv": "25d613e2c5c58d674ee38d1b9a4169284b1811528677be103ff59b8f8d98c4b2",
+    "data/raw/sec_headcount.csv": "a4383b2e6d66804dfd10abc2644cc1279aaa00fd6c9fa45bd705195826f386fa",
+    "data/raw/sec_universe_sic.csv": "40ebb06a91527885c73db0aef089d37568d15a0ff48e1cfa897f946ac6dbacd2",
+    "data/processed/company_panel.csv": "60068117b304d6a8625c6ecb7a2de1c8fd7efe589d74986bf3692e5704250909"
+  },
+  "registration_commit": "ad835e5",
+  "C2": {
+    "primary": {
+      "n_rows": 850,
+      "n_companies": 462,
+      "n_announced": 79,
+      "n_not": 771,
+      "by_year": {
+        "2024": {
+          "announced": 44,
+          "not": 394
+        },
+        "2025": {
+          "announced": 35,
+          "not": 377
+        }
+      },
+      "median_announced": -0.042268724130864264,
+      "median_not": 0.008520692068484817,
+      "diff_median": -0.05078941619934908,
+      "ci_lo": -0.09499465176680348,
+      "ci_hi": -0.00014569095095495996,
+      "p": 0.0008999100089991,
+      "predicted_sign": true,
+      "mde_log": 0.09190193996890617
+    },
+    "secondary": {
+      "year_2024": {
+        "n_announced": 44,
+        "n_not": 394,
+        "diff_median": -0.04258014438008863,
+        "ci_lo": -0.09282776231106954,
+        "ci_hi": 0.00504549652271488,
+        "p": 0.020995800839832032
+      },
+      "year_2025": {
+        "n_announced": 35,
+        "n_not": 377,
+        "diff_median": -0.04624551263293186,
+        "ci_lo": -0.11778700487189478,
+        "ci_hi": 0.005357494189825033,
+        "p": 0.04299140171965607
+      },
+      "mannwhitney_pooled_p": 0.0019594582718981527,
+      "ols": {
+        "n": 839,
+        "coef_announced": -0.08238168990445272,
+        "ci_lo": -0.12420858805313098,
+        "ci_hi": -0.04055479175577446,
+        "p": 0.00011320649548354894
+      }
+    },
+    "placebo": {
+      "n_rep": 500,
+      "false_positive_rate": 0.044
+    }
+  },
+  "E": {
+    "primary": {
+      "n": 708,
+      "n_companies": 306,
+      "observed": 219,
+      "expected": 79.05057235034862,
+      "ratio": 2.770378423440146,
+      "ci_lo": 2.4167004439428226,
+      "ci_hi": 3.1493522174001938,
+      "p": 0.00019998000199980003,
+      "predicted_sign": true,
+      "mean_window_share": 0.11165335077732856,
+      "mde_excess": 23.416278599678485,
+      "mde_ratio": 1.2962189634238013
+    },
+    "secondary": {
+      "after_only_0_3": {
+        "n": 708,
+        "observed": 174,
+        "expected": 45.283650443324035,
+        "ratio": 3.842446408285356,
+        "p": 0.0003999200159968006
+      },
+      "before_only_3_1": {
+        "n": 708,
+        "observed": 48,
+        "expected": 33.99347781579948,
+        "ratio": 1.412035575179971,
+        "p": 0.023195360927814438
+      },
+      "window_1": {
+        "n": 708,
+        "observed": 179,
+        "expected": 34.00114065104853,
+        "ratio": 5.264529264975702,
+        "p": 0.0003999200159968006
+      },
+      "window_5": {
+        "n": 708,
+        "observed": 247,
+        "expected": 123.796834524605,
+        "ratio": 1.9952044892626717,
+        "p": 0.0003999200159968006
+      },
+      "years_2022_2023": {
+        "n": 388,
+        "observed": 121,
+        "expected": 44.11923076923078,
+        "ratio": 2.7425682154999556,
+        "p": 0.0003999200159968006
+      }
+    },
+    "placebo": {
+      "shift_+45": {
+        "n": 706,
+        "observed": 65,
+        "expected": 79.38093931601435,
+        "ratio": 0.8188363675218803,
+        "p": 0.08798240351929613
+      },
+      "shift_-45": {
+        "n": 693,
+        "observed": 71,
+        "expected": 77.2046415723436,
+        "ratio": 0.9196338271121999,
+        "p": 0.5050989802039592
+      },
+      "shift_+30": {
+        "n": 708,
+        "observed": 63,
+        "expected": 79.28465678102425,
+        "ratio": 0.7946051929568071,
+        "p": 0.05438912217556489
+      },
+      "shift_-30": {
+        "n": 714,
+        "observed": 90,
+        "expected": 78.93580845611643,
+        "ratio": 1.1401669503395864,
+        "p": 0.1983603279344131
+      },
+      "share_p_below_005": 0.0
+    }
+  }
+}

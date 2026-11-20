@@ -70,3 +70,10 @@ body.show-notes .note { display: block; }
 
 @media (max-width: 700px) { .screen { padding: 9vh 5vw 5vh; } .figure .plot { height: 70vh; } }
 @media print { .screen { min-height: auto; page-break-inside: avoid; } #toc, #progress, #timer { display: none; } }
+
+/* components for chapter text: big number (stevilka) and key takeaway (poudarek); syntax in web/CONTRACT.md */
+.big-number { display: flex; flex-direction: column; margin: .4em 0 1em; max-width: var(--measure); }
+.big-number .value { font-size: clamp(3rem, 7vw, 6rem); font-weight: 700; line-height: 1; color: var(--accent); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.big-number .label { font-size: 1.1em; color: var(--muted); margin-top: .3em; }
+.takeaway { border-left: 6px solid var(--accent); background: #eef3f9; padding: .9em 1.2em; margin: .6em 0 1em; max-width: var(--measure); font-size: 1.12em; }
+.takeaway p:last-child { margin-bottom: 0; }
