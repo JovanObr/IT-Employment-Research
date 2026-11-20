@@ -1,0 +1,30 @@
+# Publishes the presentation website: deploys the committed, self-contained web/dist/ folder to GitHub Pages.
+# The site is built locally (python -m analysis.web_build), because the figures need local data that GitHub does not have.
+# One-time setup in the repository: Settings -> Pages -> Source: GitHub Actions.
+name: Pages
+on:
+  push:
+    branches: [main]
+    paths: ["web/dist/**"]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web/dist
+      - id: deployment
+        uses: actions/deploy-pages@v4

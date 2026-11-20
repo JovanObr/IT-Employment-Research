@@ -71,6 +71,15 @@ vs. software within-firm (power 60 % for a large effect, only 10 semiconductor f
   - C and D cannot be supported whatever A and B give: their raw p-values are already above 0.05, and the Holm correction only raises them.
 - [x] Results notebook (Stream A): `notebooks/10_hipoteze_SL.ipynb`, export `reports/10_hipoteze_SL.html` (2026-11-18, all four tests). **Holm across A-D: none supported.** A p 0.027 -> 0.107, opposite sign (Slovenia's share fell, rank 27 of 27); B 0.290 -> 0.579 (predicted sign; this design's placebo rejects in 29 % of metro pairs, so B is weak even in principle); C 0.348 -> 0.579 (predicted sign); D 0.126 -> 0.379 (opposite sign). Review of Stream B (A, 2026-11-18): A and B recomputed independently from the raw Eurostat and QCEW files (statsmodels HAC as reference) and match to every printed digit; the amendment of 2026-11-16 is justified (placeholder quarters; primary estimate unchanged). Exploratory (no verdict): announced layoffs show up in 10-K headcount 2022 -> 2023; the market reacts more to a company's first announcement than to repeats.
 
+## Milestone 4 (due 2026-12-02): round 2 hypotheses, presentation theme, first version of the final presentation
+Plan and Stream B brief: `docs/tasks/MILESTONE_4.md`. Round 2 rules: `docs/hypotheses/round2/README.md`. Dossier template: `docs/methods/TEMPLATE.md`.
+Website (Slovenian): `web/`, built into a self-contained `web/dist/` (GitHub Pages and offline on a laptop).
+- [x] Phase 0 (A), 2026-11-20: source-type column in notebook 09 (`compare_viz.SOURCE_TYPES`, every study classified, a test refuses unclassified ones; export rerun); `web/CONTRACT.md` and a working site skeleton (`analysis/web_build.py`, `analysis/web_theme.py`, `web/assets/`, 8 chapter stubs, 15 of 20 minutes; self-contained `web/dist/index.html` verified offline with no network requests; `.github/workflows/pages.yml`); registration `docs/hypotheses/round2/C2_E.md` written (**commit it before `python collect.py --sources sec_headcount_2425`**)
+- [ ] Phase 0 (B): Slovenia exploratory check; registration A2, F
+- [ ] Phase 1: C2, E (A); A2, F (B); dossiers C, D, C2, E (A) and A, B, A2, F (B); full theme (A)
+- [ ] Phase 2: chapters 1-4, 7, 8, data section, build (A); chapters 5-6, background Q&A (B)
+- [ ] Phase 3: notebook 11 (Holm across A2, F, C2, E); rehearsal with a timer; non-expert test; proofreading
+
 ## Requests between streams
 (Write "A asks B: ..." or "B asks A: ..." here; the owner of the file makes the change.)
 - 2026-10-30 A asks B (and everyone, `collect.py` is frozen): `collect.py` overwrote `data/manifest.json` with only the sources of that run, so every partial run (`--sources sec_fin`, `macro`, ...) wiped the other entries. Proposed change, already in this commit: `merge_manifest()` keeps old entries and replaces the ones that were re-run (test: `tests/test_collect_manifest.py`). The committed manifest currently holds only one entry; run `python collect.py` once (everything is cached) to rebuild it.

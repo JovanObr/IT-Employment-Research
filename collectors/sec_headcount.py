@@ -256,4 +256,5 @@ def report(d: pd.DataFrame, years=YEARS) -> None:
              .to_string(index=False) if ok.any() else "(none)")
 
 
-SOURCES = {"sec_headcount": lambda a: collect()}
+SOURCES = {"sec_headcount": lambda a: collect(),
+           "sec_headcount_2425": lambda a: collect(years=(2024, 2025))}     # round 2 hypothesis C2 (docs/hypotheses/round2/C2_E.md)

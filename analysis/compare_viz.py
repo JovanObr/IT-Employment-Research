@@ -326,15 +326,50 @@ def verdicts_earlier(stock_summary: dict | None, weekly: pd.Series, h2: dict) ->
     return rows
 
 
+# What kind of publication each study is (feedback after milestone 3). Matched by the first author's surname in the "studija" text;
+# a row with an unknown study raises, so every new comparison must be classified here. Checked against each publisher's page.
+SOURCE_TYPES = {
+    "challenger": "poročilo podjetja",            # Challenger, Gray & Christmas, monthly job-cut reports
+    "worrell": "recenzirana revija",              # Academy of Management Journal
+    "eshghi": "recenzirana revija",               # Human Resource Management Journal
+    "farber": "recenzirana revija",               # Labour Economics
+    "floros": "recenzirana revija",               # Journal of Economic Studies
+    "acemoglu": "recenzirana revija",             # Journal of Labor Economics
+    "weingarden": "delovni članek centralne banke",   # Federal Reserve Board, FEDS
+    "hansen": "delovni članek centralne banke",       # Federal Reserve Bank of Dallas WP (earlier NBER)
+    "bailey": "analiza centralne banke",          # Federal Reserve Bank of Cleveland, Economic Commentary
+    "cohen": "analiza centralne banke",           # Federal Reserve Bank of Kansas City, Economic Bulletin
+    "srivastava": "strokovni članek (ni recenziran)",  # California Management Review Insight
+    "bernard": "poročilo raziskovalnega oddelka podjetja",  # Indeed Hiring Lab
+    "muro": "poročilo raziskovalnega inštituta",  # Brookings Metro
+    "brynjolfsson": "delovni članek univerze",    # Stanford Digital Economy Lab
+}
+SOURCE_TYPE_NOTE = ("*Vrsta vira:* **recenzirana revija** pomeni, da so članek pred objavo pregledali neodvisni strokovnjaki; **delovni članek** je "
+                    "raziskava, objavljena pred tem pregledom; **analiza centralne banke** je krajša raziskava ekonomistov centralne banke; "
+                    "**poročilo** pripravi podjetje ali inštitut s svojimi podatki, brez zunanjega pregleda.")
+
+
+def source_type(studies: str) -> str:
+    """'Farber in Hallock (2009); Floros in sod. (2023)' -> 'recenzirana revija; recenzirana revija' (one type per study, same order)."""
+    out = []
+    for part in [p for p in studies.split(";") if p.strip()]:
+        key = next((k for k in SOURCE_TYPES if k in part.lower()), None)
+        if key is None:
+            raise KeyError(f"unknown study {part.strip()!r}: add its publication type to SOURCE_TYPES in analysis/compare_viz.py")
+        out.append(SOURCE_TYPES[key])
+    return "; ".join(out)
+
+
 def verdict_markdown(rows: list[dict]) -> str:
     for r in rows:
         missing = [k for k in VERDICT_KEYS if not str(r.get(k, "")).strip()]
         if missing or r["ocena"] not in VERDICTS:
             raise ValueError(f"verdict row {r.get('tema')!r}: missing {missing} or bad ocena {r.get('ocena')!r}")
-    head = "| Tema | Študija | Njihov rezultat | Naš rezultat | Ocena |\n|---|---|---|---|---|\n"
+    head = "| Tema | Študija | Vrsta vira | Njihov rezultat | Naš rezultat | Ocena |\n|---|---|---|---|---|---|\n"
     esc = lambda s: str(s).replace("|", "/")
-    return head + "\n".join(f"| {esc(r['tema'])} | {esc(r['studija'])} | {esc(r['njihov_rezultat'])} | {esc(r['nas_rezultat'])} | **{r['ocena']}** |"
-                            for r in rows)
+    table = "\n".join(f"| {esc(r['tema'])} | {esc(r['studija'])} | {esc(source_type(r['studija']))} | {esc(r['njihov_rezultat'])} | "
+                      f"{esc(r['nas_rezultat'])} | **{r['ocena']}** |" for r in rows)
+    return head + table + "\n\n" + SOURCE_TYPE_NOTE
 
 
 # ---------------------------------------------------------------------------------------- data and entry point

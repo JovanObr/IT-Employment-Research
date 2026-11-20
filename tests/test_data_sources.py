@@ -14,9 +14,10 @@ ROOT = Path(__file__).resolve().parent.parent
 NB = ROOT / "notebooks" / "08_zgodba_SL.ipynb"
 
 
-def figure_names_in(module) -> set[str]:
-    """Figure names returned by a module's build_figures (read from the source, so no data is needed)."""
-    return set(re.findall(r'"([1-9]\d?[a-z]?_[a-z_]+)":', inspect.getsource(module.build_figures)))
+def figure_names_in(module, func: str = "build_figures") -> set[str]:
+    """Figure names returned by a module's figure builder (read from the source, so no data is needed). Names start with the
+    chapter or notebook number, e.g. "1_casovnica", "9a_challenger", "11a2_dohitevanje"."""
+    return set(re.findall(r'"([1-9]\d?[a-z0-9]*_[a-z0-9_]+)":', inspect.getsource(getattr(module, func))))
 
 
 def test_committed_manifest_covers_every_figure():
@@ -27,10 +28,13 @@ def test_every_figure_the_story_can_show_has_sources():
     import importlib
     from analysis import compare_viz, hypotheses_viz, viz, viz_text_geo
     names = figure_names_in(viz) | figure_names_in(viz_text_geo) | figure_names_in(compare_viz) | figure_names_in(hypotheses_viz)
-    try:                                                          # Stream B's comparisons, once they exist
-        names |= figure_names_in(importlib.import_module("analysis.compare_text_geo"))
-    except ModuleNotFoundError:
-        pass
+    builders = {"analysis.compare_text_geo": "build_figures", "analysis.hypotheses2_b": "build_figures_b",
+                "analysis.web_figures_a": "build_web_figures", "analysis.web_figures_b": "build_web_figures"}
+    for mod, func in builders.items():                            # later modules (Stream B's, the website's), once they exist
+        try:
+            names |= figure_names_in(importlib.import_module(mod), func)
+        except ModuleNotFoundError:
+            pass
     assert len(names) >= 24
     assert names <= set(ds.FIGURE_SOURCES), names - set(ds.FIGURE_SOURCES)
     assert set(ds.FIGURE_SOURCES) <= names, set(ds.FIGURE_SOURCES) - names          # no stale entries either

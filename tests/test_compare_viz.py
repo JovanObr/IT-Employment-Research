@@ -118,7 +118,7 @@ def test_inputs_are_not_modified():
 
 
 def test_verdict_markdown_refuses_incomplete_rows():
-    good = {"tema": "a", "studija": "b", "njihov_rezultat": "c", "nas_rezultat": "d", "ocena": "delno"}
+    good = {"tema": "a", "studija": "Cohen (2023)", "njihov_rezultat": "c", "nas_rezultat": "d", "ocena": "delno"}
     assert "**delno**" in cv.verdict_markdown([good])
     with pytest.raises(ValueError):
         cv.verdict_markdown([{**good, "ocena": "mogoče"}])
@@ -146,3 +146,21 @@ def test_notebook_09_structure():
     assert "verdict_markdown(verdicts)" in code and "notebook_connected" in code
     for h in ("## Povzetek", "## 1. Koliko ljudi", "## 2. Ali borza", "## 3. Ali padec", "## 4. Ali so odpuščala", "## 5.", "## Viri"):
         assert h in md, h
+
+
+def test_every_study_gets_a_publication_type_and_unknown_ones_fail():
+    assert cv.source_type("Farber in Hallock (2009); Floros in sod. (2023)") == "recenzirana revija; recenzirana revija"
+    assert cv.source_type("Bernard (2025), Indeed Hiring Lab; Acemoglu in sod. (2022)") == \
+        "poročilo raziskovalnega oddelka podjetja; recenzirana revija"
+    with pytest.raises(KeyError, match="SOURCE_TYPES"):
+        cv.source_type("Neznan (2020)")
+    md = cv.verdict_markdown([{"tema": "a", "studija": "Cohen (2023, Kansas City Fed)", "njihov_rezultat": "c", "nas_rezultat": "d", "ocena": "delno"}])
+    assert "| Vrsta vira |" in md and "analiza centralne banke" in md and "recenzirana revija" in md   # the note explains the types
+
+
+def test_all_studies_used_in_notebook_09_are_classified():
+    import inspect, re
+    from analysis import compare_text_geo
+    src = inspect.getsource(cv) + inspect.getsource(compare_text_geo)
+    for studies in re.findall(r'"studija":\s*f?"([^"]+)"', src):
+        cv.source_type(studies)

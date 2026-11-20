@@ -1,0 +1,72 @@
+/* Presentation theme. Colours match analysis/viz_theme.py PALETTE so charts and page are one system. Only Stream A edits this file. */
+:root {
+  --ink: #222222; --muted: #5f6368; --paper: #ffffff; --tint: #f6f5f2; --line: #e5e5e5;
+  --accent: #4C78A8; --warm: #E45756; --amber: #F58518; --green: #54A24B;
+  --font: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --measure: 46rem; --wide: 72rem;
+}
+* { box-sizing: border-box; }
+html { scroll-snap-type: y proximity; scroll-behavior: smooth; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font); font-size: clamp(17px, 1.15vw + 10px, 22px); line-height: 1.55; }
+main { width: 100%; }
+.screen { min-height: 100vh; min-height: 100svh; scroll-snap-align: start; display: flex; flex-direction: column; justify-content: center;
+          max-width: var(--wide); margin: 0 auto; padding: 8vh 5vw 6vh; position: relative; }
+.screen > p, .screen > ul, .screen > ol, .screen > h3 { max-width: var(--measure); }
+.screen.long { min-height: auto; justify-content: flex-start; }
+h1 { font-size: clamp(2rem, 3.4vw, 3.4rem); line-height: 1.15; margin: 0 0 .6em; letter-spacing: -0.01em; }
+h2 { font-size: clamp(1.7rem, 2.6vw, 2.6rem); line-height: 1.2; margin: 0 0 .5em; }
+h3 { font-size: 1.25rem; margin: 1.6em 0 .4em; }
+p { margin: 0 0 .9em; }
+strong { color: var(--ink); }
+a { color: var(--accent); }
+code { font-size: .8em; background: var(--tint); padding: .05em .3em; border-radius: 3px; }
+
+/* title screens */
+.title-screen { text-align: left; }
+.title-screen .subtitle { font-size: 1.3em; color: var(--muted); max-width: var(--measure); }
+.title-screen .authors { color: var(--muted); margin-top: 2em; }
+.chapter-title { background: none; }
+.chapter-title .kicker { text-transform: uppercase; letter-spacing: .12em; font-size: .8em; color: var(--accent); font-weight: 600; margin: 0 0 .5em; }
+.chapter-title h2 { font-size: clamp(2.2rem, 4vw, 3.8rem); }
+.chapter-title .question { font-size: 1.35em; color: var(--muted); max-width: var(--measure); }
+
+/* figures */
+.figure { margin: 1.2em 0 0; width: 100%; }
+.figure .plot { width: 100%; height: clamp(340px, 60vh, 720px); }
+.figure.missing { border: 2px dashed var(--line); color: var(--muted); padding: 3em 1em; text-align: center; border-radius: 6px; }
+.sources { font-size: .62em; color: var(--muted); margin-top: .4em; line-height: 1.4; }
+.sources p { max-width: none; margin: 0; }
+.sources code { font-size: .95em; background: none; padding: 0; }
+
+/* glossary terms: dotted underline, definition on hover or tap */
+.term { border-bottom: 2px dotted var(--accent); cursor: help; position: relative; outline: none; }
+.term::after { content: attr(data-def); position: absolute; left: 0; top: 1.7em; z-index: 20; width: min(22rem, 80vw); padding: .7em .9em;
+               background: var(--ink); color: #fff; font-size: .75em; line-height: 1.45; font-weight: 400; border-radius: 6px;
+               opacity: 0; pointer-events: none; transform: translateY(-4px); transition: opacity .15s, transform .15s; }
+.term:hover::after, .term:focus::after { opacity: 1; transform: none; }
+
+/* speaker notes (key N) */
+.note { display: none; margin-top: 1.2em; padding: .8em 1em; border-left: 4px solid var(--amber); background: #fff7ec; font-size: .8em; max-width: var(--measure); }
+body.show-notes .note { display: block; }
+
+/* table of contents, progress bar, timer */
+#progress { position: fixed; top: 0; left: 0; height: 4px; width: 0; background: var(--accent); z-index: 50; transition: width .2s; }
+#toc { position: fixed; top: 12px; left: 12px; z-index: 40; font-size: .8rem; }
+#toc button { font: inherit; border: 1px solid var(--line); background: rgba(255,255,255,.92); padding: .35em .8em; border-radius: 4px; cursor: pointer; }
+#toc ol { display: none; list-style: none; margin: .4em 0 0; padding: .6em .8em; background: #fff; border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 4px 18px rgba(0,0,0,.08); }
+#toc.open ol { display: block; }
+#toc li a { display: block; padding: .25em 0; text-decoration: none; color: var(--ink); }
+#toc .num { display: inline-block; width: 1.6em; color: var(--accent); font-weight: 600; }
+#timer { position: fixed; right: 14px; bottom: 12px; z-index: 40; font-size: .8rem; background: var(--ink); color: #fff; padding: .4em .8em; border-radius: 4px; font-variant-numeric: tabular-nums; }
+#timer.over { background: var(--warm); }
+
+/* appendix: data table and glossary */
+.appendix .screen { padding-top: 10vh; }
+.data-table { border-collapse: collapse; width: 100%; font-size: .72em; }
+.data-table th, .data-table td { text-align: left; vertical-align: top; padding: .5em .6em; border-bottom: 1px solid var(--line); }
+.data-table .small { font-size: .9em; color: var(--muted); }
+.glossary dt { font-weight: 600; margin-top: .8em; }
+.glossary dd { margin: .1em 0 0; color: var(--muted); max-width: var(--measure); }
+
+@media (max-width: 700px) { .screen { padding: 9vh 5vw 5vh; } .figure .plot { height: 70vh; } }
+@media print { .screen { min-height: auto; page-break-inside: avoid; } #toc, #progress, #timer { display: none; } }
