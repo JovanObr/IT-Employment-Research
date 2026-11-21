@@ -113,6 +113,11 @@ normalisation question.
 Follow the contract exactly (chapter folder format, figure export, theme, glossary). Chapter 5 (2 min): remote work, AI, junior roles (and why
 juniors could not be measured). Chapter 6 (2-3 min): Sun Belt vs. hubs, East vs. West (F, whatever its result), Europe and Slovenia (A, A2, B1).
 Also `web/background/b.md`: the questions a professor would ask about chapters 5-6 and hypotheses A, B, A2, F, with short answers.
+Also `web/data/b.md`: your datasets in the same table as `web/data/a.md` (source, what it measures, exact period, what was used, why,
+chapter) plus the list of what was done to the data before testing (contract section "Data section"); check every claim against the code.
+Chapter 7's table of all hypotheses (`7w_hipoteze`, Stream A) reads `reports/hypotheses2_b_results.json` by itself: keep the keys `A2` and `F`,
+each with `primary.p` and `primary.predicted_sign` (as in round 1), and tell Jovan when it is pushed so the figure is re-exported.
+Stream A's chapters 1-4, 7, 8 and `web/background/a.md` are the worked example of the tone and length.
 Plain Slovenian for a general audience; conclusion-first chart titles; stay inside your minutes.
 
 ### Schedule for Stream B

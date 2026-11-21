@@ -78,7 +78,15 @@ Website (Slovenian): `web/`, built into a self-contained `web/dist/` (GitHub Pag
 - [ ] Phase 0 (B): Slovenia exploratory check; registration A2, F
 - [x] Phase 1 (A), 2026-11-20: **C2 and E run once** (`analysis/hypotheses2_a.py`, tests `tests/test_hypotheses2_a.py`, results `reports/hypotheses2_a_results.json`; registration `ad835e5` committed before the 2024-2025 headcounts were downloaded). C2: announcers -4.2 % vs. +0.9 % median headcount change, difference -0.051 log points (-0.095 to -0.0001), permutation p = 0.0009, both years the same direction, placebo 4.4 %. E: 219 of 708 announcements within 3 business days of an earnings release vs. 79.1 expected (2.77x, 2.42-3.15), p = 0.0002 (simulation floor), mostly after the release (3.8x), placebo with shifted release dates finds nothing. Holm can at most multiply by 4, so **both are supported whatever A2 and F give**. Dossiers `docs/methods/C.md`, `D.md`, `C2.md`, `E.md` (generated: `python -m analysis.methods_dossiers_a`; round 1's C reproduced exactly from the grown headcount file). Full theme: colour roles, chart helpers (`title`, `direct_labels`, `highlight`, `callout`), components `{{stevilka}}` and `{{poudarek}}`, style guide `web/build/vzorec.html`; contract updated (sections "Theme" and "Components").
 - [ ] Phase 1 (B): A2, F; dossiers A, B, A2, F
-- [ ] Phase 2: chapters 1-4, 7, 8, data section, build (A); chapters 5-6, background Q&A (B)
+- [x] Phase 2 (A), 2026-11-21: chapters 1-4, 7, 8 written (Slovenian, conclusion first, speaker notes; 15 of 20 minutes with B's placeholders).
+  Nine web figures in `analysis/web_figures_a.py` (`1w_oglasi`, `1w_ljudje`, `2w_obresti`, `2w_pred_po`, `3w_velikost`, `3w_rast`, `4w_zaposleni`,
+  `4w_porocila`, `7w_hipoteze`), each with a `FIGURE_SOURCES` row; `python -m analysis.web_figures_a` also prints every number the chapters quote.
+  `7w_hipoteze` is built from all results files, so A2 and F appear when `reports/hypotheses2_b_results.json` exists (until then, round 2 uses
+  the bound 4 x p, which can only fall when Holm is applied). Data section: curated `web/data/a.md` (stub `b.md` for B) shown before the
+  automatic file list; background page `web/background/a.md` (dossier links, expected questions); three glossary terms; contract sections
+  "Data section" and "Numbers in the text"; tables in figures get small margins (`web_theme.apply`). Checked offline in a browser, no console errors.
+  The figures `1_ljudje.json` and `2_datumi.json` in `web/figures/a/` are no longer used by the site (Phase 0 demo).
+- [ ] Phase 2 (B): chapters 5-6, `web/background/b.md`, `web/data/b.md`
 - [ ] Phase 3: notebook 11 (Holm across A2, F, C2, E); rehearsal with a timer; non-expert test; proofreading
 
 ## Requests between streams

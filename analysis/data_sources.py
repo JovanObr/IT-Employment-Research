@@ -121,6 +121,17 @@ FIGURE_SOURCES = {
     "10c_zaposleni": ["data/raw/sec_headcount.csv", "data/raw/sec_universe_sic.csv", _LAYOFFS, "data/raw/sec_company_matches.csv",
                       "data/processed/company_panel.csv"],
     "10d_borza": ["data/processed/event_study_events.csv", _LAYOFFS, "data/raw/sec_company_matches.csv"],
+    # presentation website, Stream A (analysis/web_figures_a.py); the hypothesis table reads the results files in reports/
+    "1w_oglasi": ["data/raw/indeed_it_sector_postings.csv", "data/raw/indeed_aggregate_postings.csv"],
+    "1w_ljudje": [_LAYOFFS],
+    "2w_obresti": [_LAYOFFS, "data/raw/fred_series.csv"],
+    "2w_pred_po": [_LAYOFFS],
+    "3w_velikost": ["data/processed/company_panel.csv"],
+    "3w_rast": ["data/raw/sec_headcount.csv"] + _H3,
+    "4w_zaposleni": ["data/raw/sec_headcount.csv", "data/raw/sec_universe_sic.csv", _LAYOFFS, "data/raw/sec_company_matches.csv"],
+    "4w_porocila": [_LAYOFFS, "data/raw/sec_company_matches.csv"],       # earnings dates: SEC 8-K filings (item 2.02), named in the text
+    "7w_hipoteze": ["data/raw/sec_headcount.csv", _LAYOFFS, "data/processed/event_study_events.csv", "data/raw/eurostat_isoc_sks_itspt.csv",
+                    "data/raw/bls_qcew_areas_it_industries.csv"],
     # notebook 09, Stream B (analysis/compare_text_geo.py); published numbers are named in the text
     "9b_daljava_primerjava": ["data/processed/hn_flags_monthly.csv", "data/processed/indeed_remote_monthly.csv"],
     "9b_ui_primerjava": ["data/processed/hn_flags_monthly.csv"],

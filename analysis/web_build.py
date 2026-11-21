@@ -226,8 +226,11 @@ def build(web: Path = WEB, out: Path | None = None, sources_md=None) -> Path:
         body.append(f'<section class="chapter" id="{cid}" data-minutes="{html.escape(c.meta.get("minutes", ""))}" '
                     f'data-title="{html.escape(c.meta.get("title", ""))}">{"".join(screens)}</section>')
     toc += ['<li><a href="#podatki">Podatki</a></li>', '<li><a href="#za-radovedne">Za radovedne</a></li>']
-    body.append(f'<section class="chapter appendix" id="podatki"><div class="screen long"><h2>Podatki</h2>'
-                f'<p>Vsi viri, ki smo jih uporabili, s točnimi datotekami. Pod vsakim grafom je zapisano, katere od njih uporablja.</p>{data_section()}</div></section>')
+    curated = "".join(_md(TERM_RE.sub(lambda m: m.group(2) or m.group(1), p.read_text(encoding="utf-8")))
+                      for p in sorted((web / "data").glob("*.md"))) if (web / "data").exists() else ""
+    body.append(f'<section class="chapter appendix" id="podatki"><div class="screen long"><h2>Podatki</h2>{curated}'
+                f'<h3>Vse datoteke</h3><p>Vsi viri, ki smo jih uporabili, s točnimi datotekami. Pod vsakim grafom je zapisano, katere od njih uporablja.</p>'
+                f'{data_section()}</div></section>')
     back = "".join(_md(TERM_RE.sub(lambda m: m.group(2) or m.group(1), p.read_text(encoding="utf-8")))
                    for p in sorted((web / "background").glob("*.md"))) if (web / "background").exists() else ""
     gloss = "".join(f"<dt>{html.escape(t)}</dt><dd>{html.escape(d)}</dd>" for t, d in sorted(terms.items()))

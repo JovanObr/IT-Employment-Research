@@ -20,13 +20,14 @@ def apply(fig: go.Figure | dict) -> go.Figure:
     """Return a copy of the figure in the web style: larger text, transparent background, title on the left, legend below."""
     f = go.Figure(fig)
     title = f.layout.title.text if f.layout.title and f.layout.title.text else None
+    table = bool(f.data) and all(tr.type == "table" for tr in f.data)  # a table has no axes: no room for tick labels
     right = max(24, int(f.layout.margin.r or 0)) if f.layout.margin else 24     # keep room reserved by direct_labels
     f.update_layout(
         font=dict(family=FONT, size=BASE_SIZE, color=PALETTE["ink"]),
         title=dict(text=title, x=0, xanchor="left", font=dict(size=BASE_SIZE + 5)) if title else None,
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
         autosize=True, width=None, height=None,
-        margin=dict(l=64, r=right, t=96 if title else 24, b=72),
+        margin=dict(l=64, r=right, t=96 if title else 24, b=72) if not table else dict(l=8, r=8, t=96 if title else 8, b=4),
         hoverlabel=dict(font=dict(family=FONT, size=BASE_SIZE - 1), namelength=-1),
         legend=dict(orientation="h", yanchor="top", y=-0.14, x=0, font=dict(size=BASE_SIZE - 2)),
         separators=",.",

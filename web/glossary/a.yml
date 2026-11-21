@@ -7,3 +7,6 @@ p-vrednost: Kako verjeten bi bil tako velik učinek, če ga v resnici ne bi bilo
 interval zaupanja: Razpon, v katerem verjetno leži prava vrednost. Če vključuje nič, učinka ne moremo dokazati.
 vnaprejšnja registracija: Hipoteze in teste zapišemo, preden vidimo rezultate, da jih ne moremo prilagoditi podatkom.
 placebo test: Isti test tam, kjer učinka ne bi smelo biti. Pokaže, kako pogosto test zmotno najde nekaj.
+mediana: Srednja vrednost: polovica podatkov je pod njo, polovica nad njo. Ena skrajna vrednost je ne premakne.
+četrtletno poročilo: Poročilo o prihodkih in dobičku, ki ga javno podjetje v ZDA objavi vsake tri mesece.
+popravek za več testov: Če hkrati preverimo več hipotez, je večja možnost, da kakšno »potrdimo« po naključju. Popravek (Holm) zato zahteva močnejši dokaz.

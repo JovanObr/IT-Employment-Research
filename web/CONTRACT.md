@@ -25,6 +25,7 @@ data that GitHub does not have.
 | `analysis/web_figures_a.py`, `analysis/web_figures_b.py` | Figure builders | A / B |
 | `web/glossary/a.yml`, `web/glossary/b.yml` | Glossary terms | A / B |
 | `web/background/a.md`, `web/background/b.md` | Background page "Za radovedne" (questions and answers, methods) | A / B |
+| `web/data/a.md`, `web/data/b.md` | Data section "Podatki": which data, from where, which period, what was used, why | A / B |
 | `web/assets/`, `analysis/web_theme.py`, `analysis/web_build.py`, `web/vzorec.md`, this file | Theme, scripts, build, style guide | A |
 New chapters later: a new folder with the next free number (e.g. `09_...`), owner in its front matter. Chapters are shown in folder-name order.
 
@@ -93,6 +94,16 @@ One term per line, `izraz: razlaga v enem ali dveh stavkih.` Lowercase term, no 
 ## Background page (`web/background/a.md`, `b.md`)
 Markdown, shown at the end under "Za radovedne" (not part of the 15-20 minutes). Sections with `##`; for each hypothesis a short summary with
 a link to its dossier on GitHub (`docs/methods/<id>.md`), and the likely questions with short answers (`**Vprašanje?** Odgovor.`).
+
+## Data section (`web/data/a.md`, `b.md`)
+Markdown, shown at the end under "Podatki", before the automatic list of all files (built from `data/manifest.json`). One table per stream with
+the columns `Vir | Kaj meri | Obdobje | Kaj smo vzeli | Zakaj | Poglavje` (period with exact first and last date or month, and counts where they help),
+then a short list "Kaj smo s podatki naredili, preden smo karkoli testirali" (cleaning, matching, filters). Every claim there must be true of the
+code: check the collector or analysis module before writing it. `web/data/a.md` is the example.
+
+## Numbers in the text
+Every number in a chapter's text must also be in a chart, or come from the figure builder's printed facts (`python -m analysis.web_figures_a`
+prints the numbers chapters 1-4 and 7 quote under "numbers quoted in the chapters"). After a re-run, compare the printed numbers with the text.
 
 ## Checks the build enforces (`--check`, and in pytest)
 - Total `minutes` of all chapters <= 20 (error); above 15 prints a warning (the 5-minute reserve for later milestones is being used).
