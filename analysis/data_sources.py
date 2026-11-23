@@ -132,6 +132,13 @@ FIGURE_SOURCES = {
     "4w_porocila": [_LAYOFFS, "data/raw/sec_company_matches.csv"],       # earnings dates: SEC 8-K filings (item 2.02), named in the text
     "7w_hipoteze": ["data/raw/sec_headcount.csv", _LAYOFFS, "data/processed/event_study_events.csv", "data/raw/eurostat_isoc_sks_itspt.csv",
                     "data/raw/bls_qcew_areas_it_industries.csv"],
+    # notebook 11, round 2 hypotheses and the Slovenia check, Stream B (analysis/hypotheses2_b.py build_figures_b)
+    "11a2_dohitevanje": ["data/raw/eurostat_isoc_sks_itspt.csv"],
+    "11f_obali": ["data/processed/metro_map_data.csv"],
+    "11x_slovenija_delez": ["data/raw/eurostat_isoc_sks_itspt.csv"],
+    "11x_slovenija_rang": ["data/raw/eurostat_isoc_sks_itspt.csv"],
+    "11x_slovenija_sprememba": ["data/raw/eurostat_isoc_sks_itspt.csv"],
+    "11x_slovenija_stevilo": ["data/raw/eurostat_isoc_sks_itspt.csv"],
     # notebook 09, Stream B (analysis/compare_text_geo.py); published numbers are named in the text
     "9b_daljava_primerjava": ["data/processed/hn_flags_monthly.csv", "data/processed/indeed_remote_monthly.csv"],
     "9b_ui_primerjava": ["data/processed/hn_flags_monthly.csv"],
