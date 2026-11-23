@@ -106,9 +106,24 @@ Website (Slovenian): `web/`, built into a self-contained `web/dist/` (GitHub Pag
   Slovenia = B1 + A2), `analysis/web_figures_b.py` (six figures `5w_daljava`, `5w_ui`, `6w_regije`, `6w_obali`, `6w_slovenija`,
   `6w_dohitevanje`, built only from committed files; `python -m analysis.web_figures_b` prints the quoted numbers), tests
   `tests/test_web_figures_b.py`, `web/glossary/b.yml` (5 terms), `web/background/b.md`, `web/data/b.md`. `--check --strict` passes, 15 of
-  20 minutes; `web/dist/index.html` rebuilt. Not checked in a browser yet (no browser here): Petar, please click through chapters 5-6 once.
+  20 minutes; `web/dist/index.html` rebuilt (browser check: see Phase 3 (B)).
   Caveat: `metro_name` in `metro_map_data.csv` comes from Census ACS, or FHFA for 5 metros; FHFA is not in that file's `DERIVED` inputs.
 - [ ] Phase 3: notebook 11 (Holm across A2, F, C2, E); rehearsal with a timer; non-expert test; proofreading
+  - Phase 3 (B), 2026-11-23, **done by the coding agent (Claude), not by a person**:
+    - Figures looked at as images (kaleido): all 6 web figures and the 6 notebook-11 figures. Fixed: `5w_daljava` x axis ran to 2028 and the
+      peak note covered the line; `6w_slovenija` band label was black and the axis ran to 2026; `6w_obali` median labels overlapped the box.
+      Left as is: country codes PT/ES overlap in `11a2_dohitevanje`.
+    - Site in headless Chrome (copy of `web/dist/index.html` with all charts drawn at once): 18 of 18 charts drawn, no JavaScript errors;
+      chapter 5-6 screens rendered with text, glossary links, charts and source lines.
+    - Proofreading of chapters 5-6 against the numbers (`python -m analysis.web_figures_b`): chapter 6 called Denver and Salt Lake City
+      "the South" and said every hub stayed flat or fell (Seattle +15 %, Austin +40 %); both corrected.
+    - Timing **estimated from word counts, not spoken aloud**: speaker notes chapter 5 = 189 words (about 1.3-1.5 min at 130-150 words per
+      minute), chapter 6 = 286 words after trimming from 326 (about 1.9-2.2 min); budgets 2 and 2.5 min. A real rehearsal with the T timer
+      is still needed.
+    - **Not done: the non-expert test** (needs a real person) and a read-through by a native Slovenian speaker.
+    - `7w_hipoteze` re-exported from the four results files with Stream A's own code (`web_figures_a.fig_hypotheses(hypothesis_table(load_results()))`,
+      no other A figure touched): 8 hypotheses, 2 supported (C2, E); A2 0.734, F 0.585 after Holm. Jovan: rerun `python -m analysis.web_figures_a`
+      on your data whenever convenient; it should give the same table.
 
 ## Requests between streams
 (Write "A asks B: ..." or "B asks A: ..." here; the owner of the file makes the change.)
@@ -117,7 +132,6 @@ Website (Slovenian): `web/`, built into a self-contained `web/dist/` (GitHub Pag
 - 2026-11-07 A asks B: please check the source lines of chapters 4-5 (`python -m analysis.data_sources`, entries `4_*` and `5_*` in `FIGURE_SOURCES`); I listed `hn_topics_monthly.csv` as built from the posts and text files, and `metro_map_data.csv` as QCEW areas + Gazetteer only (no FHFA/ACS, since the map uses only job and establishment growth). New figures in `viz_text_geo.py` need an entry there too, or the test fails.
 
 - 2026-11-23 B tells A (Jovan): `reports/hypotheses2_b_results.json` is pushed with keys `A2` and `F`, each with `primary.p` and
-  `primary.predicted_sign`. Please re-export `7w_hipoteze` (`python -m analysis.web_figures_a`) and rebuild `web/dist/`; the committed
-  `7w_hipoteze.json` still shows A2 and F as "še računamo". Notebook 11 can take B's figures from `analysis.hypotheses2_b.build_figures_b(load_results())`.
+  `primary.predicted_sign`. B re-exported only `7w_hipoteze.json` from the results files (see Phase 3 (B)) and rebuilt `web/dist/`. Notebook 11 can take B's figures from `analysis.hypotheses2_b.build_figures_b(load_results())`.
 
 ## Blocked / questions

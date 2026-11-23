@@ -106,10 +106,11 @@ def fig_remote(fl: pd.DataFrame, indeed: pd.Series, last_month: str) -> go.Figur
                              hovertemplate="%{x}: %{y:.0f} % oglasov<extra>Indeed</extra>"))
     _layout(fig, 480)
     wt.direct_labels(fig)
-    wt.callout(fig, peak, float(s[peak]), f"vrh {peak}: {_pct(s[peak])}", ax=-70, ay=10)
+    wt.callout(fig, peak, float(s[peak]), f"vrh {peak}: {_pct(s[peak])}", ax=70, ay=-5)
     wt.title(fig, f"Delo na daljavo je po vrhu {peak} upadlo, a ostaja precej pogostejše kot leta 2019",
              f"delež objav za delo, ki ponujajo delo na daljavo ({_partial(last_month)})")
-    fig.update_layout(yaxis=dict(title="delež objav (%)", rangemode="tozero"), xaxis=dict(title="", dtick=1))
+    fig.update_layout(yaxis=dict(title="delež objav (%)", rangemode="tozero"),
+                      xaxis=dict(title="", dtick=1, range=[s.index.min() - 0.5, s.index.max() + 0.5]))
     return fig
 
 
@@ -158,7 +159,7 @@ def fig_coasts(f: dict) -> go.Figure:
                              pointpos=0, orientation="h", marker=dict(color=color, size=6, opacity=0.6), line=dict(color=color),
                              fillcolor="rgba(0,0,0,0)", text=[n.replace(" Metro Area", "").replace(" Micro Area", "") for n in s["name"]],
                              hovertemplate="%{text}: %{x:.0f} %<extra></extra>"))
-        fig.add_annotation(x=med, y=f"{name}<br>({len(s)} mest)", text=f"srednje {_pct(med)}", showarrow=False, yshift=34,
+        fig.add_annotation(x=med, y=f"{name}<br>({len(s)} mest)", text=f"srednje {_pct(med)}", showarrow=False, yshift=52,
                            font=dict(color=color))
     _layout(fig, 460)
     more = "počasneje" if p["diff_median"] < 0 else "hitreje"
@@ -173,7 +174,8 @@ def fig_slovenia(b1: dict) -> go.Figure:
     br = b1["break_year"]
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=s["year"], y=s["max"], mode="lines", line=dict(width=0), hoverinfo="skip", showlegend=False))
-    fig.add_trace(go.Scatter(x=s["year"], y=s["min"], mode="lines", line=dict(width=0), fill="tonexty", fillcolor="rgba(229,229,229,0.7)",
+    fig.add_trace(go.Scatter(x=s["year"], y=s["min"], mode="lines", line=dict(width=0, color=PALETTE["grey"]), fill="tonexty",
+                             fillcolor="rgba(229,229,229,0.7)",
                              name="druge države EU", hoverinfo="skip"))
     fig.add_trace(go.Scatter(x=s["year"], y=s["eu27"], mode="lines", line=dict(color=ROLE["contrast"], width=3), name="povprečje EU",
                              hovertemplate="EU %{x}: %{y:.1f} %<extra></extra>"))
@@ -191,7 +193,8 @@ def fig_slovenia(b1: dict) -> go.Figure:
     head = (f"Slovenija je bila leta {br} nad povprečjem EU, nato je padla pod njega" if r21["si"] > r21["eu27"] and last["si"] < last["eu27"]
             else f"Slovenija je {'nad' if last['si'] > last['eu27'] else 'pod'} povprečjem EU")
     wt.title(fig, head, "delež strokovnjakov za informacijske tehnologije med vsemi zaposlenimi (%); siva: razpon drugih 26 držav")
-    fig.update_layout(yaxis=dict(title="delež zaposlenih (%)"), xaxis=dict(title="", dtick=2))
+    fig.update_layout(yaxis=dict(title="delež zaposlenih (%)"),
+                      xaxis=dict(title="", dtick=2, range=[int(s["year"].min()) - 0.5, int(s["year"].max()) + 0.5]))
     return fig
 
 
