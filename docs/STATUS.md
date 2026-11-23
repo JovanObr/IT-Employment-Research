@@ -75,9 +75,25 @@ vs. software within-firm (power 60 % for a large effect, only 10 semiconductor f
 Plan and Stream B brief: `docs/tasks/MILESTONE_4.md`. Round 2 rules: `docs/hypotheses/round2/README.md`. Dossier template: `docs/methods/TEMPLATE.md`.
 Website (Slovenian): `web/`, built into a self-contained `web/dist/` (GitHub Pages and offline on a laptop).
 - [x] Phase 0 (A), 2026-11-20: source-type column in notebook 09 (`compare_viz.SOURCE_TYPES`, every study classified, a test refuses unclassified ones; export rerun); `web/CONTRACT.md` and a working site skeleton (`analysis/web_build.py`, `analysis/web_theme.py`, `web/assets/`, 8 chapter stubs, 15 of 20 minutes; self-contained `web/dist/index.html` verified offline with no network requests; `.github/workflows/pages.yml`); registration `docs/hypotheses/round2/C2_E.md` written (**commit it before `python collect.py --sources sec_headcount_2425`**)
-- [ ] Phase 0 (B): Slovenia exploratory check; registration A2, F
+- [x] Phase 0 (B), 2026-11-23: registration `docs/hypotheses/round2/A2_F.md` committed **before** any test and before the B1 figures
+  (`fdd6e00`; B1 shows every country's level, which would reveal the A2 relation, so it was done after). Design checks were counts only.
+  Decisions in the registration: A2 start level = mean of 2019-2020 (not 2021, to avoid regression to the mean); F coasts by state list,
+  **PA included in the East** (Philadelphia), first state in the metro name, withheld metros excluded and counted.
+  B1 Slovenia (exploratory, no test, `B1` in `reports/hypotheses2_b_results.json`, figures `11x_slovenija_*`): 2021 rank 10 of 27 (4.8 %,
+  EU 4.5 %), 2019 rank 14, 2024 rank 24; 2015 -> 2020 +0.80 points vs. others +0.87 (no earlier rise); 2021 was Slovenia's highest year,
+  3.8 % in 2023, 4.5 % in 2025; absolute numbers (Eurostat `THS_PER`, already in the file, no new collector): 46.5 thousand (2021),
+  37.2 (2023), 45.2 (2025). Normalisation answered in `docs/methods/A.md`.
 - [x] Phase 1 (A), 2026-11-20: **C2 and E run once** (`analysis/hypotheses2_a.py`, tests `tests/test_hypotheses2_a.py`, results `reports/hypotheses2_a_results.json`; registration `ad835e5` committed before the 2024-2025 headcounts were downloaded). C2: announcers -4.2 % vs. +0.9 % median headcount change, difference -0.051 log points (-0.095 to -0.0001), permutation p = 0.0009, both years the same direction, placebo 4.4 %. E: 219 of 708 announcements within 3 business days of an earnings release vs. 79.1 expected (2.77x, 2.42-3.15), p = 0.0002 (simulation floor), mostly after the release (3.8x), placebo with shifted release dates finds nothing. Holm can at most multiply by 4, so **both are supported whatever A2 and F give**. Dossiers `docs/methods/C.md`, `D.md`, `C2.md`, `E.md` (generated: `python -m analysis.methods_dossiers_a`; round 1's C reproduced exactly from the grown headcount file). Full theme: colour roles, chart helpers (`title`, `direct_labels`, `highlight`, `callout`), components `{{stevilka}}` and `{{poudarek}}`, style guide `web/build/vzorec.html`; contract updated (sections "Theme" and "Components").
-- [ ] Phase 1 (B): A2, F; dossiers A, B, A2, F
+- [x] Phase 1 (B), 2026-11-23: **A2 and F run once** (`analysis/hypotheses2_b.py`, tests `tests/test_hypotheses2_b.py` committed before the
+  run in `e79b61e`; results `reports/hypotheses2_b_results.json`, `7ac6b78`). **A2:** slope -0.025 (-0.198 to +0.096), permutation p = 0.734,
+  predicted sign but tiny; placebo 4.55 % (naive 2021 start 5.1 %); Slovenia starts 13th of 27, the line without it predicts +0.59, observed
+  -0.50 (residual -1.09, rank 27): the start level does not explain it. **F:** West 41 metros median +2.0 %, East 97 median +12.7 %, difference
+  -10.7 points (-25.4 to +14.5), Mann-Whitney p = 0.292, predicted sign; withheld East 30, West 4; size-weighted -2.9 % vs. +0.2 %;
+  establishments p = 0.117; placebo 4.2 %. **Holm across round 2 (computed here for checking, notebook 11 is A's):** E 0.0008, C2 0.0027,
+  F 0.585, A2 0.734, so A2 and F not supported. Dossiers `docs/methods/A.md`, `B.md`, `A2.md`, `F.md` (hand-written, numbers copied
+  from the results files). Figures for notebook 11: `build_figures_b(results)` -> `11a2_dohitevanje`, `11f_obali`, `11x_slovenija_delez`,
+  `_rang`, `_sprememba`, `_stevilo` with the four parts; `pomen` states no verdict. Not looked at as images (no kaleido here); titles and
+  texts checked against the numbers.
 - [x] Phase 2 (A), 2026-11-21: chapters 1-4, 7, 8 written (Slovenian, conclusion first, speaker notes; 15 of 20 minutes with B's placeholders).
   Nine web figures in `analysis/web_figures_a.py` (`1w_oglasi`, `1w_ljudje`, `2w_obresti`, `2w_pred_po`, `3w_velikost`, `3w_rast`, `4w_zaposleni`,
   `4w_porocila`, `7w_hipoteze`), each with a `FIGURE_SOURCES` row; `python -m analysis.web_figures_a` also prints every number the chapters quote.
@@ -86,7 +102,12 @@ Website (Slovenian): `web/`, built into a self-contained `web/dist/` (GitHub Pag
   automatic file list; background page `web/background/a.md` (dossier links, expected questions); three glossary terms; contract sections
   "Data section" and "Numbers in the text"; tables in figures get small margins (`web_theme.apply`). Checked offline in a browser, no console errors.
   The figures `1_ljudje.json` and `2_datumi.json` in `web/figures/a/` are no longer used by the site (Phase 0 demo).
-- [ ] Phase 2 (B): chapters 5-6, `web/background/b.md`, `web/data/b.md`
+- [x] Phase 2 (B), 2026-11-23: chapters 5 (2 min: remote, AI, juniors not measurable) and 6 (2.5 min: rising stars vs. hubs, coasts = F,
+  Slovenia = B1 + A2), `analysis/web_figures_b.py` (six figures `5w_daljava`, `5w_ui`, `6w_regije`, `6w_obali`, `6w_slovenija`,
+  `6w_dohitevanje`, built only from committed files; `python -m analysis.web_figures_b` prints the quoted numbers), tests
+  `tests/test_web_figures_b.py`, `web/glossary/b.yml` (5 terms), `web/background/b.md`, `web/data/b.md`. `--check --strict` passes, 15 of
+  20 minutes; `web/dist/index.html` rebuilt. Not checked in a browser yet (no browser here): Petar, please click through chapters 5-6 once.
+  Caveat: `metro_name` in `metro_map_data.csv` comes from Census ACS, or FHFA for 5 metros; FHFA is not in that file's `DERIVED` inputs.
 - [ ] Phase 3: notebook 11 (Holm across A2, F, C2, E); rehearsal with a timer; non-expert test; proofreading
 
 ## Requests between streams
@@ -94,5 +115,9 @@ Website (Slovenian): `web/`, built into a self-contained `web/dist/` (GitHub Pag
 - 2026-10-30 A asks B (and everyone, `collect.py` is frozen): `collect.py` overwrote `data/manifest.json` with only the sources of that run, so every partial run (`--sources sec_fin`, `macro`, ...) wiped the other entries. Proposed change, already in this commit: `merge_manifest()` keeps old entries and replaces the ones that were re-run (test: `tests/test_collect_manifest.py`). The committed manifest currently holds only one entry; run `python collect.py` once (everything is cached) to rebuild it.
 
 - 2026-11-07 A asks B: please check the source lines of chapters 4-5 (`python -m analysis.data_sources`, entries `4_*` and `5_*` in `FIGURE_SOURCES`); I listed `hn_topics_monthly.csv` as built from the posts and text files, and `metro_map_data.csv` as QCEW areas + Gazetteer only (no FHFA/ACS, since the map uses only job and establishment growth). New figures in `viz_text_geo.py` need an entry there too, or the test fails.
+
+- 2026-11-23 B tells A (Jovan): `reports/hypotheses2_b_results.json` is pushed with keys `A2` and `F`, each with `primary.p` and
+  `primary.predicted_sign`. Please re-export `7w_hipoteze` (`python -m analysis.web_figures_a`) and rebuild `web/dist/`; the committed
+  `7w_hipoteze.json` still shows A2 and F as "še računamo". Notebook 11 can take B's figures from `analysis.hypotheses2_b.build_figures_b(load_results())`.
 
 ## Blocked / questions

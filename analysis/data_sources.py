@@ -139,6 +139,14 @@ FIGURE_SOURCES = {
     "11x_slovenija_rang": ["data/raw/eurostat_isoc_sks_itspt.csv"],
     "11x_slovenija_sprememba": ["data/raw/eurostat_isoc_sks_itspt.csv"],
     "11x_slovenija_stevilo": ["data/raw/eurostat_isoc_sks_itspt.csv"],
+    # presentation website, Stream B (analysis/web_figures_b.py): chapters 5-6; 6w_obali, 6w_slovenija, 6w_dohitevanje are drawn from
+    # reports/hypotheses2_b_results.json, which analysis.hypotheses2_b computes from the files named here
+    "5w_daljava": ["data/processed/hn_flags_monthly.csv", "data/processed/indeed_remote_monthly.csv"],
+    "5w_ui": ["data/processed/hn_flags_monthly.csv"],
+    "6w_regije": ["data/processed/metro_map_data.csv"],
+    "6w_obali": ["data/processed/metro_map_data.csv"],
+    "6w_slovenija": ["data/raw/eurostat_isoc_sks_itspt.csv"],
+    "6w_dohitevanje": ["data/raw/eurostat_isoc_sks_itspt.csv"],
     # notebook 09, Stream B (analysis/compare_text_geo.py); published numbers are named in the text
     "9b_daljava_primerjava": ["data/processed/hn_flags_monthly.csv", "data/processed/indeed_remote_monthly.csv"],
     "9b_ui_primerjava": ["data/processed/hn_flags_monthly.csv"],

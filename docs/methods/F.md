@@ -18,9 +18,10 @@
 ## 2. Data
 | Dataset | Provider | URL | Retrieved | File in the repo | SHA-256 (first 12) | Period used | Unit / level |
 |---|---|---|---|---|---|---|---|
-| Metro map table (derived) | built from BLS QCEW + Census Gazetteer (+ one Census ACS column, not used here) | - | file committed 2026-11-02 (`9f77f90`) | `data/processed/metro_map_data.csv` | `91591938b86d` | 2019 and 2024 (quarterly means) | metro area (CBSA) |
+| Metro map table (derived) | built from BLS QCEW, Census ACS (names), FHFA (fallback names), Census Gazetteer (coordinates) | - | file committed 2026-11-02 (`9f77f90`) | `data/processed/metro_map_data.csv` | `91591938b86d` | 2019 and 2024 (quarterly means) | metro area (CBSA) |
 | QCEW, state/county/metro, IT industries (source of the table) | US Bureau of Labor Statistics | https://www.bls.gov/cew/ | 2026-10-30 | `data/raw/bls_qcew_areas_it_industries.csv` | `fc05c681079c` (round 1 hash) | 2019, 2024 | area-quarter, NAICS 5415, private |
-| Gazetteer CBSA centroids (names only matter here) | US Census Bureau | https://www2.census.gov/geo/docs/maps-data/data/gazetteer/2023_Gazetteer/2023_Gaz_cbsa_national.zip | 2026-10-30 | `data/raw/census_gazetteer_cbsa.csv` | - | 2023 delineation | CBSA |
+| Census ACS 5-year, metro (only the metro **name**, which sets the state and so the coast) | US Census Bureau | https://api.census.gov/data/ | 2026-10-30 | `data/raw/census_acs5_metro.csv` | - | names as published | CBSA |
+| FHFA house price index, metro (name used only where ACS has none) | US Federal Housing Finance Agency | https://www.fhfa.gov/hpi/download/quarterly_datasets/hpi_at_metro.csv | 2026-10-30 | `data/raw/fhfa_hpi_metro_quarterly.csv` | - | names | CBSA |
 
 - Licences: BLS "public domain, please cite BLS"; Census "public data, please cite the US Census Bureau" (`data/manifest.json`).
 - Re-create: `python collect.py --sources qcew gazetteer acs5` (ACS needs `CENSUS_API_KEY`), then `python build_metro_panel.py`, then
@@ -34,7 +35,8 @@
    `matched`, 243 metros); otherwise the mean of whatever quarters exist in each year (`unmatched`, 20 metros); otherwise none (140 metros).
 3. **Outcome** (`build`, line 204): `it_growth_pct = (emp_it_2024 / emp_it_2019 - 1) * 100`; `usable = emp_it_2019 and emp_it_2024 both present`
    (line 210). The panel has 403 metros, 263 usable.
-4. **Map table** (`analysis/geo.py` `load_geo_panel` line 63, `map_data` line 196): same 403 rows, columns kept, names from Census.
+4. **Names.** `metro_name` is the Census ACS name of the CBSA, or the FHFA name where ACS has none (`build`, `p["metro_name"] = p["name"].fillna(p["hpi_name"])`).
+   **Map table** (`analysis/geo.py` `load_geo_panel` line 63, `map_data` line 196): the same 403 rows, plus Gazetteer coordinates (not used by the test).
 5. **Coast** (`state_of`, `coast_of` in `analysis/hypotheses2_b.py`, lines 203 and 211): the first two-letter state after the first comma of
    `metro_name`. West = WA, OR, CA; East = ME, NH, MA, RI, CT, NY, NJ, PA, DE, MD, VA, NC, SC, GA, FL, DC. Everything else is out (125 usable
    metros in other states). Lewiston, ID-WA and Chattanooga, TN-GA are out (first state not a coast state); Portland, OR-WA is West;
