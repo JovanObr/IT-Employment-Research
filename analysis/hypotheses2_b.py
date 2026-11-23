@@ -359,7 +359,8 @@ def fig_a2(a2: dict) -> go.Figure:
                              hovertemplate="Slovenija: izhodišče %{x:.2f} %, sprememba %{y:.2f} točke<extra></extra>"))
     fig.add_trace(go.Scatter(x=xs, y=p["intercept"] + p["b"] * xs, mode="lines", line=dict(color=PALETTE["orange"], width=2),
                              name="premica", hoverinfo="skip"))
-    direction = "Države z višjim izhodiščem so zrasle manj" if p["b"] < 0 else "Države z višjim izhodiščem niso zrasle manj"
+    direction = ("Rast skoraj ni povezana z izhodiščem" if abs(p["r"]) < 0.2 else
+                 "Države z višjim izhodiščem so zrasle manj" if p["b"] < 0 else "Države z višjim izhodiščem so zrasle več")
     fig.update_layout(**base_layout(f"{direction} (naklon {sl_num(p['b'], 2)})", height=560))
     fig.update_layout(xaxis=dict(title="delež strokovnjakov IKT med zaposlenimi, povprečje 2019-2020 (%)"),
                       yaxis=dict(title="sprememba deleža 2021 → 2024 (odstotne točke)"), showlegend=False)
@@ -378,7 +379,7 @@ def explain_a2(a2: dict) -> dict:
         "pomen": (f"Naklon premice je {_pp(p['b'], 2)} odstotne točke spremembe na vsako točko izhodišča (95 % interval od {sl_num(p['ci_lo'], 2)} "
                   f"do {sl_num(p['ci_hi'], 2)}), p {_p(p['p'])} (permutacijski test). Slovenija je začela na {s['start_rank']}. mestu od {s['n']}; "
                   f"premica, izračunana brez nje, ji napove spremembo {_pp(s['predicted_change'])} točke, izmerjena je bila {_pp(s['change'])} "
-                  f"(odstopanje {_pp(s['residual'])}). Ali je hipoteza potrjena, odloči šele popravek za vse štiri hipoteze v zvezku 11."),
+                  f"(odstopanje {_pp(s['residual'])}, opisni test p {_p(s['pi_p'])}): izhodišče slovenskega padca ne pojasni. Ali je hipoteza potrjena, odloči šele popravek za vse štiri hipoteze v zvezku 11."),
         "omejitve": (f"Le 27 držav: test zanesljivo opazi šele močno povezavo (korelacija okoli {sl_num(p['mde_abs_r'], 2)}). Leta 2021 se je metoda "
                      f"ankete spremenila. Simulacija brez dohitevanja da p pod 0,05 v {sl_num(100 * pl['share_p_below_005'], 1)} % primerov z našim "
                      f"načrtom in v {sl_num(100 * pl['share_p_below_005_naive'], 1)} % z izhodiščem 2021; zato izhodišča 2021 nismo uporabili "
@@ -415,7 +416,7 @@ def explain_f(f: dict) -> dict:
         "pomen": (f"Mediana je {sl_num(p['median_west'], 1)} % na zahodu ({p['n_west']} območij) in {sl_num(p['median_east'], 1)} % na vzhodu "
                   f"({p['n_east']}), razlika {_pp(p['diff_median'], 1)} odstotne točke (95 % interval od {sl_num(p['ci_lo'], 1)} do "
                   f"{sl_num(p['ci_hi'], 1)}), p {_p(p['p'])} (Mann-Whitneyjev test). Če štejemo vsa delovna mesta skupaj (velika mesta štejejo več), "
-                  f"je zahod zrasel za {sl_num(w['west'], 1)} %, vzhod za {sl_num(w['east'], 1)} %. Ali je hipoteza potrjena, odloči šele popravek "
+                  f"se je njihovo število na zahodu spremenilo za {_pp(w['west'], 1)} %, na vzhodu za {_pp(w['east'], 1)} %. Ali je hipoteza potrjena, odloči šele popravek "
                   f"za vse štiri hipoteze v zvezku 11."),
         "omejitve": (f"Za {p['n_withheld_east']} območij na vzhodu in {p['n_withheld_west']} na zahodu urad podatka o zaposlenih ne objavi (med njimi "
                      f"Atlanta), zato manjkajo. Cela zvezna država šteje k obali, tudi mesta v notranjosti. IT storitve niso vsa tehnološka "
@@ -440,11 +441,24 @@ def fig_slovenia_share(b1: dict) -> go.Figure:
     fig.add_annotation(x=b1["break_year"] - 0.5, y=1, yref="paper", text="nova metoda ankete", showarrow=False, xanchor="right",
                        yanchor="top", textangle=-90)
     last, y21 = s.iloc[-1], s.loc[s["year"] == b1["break_year"]].iloc[0]
-    where = "nad" if last["si"] > last["eu27"] else "pod"
-    trend = "po letu 2021 pa ne raste več" if last["si"] <= y21["si"] else "in po letu 2021 še raste"
-    fig.update_layout(**base_layout(f"Slovenija je {where} povprečjem EU, {trend}", height=520))
+    if y21["si"] > y21["eu27"] and last["si"] < last["eu27"]:
+        head = f"Slovenija je bila leta {b1['break_year']} nad povprečjem EU, do leta {int(last['year'])} pa je padla pod njega"
+    else:
+        where = "nad" if last["si"] > last["eu27"] else "pod"
+        head = f"Slovenija je {where} povprečjem EU" + (", po letu 2021 pa ne raste več" if last["si"] <= y21["si"] else "")
+    fig.update_layout(**base_layout(head, height=520))
     fig.update_layout(yaxis=dict(title="strokovnjaki IKT med zaposlenimi (%)"), xaxis=dict(title="", dtick=1))
     return fig
+
+
+def _after_break(s: pd.DataFrame, year: int) -> str:
+    """One sentence on Slovenia's highest and lowest year from the break year on (the timing question of the feedback)."""
+    a = s.loc[s.index >= year, "si"]
+    hi, lo = int(a.idxmax()), int(a.idxmin())
+    if hi == year:
+        return (f"Leto {year}, kjer se primerjava začne, je bilo za Slovenijo najvišje ({sl_num(a[hi], 1)} %); najnižje je bilo "
+                f"leto {lo} ({sl_num(a[lo], 1)} %).")
+    return f"Po letu {year} je bil delež najvišji leta {hi} ({sl_num(a[hi], 1)} %) in najnižji leta {lo} ({sl_num(a[lo], 1)} %)."
 
 
 def explain_slovenia_share(b1: dict) -> dict:
@@ -458,7 +472,8 @@ def explain_slovenia_share(b1: dict) -> dict:
         "pomen": (f"Slovenija je imela {sl_num(s.at[2015, 'si'], 1)} % leta 2015, {sl_num(s.at[2021, 'si'], 1)} % leta 2021 in "
                   f"{sl_num(s.at[2024, 'si'], 1)} % leta 2024 (EU-27: {sl_num(s.at[2015, 'eu27'], 1)}, {sl_num(s.at[2021, 'eu27'], 1)}, "
                   f"{sl_num(s.at[2024, 'eu27'], 1)}). Med 2015 in 2020 je zrasla za {_pp(e['si_2015_2020_points'], 2)} točke, ostale države v "
-                  f"povprečju za {_pp(e['others_mean_2015_2020_points'], 2)} ({e['rank_2015_2020']}. mesto od {b1['n']})."),
+                  f"povprečju za {_pp(e['others_mean_2015_2020_points'], 2)} (po rasti {e['rank_2015_2020']}. mesto od {b1['n']}), torej ni rasla prej kot "
+                  f"druge. {_after_break(s, b1['break_year'])}"),
         "omejitve": "Delež je že normaliziran: deli se s številom vseh zaposlenih, zato velikost države ne vpliva neposredno. Ne odpravi pa tega, "
                     "da je vzorec ankete v majhni državi manjši in ocena bolj negotova. Zadnja leta so delno ocene (oznaka »e«).",
     }

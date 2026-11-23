@@ -1,0 +1,1579 @@
+{
+  "inputs_sha256": {
+    "data/raw/eurostat_isoc_sks_itspt.csv": "c63a1f9bfd718a34bedda367662ff46460812986700791ea69965ca50c16a2af",
+    "data/processed/metro_map_data.csv": "91591938b86da0bad58a346eba973e192dd2d7d0c6e4d46eb828964d830107d0"
+  },
+  "A2": {
+    "primary": {
+      "n": 27,
+      "x": "start",
+      "y": "change",
+      "b": -0.02548783893725796,
+      "intercept": 0.6504800472761568,
+      "ci_lo": -0.1979975666589995,
+      "ci_hi": 0.09579122312041619,
+      "p": 0.7343265673432656,
+      "p_ols": 0.731588920833184,
+      "r": -0.06920844640788755,
+      "predicted_sign": true,
+      "n_perm": 10000,
+      "n_boot": 5000,
+      "mde_abs_r": 0.5167321619197414
+    },
+    "slovenia": {
+      "country": "SI",
+      "start": 4.15,
+      "change": -0.5,
+      "predicted_change": 0.5854826771189933,
+      "residual": -1.0854826771189932,
+      "pi_t": -2.3234649085376127,
+      "pi_p": 0.028948176803911062,
+      "df": 24,
+      "b_without": -0.029178477403292213,
+      "residual_full": -1.0447055156865361,
+      "rank_residual_full": 27,
+      "n": 27,
+      "start_rank": 13
+    },
+    "secondary": {
+      "naive_start_2021": {
+        "b": -0.032053845128615255,
+        "ci_lo": -0.19456692487048924,
+        "ci_hi": 0.080038745825299,
+        "p": 0.6562343765623437,
+        "p_ols": 0.6516663134145754,
+        "r": -0.0910069593845815,
+        "predicted_sign": true,
+        "n": 27
+      },
+      "spearman": {
+        "rho": -0.17777445569214492,
+        "p": 0.3750094096699996
+      },
+      "relative_change": {
+        "b": -2.8950619645945634,
+        "ci_lo": -6.99077566762799,
+        "ci_hi": -0.30113003715641606,
+        "p": 0.1004899510048995,
+        "p_ols": 0.10716070370761104,
+        "r": -0.31699696815223216,
+        "predicted_sign": true,
+        "n": 27
+      },
+      "change_2021_2025": {
+        "b": 0.012616419559700233,
+        "ci_lo": -0.20336333842344362,
+        "ci_hi": 0.18473733097480557,
+        "p": 0.8805119488051195,
+        "p_ols": 0.8840478852645399,
+        "r": 0.02945460371507368,
+        "predicted_sign": false,
+        "n": 27
+      },
+      "without_slovenia": {
+        "b": -0.029178477403292213,
+        "ci_lo": -0.2009395874835877,
+        "ci_hi": 0.09142120787930574,
+        "p": 0.675032496750325,
+        "p_ols": 0.6706724095447321,
+        "r": -0.0875383774731097,
+        "predicted_sign": true,
+        "n": 26
+      },
+      "flagged_cells": [
+        "AT 2021: b",
+        "BE 2021: b",
+        "BG 2019: b",
+        "BG 2021: b",
+        "BG 2024: b",
+        "CY 2021: b",
+        "CY 2024: e",
+        "CZ 2021: b",
+        "DE 2020: b",
+        "DE 2021: b",
+        "DK 2019: e",
+        "DK 2020: e",
+        "DK 2021: b",
+        "EE 2020: e",
+        "EE 2021: b",
+        "EE 2024: e",
+        "EE 2025: e",
+        "EL 2019: e",
+        "EL 2020: e",
+        "EL 2021: b",
+        "ES 2019: e",
+        "ES 2020: e",
+        "ES 2021: bd",
+        "ES 2024: d",
+        "ES 2025: d",
+        "FI 2021: b",
+        "FR 2021: bd",
+        "FR 2024: d",
+        "FR 2025: d",
+        "HR 2019: e",
+        "HR 2020: e",
+        "HR 2021: be",
+        "HR 2024: e",
+        "HR 2025: e",
+        "HU 2020: e",
+        "HU 2021: be",
+        "HU 2024: e",
+        "HU 2025: e",
+        "IE 2019: e",
+        "IE 2020: e",
+        "IE 2021: be",
+        "IE 2024: e",
+        "IE 2025: e",
+        "IT 2019: e",
+        "IT 2020: e",
+        "IT 2021: be",
+        "IT 2024: e",
+        "IT 2025: e",
+        "LT 2019: e",
+        "LT 2021: b",
+        "LU 2019: e",
+        "LU 2021: b",
+        "LV 2019: e",
+        "LV 2020: e",
+        "LV 2021: b",
+        "MT 2020: e",
+        "MT 2021: be",
+        "NL 2021: b",
+        "PL 2019: b",
+        "PL 2021: b",
+        "PT 2019: e",
+        "PT 2020: e",
+        "PT 2021: b",
+        "RO 2019: e",
+        "RO 2021: b",
+        "RO 2024: e",
+        "RO 2025: e",
+        "SE 2020: e",
+        "SE 2021: b",
+        "SI 2019: e",
+        "SI 2020: e",
+        "SI 2021: b",
+        "SI 2024: e",
+        "SK 2021: b",
+        "SK 2025: e"
+      ]
+    },
+    "placebo": {
+      "n_sim": 2000,
+      "n_perm": 1000,
+      "sigma": 0.18251138497019842,
+      "sd_true": 0.4147772382538471,
+      "mean_change": 0.5407407407407406,
+      "share_p_below_005": 0.0455,
+      "share_p_below_005_naive": 0.051,
+      "mean_slope_naive": -0.017657303684473522
+    },
+    "noise": {
+      "sigma": 0.18251138497019842,
+      "years": [
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020
+      ],
+      "by_country": {
+        "AT": 0.1305665311158316,
+        "BE": 0.2800510157606324,
+        "BG": 0.13309502512973842,
+        "CY": 0.21679483388679258,
+        "CZ": 0.10510765456244874,
+        "DE": 0.22307376529279005,
+        "DK": 0.11296860077874468,
+        "EE": 0.21624501095264168,
+        "EL": 0.1591644851508461,
+        "ES": 0.03779644730091722,
+        "FI": 0.24377976008801752,
+        "FR": 0.06654751256486742,
+        "HR": 0.2026021200471912,
+        "HU": 0.14556948921555088,
+        "IE": 0.27705938851067735,
+        "IT": 0.06362090102803843,
+        "LT": 0.10510765456243477,
+        "LU": 0.16860774427223513,
+        "LV": 0.30142518616921,
+        "MT": 0.2792848008753776,
+        "NL": 0.1266791973751789,
+        "PL": 0.07776643908279805,
+        "PT": 0.23884643402744182,
+        "RO": 2.124561952982656e-14,
+        "SE": 0.09050124966254051,
+        "SI": 0.15553287816560274,
+        "SK": 0.2556038601691094
+      }
+    },
+    "values": {
+      "AT": {
+        "start": 4.4,
+        "level_2021": 4.5,
+        "level_2024": 5.3,
+        "change": 0.7999999999999998,
+        "change_2025": 0.9000000000000004,
+        "rel_change": 17.777777777777782
+      },
+      "BE": {
+        "start": 5.0,
+        "level_2021": 5.6,
+        "level_2024": 5.7,
+        "change": 0.10000000000000053,
+        "change_2025": 0.3000000000000007,
+        "rel_change": 1.7857142857143016
+      },
+      "BG": {
+        "start": 3.15,
+        "level_2021": 3.5,
+        "level_2024": 4.6,
+        "change": 1.0999999999999996,
+        "change_2025": 1.2999999999999998,
+        "rel_change": 31.428571428571427
+      },
+      "CY": {
+        "start": 2.95,
+        "level_2021": 3.9,
+        "level_2024": 5.0,
+        "change": 1.1,
+        "change_2025": 1.0000000000000004,
+        "rel_change": 28.205128205128215
+      },
+      "CZ": {
+        "start": 4.1,
+        "level_2021": 4.6,
+        "level_2024": 4.5,
+        "change": -0.09999999999999964,
+        "change_2025": 0.10000000000000053,
+        "rel_change": -2.1739130434782483
+      },
+      "DE": {
+        "start": 4.35,
+        "level_2021": 4.9,
+        "level_2024": 5.1,
+        "change": 0.1999999999999993,
+        "change_2025": 0.5999999999999996,
+        "rel_change": 4.081632653061207
+      },
+      "DK": {
+        "start": 5.199999999999999,
+        "level_2021": 5.6,
+        "level_2024": 5.8,
+        "change": 0.20000000000000018,
+        "change_2025": 0.10000000000000053,
+        "rel_change": 3.571428571428581
+      },
+      "EE": {
+        "start": 6.0,
+        "level_2021": 6.2,
+        "level_2024": 7.2,
+        "change": 1.0,
+        "change_2025": 0.5999999999999996,
+        "rel_change": 16.129032258064523
+      },
+      "EL": {
+        "start": 2.0,
+        "level_2021": 2.4,
+        "level_2024": 2.5,
+        "change": 0.10000000000000009,
+        "change_2025": 0.10000000000000009,
+        "rel_change": 4.166666666666674
+      },
+      "ES": {
+        "start": 3.8,
+        "level_2021": 4.1,
+        "level_2024": 4.7,
+        "change": 0.6000000000000005,
+        "change_2025": 0.7000000000000002,
+        "rel_change": 14.634146341463428
+      },
+      "FI": {
+        "start": 7.199999999999999,
+        "level_2021": 7.4,
+        "level_2024": 7.8,
+        "change": 0.39999999999999947,
+        "change_2025": 0.39999999999999947,
+        "rel_change": 5.405405405405395
+      },
+      "FR": {
+        "start": 4.35,
+        "level_2021": 4.5,
+        "level_2024": 4.8,
+        "change": 0.2999999999999998,
+        "change_2025": 0.40000000000000036,
+        "rel_change": 6.666666666666665
+      },
+      "HR": {
+        "start": 3.5,
+        "level_2021": 3.7,
+        "level_2024": 5.0,
+        "change": 1.2999999999999998,
+        "change_2025": 1.2000000000000002,
+        "rel_change": 35.13513513513513
+      },
+      "HU": {
+        "start": 3.5999999999999996,
+        "level_2021": 3.9,
+        "level_2024": 4.5,
+        "change": 0.6000000000000001,
+        "change_2025": 0.6999999999999997,
+        "rel_change": 15.384615384615397
+      },
+      "IE": {
+        "start": 5.300000000000001,
+        "level_2021": 6.3,
+        "level_2024": 6.3,
+        "change": 0.0,
+        "change_2025": -0.09999999999999964,
+        "rel_change": 0.0
+      },
+      "IT": {
+        "start": 3.55,
+        "level_2021": 3.8,
+        "level_2024": 4.0,
+        "change": 0.20000000000000018,
+        "change_2025": 0.0,
+        "rel_change": 5.263157894736836
+      },
+      "LT": {
+        "start": 3.2,
+        "level_2021": 3.8,
+        "level_2024": 5.3,
+        "change": 1.5,
+        "change_2025": 1.9000000000000004,
+        "rel_change": 39.47368421052633
+      },
+      "LU": {
+        "start": 6.199999999999999,
+        "level_2021": 6.7,
+        "level_2024": 8.0,
+        "change": 1.2999999999999998,
+        "change_2025": 1.9999999999999991,
+        "rel_change": 19.402985074626855
+      },
+      "LV": {
+        "start": 3.35,
+        "level_2021": 3.8,
+        "level_2024": 4.9,
+        "change": 1.1000000000000005,
+        "change_2025": 0.7000000000000002,
+        "rel_change": 28.947368421052655
+      },
+      "MT": {
+        "start": 4.5,
+        "level_2021": 4.8,
+        "level_2024": 5.3,
+        "change": 0.5,
+        "change_2025": 0.0,
+        "rel_change": 10.416666666666675
+      },
+      "NL": {
+        "start": 5.75,
+        "level_2021": 6.7,
+        "level_2024": 7.0,
+        "change": 0.2999999999999998,
+        "change_2025": 0.5,
+        "rel_change": 4.477611940298498
+      },
+      "PL": {
+        "start": 3.35,
+        "level_2021": 3.7,
+        "level_2024": 4.5,
+        "change": 0.7999999999999998,
+        "change_2025": 0.7999999999999998,
+        "rel_change": 21.62162162162162
+      },
+      "PT": {
+        "start": 3.75,
+        "level_2021": 4.6,
+        "level_2024": 5.2,
+        "change": 0.6000000000000005,
+        "change_2025": 0.8000000000000007,
+        "rel_change": 13.043478260869579
+      },
+      "RO": {
+        "start": 2.3499999999999996,
+        "level_2021": 2.6,
+        "level_2024": 2.8,
+        "change": 0.19999999999999973,
+        "change_2025": 0.10000000000000009,
+        "rel_change": 7.692307692307687
+      },
+      "SE": {
+        "start": 7.25,
+        "level_2021": 8.0,
+        "level_2024": 8.6,
+        "change": 0.5999999999999996,
+        "change_2025": 0.9000000000000004,
+        "rel_change": 7.499999999999996
+      },
+      "SI": {
+        "start": 4.15,
+        "level_2021": 4.8,
+        "level_2024": 4.3,
+        "change": -0.5,
+        "change_2025": -0.2999999999999998,
+        "rel_change": -10.416666666666663
+      },
+      "SK": {
+        "start": 3.95,
+        "level_2021": 4.3,
+        "level_2024": 4.6,
+        "change": 0.2999999999999998,
+        "change_2025": 0.10000000000000053,
+        "rel_change": 6.976744186046502
+      }
+    }
+  },
+  "F": {
+    "primary": {
+      "n_west": 41,
+      "n_east": 97,
+      "n_withheld_west": 4,
+      "n_withheld_east": 30,
+      "median_west": 1.985906470211396,
+      "median_east": 12.701837753964028,
+      "diff_median": -10.715931283752631,
+      "ci_lo": -25.38984084453847,
+      "ci_hi": 14.525376073619281,
+      "u": 1762.0,
+      "p": 0.2923571102913334,
+      "prob_west_higher": 0.44304752325873775,
+      "predicted_sign": true,
+      "mde_sd": 0.5340475093658942,
+      "mde_prob": 0.6471467479551252
+    },
+    "secondary": {
+      "weighted": {
+        "west": -2.86902643568141,
+        "east": 0.15764897820256252,
+        "diff": -3.0266754138839724,
+        "ci_lo": -13.327807574861362,
+        "ci_hi": 5.900030782502225,
+        "jobs_2019_west": 379855.9166666666,
+        "jobs_2019_east": 679005.0000000001
+      },
+      "big_metros": {
+        "n_west": 15,
+        "n_east": 44,
+        "median_west": -9.757110088515477,
+        "median_east": -0.9367712627068758,
+        "u": 234.0,
+        "p": 0.09642426083852891,
+        "prob_west_higher": 0.35454545454545455
+      },
+      "establishments": {
+        "n_west": 44,
+        "n_east": 117,
+        "median_west": 25.863581030668747,
+        "median_east": 43.29268292682927,
+        "diff_median": -17.429101896160525,
+        "ci_lo": -30.83233804500325,
+        "ci_hi": 6.426459121915613,
+        "p": 0.11676041584977995,
+        "prob_west_higher": 0.4195804195804196
+      }
+    },
+    "placebo": {
+      "n_rep": 1000,
+      "pool": 263,
+      "share_p_below_005": 0.042
+    },
+    "metros": [
+      {
+        "name": "Albany, GA Metro Area",
+        "coast": "east",
+        "growth": 93.34677419354836,
+        "jobs_2019": 82.66666666666666
+      },
+      {
+        "name": "Albany-Lebanon, OR Metro Area",
+        "coast": "west",
+        "growth": 28.38283828382839,
+        "jobs_2019": 126.25
+      },
+      {
+        "name": "Albany-Schenectady-Troy, NY Metro Area",
+        "coast": "east",
+        "growth": 0.1773646065869494,
+        "jobs_2019": 5450.166666666667
+      },
+      {
+        "name": "Allentown-Bethlehem-Easton, PA-NJ Metro Area",
+        "coast": "east",
+        "growth": -2.346630908481384,
+        "jobs_2019": 1988.6666666666663
+      },
+      {
+        "name": "Altoona, PA Metro Area",
+        "coast": "east",
+        "growth": -5.3080308030803,
+        "jobs_2019": 303.0
+      },
+      {
+        "name": "Asheville, NC Metro Area",
+        "coast": "east",
+        "growth": 23.821749495690447,
+        "jobs_2019": 908.8333333333334
+      },
+      {
+        "name": "Athens-Clarke County, GA Metro Area",
+        "coast": "east",
+        "growth": -0.0565610859728393,
+        "jobs_2019": 392.88888888888886
+      },
+      {
+        "name": "Atlantic City-Hammonton, NJ Metro Area",
+        "coast": "east",
+        "growth": -14.191395712054511,
+        "jobs_2019": 1173.8333333333333
+      },
+      {
+        "name": "Bakersfield, CA Metro Area",
+        "coast": "west",
+        "growth": -10.157710280373822,
+        "jobs_2019": 1426.6666666666667
+      },
+      {
+        "name": "Baltimore-Columbia-Towson, MD Metro Area",
+        "coast": "east",
+        "growth": -2.050907132000701,
+        "jobs_2019": 34651.333333333336
+      },
+      {
+        "name": "Bangor, ME Metro Area",
+        "coast": "east",
+        "growth": 37.86316776007499,
+        "jobs_2019": 177.83333333333334
+      },
+      {
+        "name": "Barnstable Town, MA Metro Area",
+        "coast": "east",
+        "growth": -37.003987089424726,
+        "jobs_2019": 438.9166666666667
+      },
+      {
+        "name": "Bellingham, WA Metro Area",
+        "coast": "west",
+        "growth": 73.9720787913559,
+        "jobs_2019": 435.75
+      },
+      {
+        "name": "Binghamton, NY Metro Area",
+        "coast": "east",
+        "growth": -25.82647610798325,
+        "jobs_2019": 577.25
+      },
+      {
+        "name": "Blacksburg-Christiansburg, VA Metro Area",
+        "coast": "east",
+        "growth": 32.03592814371257,
+        "jobs_2019": 779.3333333333334
+      },
+      {
+        "name": "Boston-Cambridge-Newton, MA-NH Metro Area",
+        "coast": "east",
+        "growth": -18.397155209665986,
+        "jobs_2019": 78295.16666666667
+      },
+      {
+        "name": "Bremerton-Silverdale-Port Orchard, WA Metro Area",
+        "coast": "west",
+        "growth": 37.49043611323641,
+        "jobs_2019": 980.25
+      },
+      {
+        "name": "Bridgeport-Stamford-Norwalk, CT Metro Area",
+        "coast": "east",
+        "growth": -20.33434240209784,
+        "jobs_2019": 4321.916666666667
+      },
+      {
+        "name": "Buffalo-Cheektowaga, NY Metro Area",
+        "coast": "east",
+        "growth": -19.20546101967477,
+        "jobs_2019": 5078.416666666667
+      },
+      {
+        "name": "Burlington, NC Metro Area",
+        "coast": "east",
+        "growth": 119.4068343004513,
+        "jobs_2019": 129.25
+      },
+      {
+        "name": "Cape Coral-Fort Myers, FL Metro Area",
+        "coast": "east",
+        "growth": 52.92612297124386,
+        "jobs_2019": 1237.4166666666667
+      },
+      {
+        "name": "Chambersburg-Waynesboro, PA Metro Area",
+        "coast": "east",
+        "growth": -32.33979135618479,
+        "jobs_2019": 447.3333333333333
+      },
+      {
+        "name": "Charleston-North Charleston, SC Metro Area",
+        "coast": "east",
+        "growth": -16.27624521994275,
+        "jobs_2019": 6929.833333333333
+      },
+      {
+        "name": "Charlotte-Concord-Gastonia, NC-SC Metro Area",
+        "coast": "east",
+        "growth": 22.315364497876967,
+        "jobs_2019": 16760.5
+      },
+      {
+        "name": "Charlottesville, VA Metro Area",
+        "coast": "east",
+        "growth": 7.121150729335479,
+        "jobs_2019": 1645.3333333333337
+      },
+      {
+        "name": "Chico, CA Metro Area",
+        "coast": "west",
+        "growth": 22.35586893405226,
+        "jobs_2019": 200.91666666666663
+      },
+      {
+        "name": "Columbus, GA-AL Metro Area",
+        "coast": "east",
+        "growth": -21.12035010940919,
+        "jobs_2019": 1904.1666666666667
+      },
+      {
+        "name": "Corvallis, OR Metro Area",
+        "coast": "west",
+        "growth": 1.985906470211396,
+        "jobs_2019": 260.1666666666667
+      },
+      {
+        "name": "Crestview-Fort Walton Beach-Destin, FL Metro Area",
+        "coast": "east",
+        "growth": 36.32610939112486,
+        "jobs_2019": 2341.75
+      },
+      {
+        "name": "Deltona-Daytona Beach-Ormond Beach, FL Metro Area",
+        "coast": "east",
+        "growth": 126.4526924247034,
+        "jobs_2019": 547.8333333333333
+      },
+      {
+        "name": "Dover, DE Metro Area",
+        "coast": "east",
+        "growth": 152.27715064227323,
+        "jobs_2019": 214.0833333333333
+      },
+      {
+        "name": "El Centro, CA Metro Area",
+        "coast": "west",
+        "growth": -26.74672489082971,
+        "jobs_2019": 76.33333333333334
+      },
+      {
+        "name": "Erie, PA Metro Area",
+        "coast": "east",
+        "growth": -20.53855159725706,
+        "jobs_2019": 498.25
+      },
+      {
+        "name": "Eugene-Springfield, OR Metro Area",
+        "coast": "west",
+        "growth": 7.363494539781601,
+        "jobs_2019": 534.1666666666666
+      },
+      {
+        "name": "Fayetteville, NC Metro Area",
+        "coast": "east",
+        "growth": 63.71365672208304,
+        "jobs_2019": 1097.75
+      },
+      {
+        "name": "Florence, SC Metro Area",
+        "coast": "east",
+        "growth": -14.678899082568808,
+        "jobs_2019": 208.91666666666663
+      },
+      {
+        "name": "Fresno, CA Metro Area",
+        "coast": "west",
+        "growth": 35.552640209904915,
+        "jobs_2019": 762.2499999999999
+      },
+      {
+        "name": "Gainesville, GA Metro Area",
+        "coast": "east",
+        "growth": 29.271567640147712,
+        "jobs_2019": 248.25
+      },
+      {
+        "name": "Gettysburg, PA Metro Area",
+        "coast": "east",
+        "growth": 17.810760667903548,
+        "jobs_2019": 89.83333333333333
+      },
+      {
+        "name": "Glens Falls, NY Metro Area",
+        "coast": "east",
+        "growth": 46.30960156760287,
+        "jobs_2019": 127.58333333333331
+      },
+      {
+        "name": "Goldsboro, NC Metro Area",
+        "coast": "east",
+        "growth": 11.550888529886926,
+        "jobs_2019": 103.16666666666666
+      },
+      {
+        "name": "Grants Pass, OR Metro Area",
+        "coast": "west",
+        "growth": 182.1212121212121,
+        "jobs_2019": 27.5
+      },
+      {
+        "name": "Greensboro-High Point, NC Metro Area",
+        "coast": "east",
+        "growth": 61.8776401347952,
+        "jobs_2019": 1755.75
+      },
+      {
+        "name": "Greenville, NC Metro Area",
+        "coast": "east",
+        "growth": 333.5006273525721,
+        "jobs_2019": 132.83333333333334
+      },
+      {
+        "name": "Greenville-Anderson, SC Metro Area",
+        "coast": "east",
+        "growth": 26.67278327544398,
+        "jobs_2019": 2543.166666666667
+      },
+      {
+        "name": "Hagerstown-Martinsburg, MD-WV Metro Area",
+        "coast": "east",
+        "growth": 12.539481996209734,
+        "jobs_2019": 791.5
+      },
+      {
+        "name": "Hanford-Corcoran, CA Metro Area",
+        "coast": "west",
+        "growth": 243.85447394296955,
+        "jobs_2019": 84.75
+      },
+      {
+        "name": "Harrisburg-Carlisle, PA Metro Area",
+        "coast": "east",
+        "growth": -26.36871297588953,
+        "jobs_2019": 4417.166666666667
+      },
+      {
+        "name": "Harrisonburg, VA Metro Area",
+        "coast": "east",
+        "growth": 33.77308707124011,
+        "jobs_2019": 94.75
+      },
+      {
+        "name": "Hartford-East Hartford-Middletown, CT Metro Area",
+        "coast": "east",
+        "growth": 6.116340983834756,
+        "jobs_2019": 9578.166666666668
+      },
+      {
+        "name": "Hickory-Lenoir-Morganton, NC Metro Area",
+        "coast": "east",
+        "growth": -62.24915557321676,
+        "jobs_2019": 838.8333333333333
+      },
+      {
+        "name": "Homosassa Springs, FL Metro Area",
+        "coast": "east",
+        "growth": 80.15075376884424,
+        "jobs_2019": 99.5
+      },
+      {
+        "name": "Ithaca, NY Metro Area",
+        "coast": "east",
+        "growth": 8.625070581592343,
+        "jobs_2019": 590.3333333333333
+      },
+      {
+        "name": "Jacksonville, NC Metro Area",
+        "coast": "east",
+        "growth": 77.86149982059565,
+        "jobs_2019": 232.25
+      },
+      {
+        "name": "Johnstown, PA Metro Area",
+        "coast": "east",
+        "growth": -13.1214761660687,
+        "jobs_2019": 325.1666666666667
+      },
+      {
+        "name": "Kennewick-Richland, WA Metro Area",
+        "coast": "west",
+        "growth": -44.91185897435898,
+        "jobs_2019": 624.0
+      },
+      {
+        "name": "Kingston, NY Metro Area",
+        "coast": "east",
+        "growth": 13.762971054068784,
+        "jobs_2019": 152.58333333333334
+      },
+      {
+        "name": "Lakeland-Winter Haven, FL Metro Area",
+        "coast": "east",
+        "growth": -9.049611476389709,
+        "jobs_2019": 697.0833333333333
+      },
+      {
+        "name": "Lancaster, PA Metro Area",
+        "coast": "east",
+        "growth": 0.5714285714285783,
+        "jobs_2019": 1064.5833333333333
+      },
+      {
+        "name": "Lebanon, PA Metro Area",
+        "coast": "east",
+        "growth": 14.944042132982217,
+        "jobs_2019": 126.58333333333334
+      },
+      {
+        "name": "Lewiston-Auburn, ME Metro Area",
+        "coast": "east",
+        "growth": 25.202885482416583,
+        "jobs_2019": 369.6666666666667
+      },
+      {
+        "name": "California-Lexington Park, MD Metro Area",
+        "coast": "east",
+        "growth": 7.2706557515402,
+        "jobs_2019": 1974.8333333333333
+      },
+      {
+        "name": "Longview, WA Metro Area",
+        "coast": "west",
+        "growth": 61.95049870705576,
+        "jobs_2019": 225.5833333333333
+      },
+      {
+        "name": "Los Angeles-Long Beach-Anaheim, CA Metro Area",
+        "coast": "west",
+        "growth": -11.810338272355969,
+        "jobs_2019": 61370.66666666667
+      },
+      {
+        "name": "Manchester-Nashua, NH Metro Area",
+        "coast": "east",
+        "growth": 12.701837753964028,
+        "jobs_2019": 3437.1666666666665
+      },
+      {
+        "name": "Medford, OR Metro Area",
+        "coast": "west",
+        "growth": 22.690086621751693,
+        "jobs_2019": 346.3333333333333
+      },
+      {
+        "name": "Merced, CA Metro Area",
+        "coast": "west",
+        "growth": 139.1304347826087,
+        "jobs_2019": 15.333333333333334
+      },
+      {
+        "name": "Miami-Fort Lauderdale-Pompano Beach, FL Metro Area",
+        "coast": "east",
+        "growth": 32.67693635888076,
+        "jobs_2019": 22780.08333333333
+      },
+      {
+        "name": "Modesto, CA Metro Area",
+        "coast": "west",
+        "growth": -20.12532252119425,
+        "jobs_2019": 452.1666666666667
+      },
+      {
+        "name": "Mount Vernon-Anacortes, WA Metro Area",
+        "coast": "west",
+        "growth": -27.30253353204175,
+        "jobs_2019": 279.58333333333337
+      },
+      {
+        "name": "Myrtle Beach-Conway-North Myrtle Beach, SC-NC Metro Area",
+        "coast": "east",
+        "growth": 21.903765690376552,
+        "jobs_2019": 398.33333333333337
+      },
+      {
+        "name": "Napa, CA Metro Area",
+        "coast": "west",
+        "growth": 37.032299328429815,
+        "jobs_2019": 260.5833333333333
+      },
+      {
+        "name": "Naples-Marco Island, FL Metro Area",
+        "coast": "east",
+        "growth": 42.7069982055883,
+        "jobs_2019": 650.1666666666666
+      },
+      {
+        "name": "New Haven-Milford, CT Metro Area",
+        "coast": "east",
+        "growth": -45.60675744732018,
+        "jobs_2019": 2772.2500000000005
+      },
+      {
+        "name": "New York-Newark-Jersey City, NY-NJ-PA Metro Area",
+        "coast": "east",
+        "growth": 4.506837849618561,
+        "jobs_2019": 131723.91666666666
+      },
+      {
+        "name": "North Port-Sarasota-Bradenton, FL Metro Area",
+        "coast": "east",
+        "growth": 45.60190007916998,
+        "jobs_2019": 1999.9166666666663
+      },
+      {
+        "name": "Norwich-New London, CT Metro Area",
+        "coast": "east",
+        "growth": -10.099237156551666,
+        "jobs_2019": 1234.4166666666663
+      },
+      {
+        "name": "Ocala, FL Metro Area",
+        "coast": "east",
+        "growth": 98.75536480686692,
+        "jobs_2019": 194.16666666666669
+      },
+      {
+        "name": "Olympia-Lacey-Tumwater, WA Metro Area",
+        "coast": "west",
+        "growth": 59.0681502086231,
+        "jobs_2019": 1198.3333333333333
+      },
+      {
+        "name": "Orlando-Kissimmee-Sanford, FL Metro Area",
+        "coast": "east",
+        "growth": 34.43958932422719,
+        "jobs_2019": 14837.333333333332
+      },
+      {
+        "name": "Oxnard-Thousand Oaks-Ventura, CA Metro Area",
+        "coast": "west",
+        "growth": 6.845680632088413,
+        "jobs_2019": 2858.25
+      },
+      {
+        "name": "Palm Bay-Melbourne-Titusville, FL Metro Area",
+        "coast": "east",
+        "growth": -17.23776161601792,
+        "jobs_2019": 4686.416666666666
+      },
+      {
+        "name": "Panama City, FL Metro Area",
+        "coast": "east",
+        "growth": 31.440781440781464,
+        "jobs_2019": 546.0
+      },
+      {
+        "name": "Pensacola-Ferry Pass-Brent, FL Metro Area",
+        "coast": "east",
+        "growth": 3.5304098146698326,
+        "jobs_2019": 1276.9999999999998
+      },
+      {
+        "name": "Philadelphia-Camden-Wilmington, PA-NJ-DE-MD Metro Area",
+        "coast": "east",
+        "growth": -9.865226415812934,
+        "jobs_2019": 35009.333333333336
+      },
+      {
+        "name": "Pittsburgh, PA Metro Area",
+        "coast": "east",
+        "growth": -20.103144668983763,
+        "jobs_2019": 14074.083333333332
+      },
+      {
+        "name": "Pittsfield, MA Metro Area",
+        "coast": "east",
+        "growth": 57.84600389863546,
+        "jobs_2019": 171.0
+      },
+      {
+        "name": "Portland-South Portland, ME Metro Area",
+        "coast": "east",
+        "growth": -4.429143972870209,
+        "jobs_2019": 4054.583333333334
+      },
+      {
+        "name": "Portland-Vancouver-Hillsboro, OR-WA Metro Area",
+        "coast": "west",
+        "growth": -6.841142706049563,
+        "jobs_2019": 15127.833333333334
+      },
+      {
+        "name": "Port St. Lucie, FL Metro Area",
+        "coast": "east",
+        "growth": 59.1540404040404,
+        "jobs_2019": 396.0
+      },
+      {
+        "name": "Providence-Warwick, RI-MA Metro Area",
+        "coast": "east",
+        "growth": 18.94598470363292,
+        "jobs_2019": 6973.333333333333
+      },
+      {
+        "name": "Punta Gorda, FL Metro Area",
+        "coast": "east",
+        "growth": 102.49424405218726,
+        "jobs_2019": 217.16666666666663
+      },
+      {
+        "name": "Raleigh-Cary, NC Metro Area",
+        "coast": "east",
+        "growth": 7.02774633813692,
+        "jobs_2019": 17596.916666666664
+      },
+      {
+        "name": "Reading, PA Metro Area",
+        "coast": "east",
+        "growth": -12.46664125047655,
+        "jobs_2019": 874.3333333333334
+      },
+      {
+        "name": "Redding, CA Metro Area",
+        "coast": "west",
+        "growth": -24.13494809688581,
+        "jobs_2019": 192.66666666666663
+      },
+      {
+        "name": "Riverside-San Bernardino-Ontario, CA Metro Area",
+        "coast": "west",
+        "growth": -36.12843767113223,
+        "jobs_2019": 6239.083333333333
+      },
+      {
+        "name": "Rochester, NY Metro Area",
+        "coast": "east",
+        "growth": -15.833912253513605,
+        "jobs_2019": 6237.666666666667
+      },
+      {
+        "name": "Rocky Mount, NC Metro Area",
+        "coast": "east",
+        "growth": 79.35222672064775,
+        "jobs_2019": 41.16666666666667
+      },
+      {
+        "name": "Rome, GA Metro Area",
+        "coast": "east",
+        "growth": 63.862660944206006,
+        "jobs_2019": 97.08333333333331
+      },
+      {
+        "name": "Sacramento-Roseville-Folsom, CA Metro Area",
+        "coast": "west",
+        "growth": -9.757110088515477,
+        "jobs_2019": 11843.499999999998
+      },
+      {
+        "name": "Salem, OR Metro Area",
+        "coast": "west",
+        "growth": 26.82926829268293,
+        "jobs_2019": 406.5833333333333
+      },
+      {
+        "name": "Salinas, CA Metro Area",
+        "coast": "west",
+        "growth": -35.02684430304237,
+        "jobs_2019": 838.1666666666667
+      },
+      {
+        "name": "San Diego-Chula Vista-Carlsbad, CA Metro Area",
+        "coast": "west",
+        "growth": -10.243079949416876,
+        "jobs_2019": 24909.5
+      },
+      {
+        "name": "San Francisco-Oakland-Berkeley, CA Metro Area",
+        "coast": "west",
+        "growth": -2.07535080412633,
+        "jobs_2019": 104046.66666666666
+      },
+      {
+        "name": "San Jose-Sunnyvale-Santa Clara, CA Metro Area",
+        "coast": "west",
+        "growth": -2.6212771466978424,
+        "jobs_2019": 87533.66666666667
+      },
+      {
+        "name": "San Luis Obispo-Paso Robles, CA Metro Area",
+        "coast": "west",
+        "growth": -50.45366339749305,
+        "jobs_2019": 1588.9166666666667
+      },
+      {
+        "name": "Santa Cruz-Watsonville, CA Metro Area",
+        "coast": "west",
+        "growth": -23.96662288495712,
+        "jobs_2019": 1078.5833333333337
+      },
+      {
+        "name": "Santa Maria-Santa Barbara, CA Metro Area",
+        "coast": "west",
+        "growth": -7.579080176634923,
+        "jobs_2019": 2774.083333333333
+      },
+      {
+        "name": "Santa Rosa-Petaluma, CA Metro Area",
+        "coast": "west",
+        "growth": -37.83444816053512,
+        "jobs_2019": 1196.0
+      },
+      {
+        "name": "Savannah, GA Metro Area",
+        "coast": "east",
+        "growth": -23.844965594719845,
+        "jobs_2019": 593.4166666666666
+      },
+      {
+        "name": "Scranton--Wilkes-Barre, PA Metro Area",
+        "coast": "east",
+        "growth": 12.812248186945997,
+        "jobs_2019": 1034.1666666666667
+      },
+      {
+        "name": "Seattle-Tacoma-Bellevue, WA Metro Area",
+        "coast": "west",
+        "growth": 15.16625586169491,
+        "jobs_2019": 48549.66666666666
+      },
+      {
+        "name": "Sebastian-Vero Beach, FL Metro Area",
+        "coast": "east",
+        "growth": 43.61702127659575,
+        "jobs_2019": 117.5
+      },
+      {
+        "name": "Sebring-Avon Park, FL Metro Area",
+        "coast": "east",
+        "growth": 116.77419354838712,
+        "jobs_2019": 38.75
+      },
+      {
+        "name": "Springfield, MA Metro Area",
+        "coast": "east",
+        "growth": -26.91424823741597,
+        "jobs_2019": 1016.5
+      },
+      {
+        "name": "State College, PA Metro Area",
+        "coast": "east",
+        "growth": -4.590064925260462,
+        "jobs_2019": 551.9166666666666
+      },
+      {
+        "name": "Staunton, VA Metro Area",
+        "coast": "east",
+        "growth": 105.83214793741114,
+        "jobs_2019": 78.1111111111111
+      },
+      {
+        "name": "Stockton, CA Metro Area",
+        "coast": "west",
+        "growth": 124.57652303120356,
+        "jobs_2019": 280.4166666666667
+      },
+      {
+        "name": "Sumter, SC Metro Area",
+        "coast": "east",
+        "growth": 7.83049286043298,
+        "jobs_2019": 180.91666666666663
+      },
+      {
+        "name": "Syracuse, NY Metro Area",
+        "coast": "east",
+        "growth": -12.26402403479664,
+        "jobs_2019": 1858.4166666666663
+      },
+      {
+        "name": "Tampa-St. Petersburg-Clearwater, FL Metro Area",
+        "coast": "east",
+        "growth": 17.198257692848106,
+        "jobs_2019": 18385.58333333333
+      },
+      {
+        "name": "Trenton-Princeton, NJ Metro Area",
+        "coast": "east",
+        "growth": -3.662465381789404,
+        "jobs_2019": 4423.25
+      },
+      {
+        "name": "Utica-Rome, NY Metro Area",
+        "coast": "east",
+        "growth": -5.737769080234834,
+        "jobs_2019": 1064.5833333333333
+      },
+      {
+        "name": "Vallejo, CA Metro Area",
+        "coast": "west",
+        "growth": -8.62217129762245,
+        "jobs_2019": 290.91666666666663
+      },
+      {
+        "name": "Vineland-Bridgeton, NJ Metro Area",
+        "coast": "east",
+        "growth": 17.504655493482325,
+        "jobs_2019": 44.75
+      },
+      {
+        "name": "Visalia, CA Metro Area",
+        "coast": "west",
+        "growth": 31.407269338303824,
+        "jobs_2019": 89.41666666666667
+      },
+      {
+        "name": "Washington-Arlington-Alexandria, DC-VA-MD-WV Metro Area",
+        "coast": "east",
+        "growth": -4.088496655716178,
+        "jobs_2019": 174726.0
+      },
+      {
+        "name": "Watertown-Fort Drum, NY Metro Area",
+        "coast": "east",
+        "growth": 42.64705882352941,
+        "jobs_2019": 85.0
+      },
+      {
+        "name": "Wenatchee, WA Metro Area",
+        "coast": "west",
+        "growth": 56.76113360323887,
+        "jobs_2019": 102.91666666666669
+      },
+      {
+        "name": "The Villages, FL Metro Area",
+        "coast": "east",
+        "growth": 91.50285351934046,
+        "jobs_2019": 131.41666666666669
+      },
+      {
+        "name": "Williamsport, PA Metro Area",
+        "coast": "east",
+        "growth": -18.907809747504388,
+        "jobs_2019": 141.91666666666666
+      },
+      {
+        "name": "Wilmington, NC Metro Area",
+        "coast": "east",
+        "growth": 93.19979455572678,
+        "jobs_2019": 811.25
+      },
+      {
+        "name": "Winchester, VA-WV Metro Area",
+        "coast": "east",
+        "growth": 49.88929889298892,
+        "jobs_2019": 225.8333333333333
+      },
+      {
+        "name": "Winston-Salem, NC Metro Area",
+        "coast": "east",
+        "growth": 26.881720430107524,
+        "jobs_2019": 1317.5
+      },
+      {
+        "name": "Worcester, MA-CT Metro Area",
+        "coast": "east",
+        "growth": -9.968354430379744,
+        "jobs_2019": 4055.3333333333335
+      },
+      {
+        "name": "Yakima, WA Metro Area",
+        "coast": "west",
+        "growth": 11.0655737704918,
+        "jobs_2019": 101.66666666666669
+      },
+      {
+        "name": "York-Hanover, PA Metro Area",
+        "coast": "east",
+        "growth": 19.0773754824481,
+        "jobs_2019": 906.8333333333334
+      },
+      {
+        "name": "Yuba City, CA Metro Area",
+        "coast": "west",
+        "growth": -0.834492350486804,
+        "jobs_2019": 119.83333333333334
+      }
+    ],
+    "withheld": [
+      "Amherst Town-Northampton, MA",
+      "Atlanta-Sandy Springs-Alpharetta, GA Metro Area",
+      "Augusta-Richmond County, GA-SC Metro Area",
+      "Bend, OR Metro Area",
+      "Bloomsburg-Berwick, PA Metro Area",
+      "Brunswick, GA Metro Area",
+      "Columbia, SC Metro Area",
+      "Cumberland, MD-WV Metro Area",
+      "Dalton, GA Metro Area",
+      "Durham-Chapel Hill, NC Metro Area",
+      "East Stroudsburg, PA Metro Area",
+      "Elmira, NY Metro Area",
+      "Gainesville, FL Metro Area",
+      "Hilton Head Island-Bluffton, SC Metro Area",
+      "Hinesville, GA Metro Area",
+      "Jacksonville, FL Metro Area",
+      "Kiryas Joel-Poughkeepsie-Newburgh, NY",
+      "Lynchburg, VA Metro Area",
+      "Macon-Bibb County, GA Metro Area",
+      "Madera, CA Metro Area",
+      "New Bern, NC Metro Area",
+      "Ocean City, NJ Metro Area",
+      "Pinehurst-Southern Pines, NC Micro Area",
+      "Richmond, VA Metro Area",
+      "Roanoke, VA Metro Area",
+      "Salisbury, MD-DE Metro Area",
+      "Spartanburg, SC Metro Area",
+      "Spokane-Spokane Valley, WA Metro Area",
+      "Tallahassee, FL Metro Area",
+      "Valdosta, GA Metro Area",
+      "Virginia Beach-Norfolk-Newport News, VA-NC Metro Area",
+      "Walla Walla, WA Metro Area",
+      "Warner Robins, GA Metro Area",
+      "Waterbury-Shelton, CT"
+    ]
+  },
+  "B1": {
+    "series": [
+      {
+        "year": 2015,
+        "si": 3.6,
+        "eu27": 3.5,
+        "min": 1.6,
+        "q25": 2.8,
+        "median": 3.45,
+        "q75": 4.2,
+        "max": 6.4
+      },
+      {
+        "year": 2016,
+        "si": 3.5,
+        "eu27": 3.6,
+        "min": 1.8,
+        "q25": 2.925,
+        "median": 3.6,
+        "q75": 4.7250000000000005,
+        "max": 6.6
+      },
+      {
+        "year": 2017,
+        "si": 3.8,
+        "eu27": 3.7,
+        "min": 2.0,
+        "q25": 2.8249999999999997,
+        "median": 3.6,
+        "q75": 4.975,
+        "max": 6.7
+      },
+      {
+        "year": 2018,
+        "si": 4.0,
+        "eu27": 3.8,
+        "min": 2.2,
+        "q25": 3.2,
+        "median": 3.8,
+        "q75": 4.95,
+        "max": 6.8
+      },
+      {
+        "year": 2019,
+        "si": 3.9,
+        "eu27": 4.0,
+        "min": 2.0,
+        "q25": 3.225,
+        "median": 3.85,
+        "q75": 4.975,
+        "max": 7.0
+      },
+      {
+        "year": 2020,
+        "si": 4.4,
+        "eu27": 4.3,
+        "min": 2.0,
+        "q25": 3.6,
+        "median": 4.2,
+        "q75": 5.225,
+        "max": 7.6
+      },
+      {
+        "year": 2021,
+        "si": 4.8,
+        "eu27": 4.5,
+        "min": 2.4,
+        "q25": 3.8,
+        "median": 4.5,
+        "q75": 5.6,
+        "max": 8.0
+      },
+      {
+        "year": 2022,
+        "si": 4.5,
+        "eu27": 4.6,
+        "min": 2.5,
+        "q25": 4.225,
+        "median": 4.45,
+        "q75": 5.675,
+        "max": 8.6
+      },
+      {
+        "year": 2023,
+        "si": 3.8,
+        "eu27": 4.8,
+        "min": 2.4,
+        "q25": 4.3,
+        "median": 4.7,
+        "q75": 5.825,
+        "max": 8.7
+      },
+      {
+        "year": 2024,
+        "si": 4.3,
+        "eu27": 4.9,
+        "min": 2.5,
+        "q25": 4.6,
+        "median": 5.05,
+        "q75": 5.775,
+        "max": 8.6
+      },
+      {
+        "year": 2025,
+        "si": 4.5,
+        "eu27": 5.0,
+        "min": 2.5,
+        "q25": 4.625,
+        "median": 4.9,
+        "q75": 5.8500000000000005,
+        "max": 8.9
+      }
+    ],
+    "break_year": 2021,
+    "rank": {
+      "2015": 12,
+      "2016": 15,
+      "2017": 11,
+      "2018": 11,
+      "2019": 14,
+      "2020": 12,
+      "2021": 10,
+      "2022": 12,
+      "2023": 25,
+      "2024": 24,
+      "2025": 21
+    },
+    "n": 27,
+    "level_2021": {
+      "AT": 4.5,
+      "BE": 5.6,
+      "BG": 3.5,
+      "CY": 3.9,
+      "CZ": 4.6,
+      "DE": 4.9,
+      "DK": 5.6,
+      "EE": 6.2,
+      "EL": 2.4,
+      "ES": 4.1,
+      "FI": 7.4,
+      "FR": 4.5,
+      "HR": 3.7,
+      "HU": 3.9,
+      "IE": 6.3,
+      "IT": 3.8,
+      "LT": 3.8,
+      "LU": 6.7,
+      "LV": 3.8,
+      "MT": 4.8,
+      "NL": 6.7,
+      "PL": 3.7,
+      "PT": 4.6,
+      "RO": 2.6,
+      "SE": 8.0,
+      "SI": 4.8,
+      "SK": 4.3
+    },
+    "change_2021_2024": {
+      "si_points": -0.5,
+      "others_mean_points": 0.5807692307692307,
+      "si_pct": -10.416666666666663,
+      "others_mean_pct": 13.346678219422065,
+      "rank_points": 27,
+      "rank_pct": 27
+    },
+    "earlier_rise": {
+      "si_2015_2020_points": 0.8000000000000003,
+      "others_mean_2015_2020_points": 0.8730769230769229,
+      "rank_2015_2020": 15
+    },
+    "thousands": [
+      {
+        "year": 2015,
+        "si": 33.0,
+        "eu27": 6555.0
+      },
+      {
+        "year": 2016,
+        "si": 32.1,
+        "eu27": 6919.5
+      },
+      {
+        "year": 2017,
+        "si": 36.1,
+        "eu27": 7181.2
+      },
+      {
+        "year": 2018,
+        "si": 39.0,
+        "eu27": 7570.4
+      },
+      {
+        "year": 2019,
+        "si": 38.5,
+        "eu27": 7880.4
+      },
+      {
+        "year": 2020,
+        "si": 42.5,
+        "eu27": 8442.4
+      },
+      {
+        "year": 2021,
+        "si": 46.5,
+        "eu27": 8920.3
+      },
+      {
+        "year": 2022,
+        "si": 44.7,
+        "eu27": 9370.1
+      },
+      {
+        "year": 2023,
+        "si": 37.2,
+        "eu27": 9749.5
+      },
+      {
+        "year": 2024,
+        "si": 42.9,
+        "eu27": 10189.9
+      },
+      {
+        "year": 2025,
+        "si": 45.2,
+        "eu27": 10450.8
+      }
+    ]
+  }
+}
