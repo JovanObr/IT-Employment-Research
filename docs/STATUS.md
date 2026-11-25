@@ -147,3 +147,10 @@ Website (Slovenian): `web/`, built into a self-contained `web/dist/` (GitHub Pag
   0700921S (J62, J63, total; 2000M01-2025M12); collector `collectors/surs.py` (PC-Axis parser), test code `analysis/hypotheses3_a.py`,
   synthetic tests `tests/test_hypotheses3_a.py` (10, passing). Primary changed before registration from Newey-West (over-rejects 24-54 %
   with 24 autocorrelated months) to a simulated null from the 2015-2019 noise (5 %). **Not run on real data yet.**
+- 2026-11-25 (A): **H run once** (registration `c28fcb4` committed 15:35:34, SURS file downloaded 15:36:18). Register share of J62+J63 in
+  employment 2.06 % (2021) -> 2.30 % (2023), d = +0.238 points (0.211-0.265), p = 0.0001 (simulation floor); persons 18,564 -> 21,475
+  (+15.7 %); every secondary the same direction (2024: +0.33; J62 alone +0.24; employees only +0.21; phi 0.9 still p = 0.0001); 2022-2023
+  0.11 points above the 2015-2019 trend (no slowdown). Block placebo 0 % with p < 0.05 (the AR(1) model is, if anything, cautious).
+  Holm (m = 2) can at most double p, so **H is supported whatever G gives**. Dossier `docs/methods/H.md` (generated, with the facts block for
+  Petar's chapter 6 screen), figure `6w_register` (register vs survey, index 2021 = 100), `7w_hipoteze` now has round 3 (G pending), SURS row
+  in `web/data/a.md`, H in `web/background/a.md`. The January steps in the register share are seasonal (total employment dips every January).

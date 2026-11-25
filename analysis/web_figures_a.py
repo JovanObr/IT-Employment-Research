@@ -59,7 +59,8 @@ def indeed_monthly(raw: Path | None = None, country: str = "US") -> pd.DataFrame
 def load_results() -> dict:
     """The hypothesis results files that exist (round 1: A, B, C, D; round 2: C2, E and, once Stream B delivers them, A2, F)."""
     out = {}
-    for name in ("hypotheses_a_results", "hypotheses_b_results", "hypotheses2_a_results", "hypotheses2_b_results"):
+    for name in ("hypotheses_a_results", "hypotheses_b_results", "hypotheses2_a_results", "hypotheses2_b_results",
+                 "hypotheses3_a_results", "hypotheses3_b_results"):
         p = REPORTS / f"{name}.json"
         if p.exists():
             out.update({k: v for k, v in json.loads(p.read_text(encoding="utf-8")).items() if isinstance(v, dict) and "primary" in v})
@@ -79,6 +80,8 @@ def prepare_web_data() -> dict:
     out = {"indeed": indeed_monthly(), "quarterly": cs.quarterly_layoffs(ev), "monthly": cs.monthly_layoffs(ev),
            "macro": cs.monthly_macro(d["fred"]), "studies": h2["studies"], "jolts": h2["jolts"],
            "panel": panel, "challenger": cp.challenger_compare(ev), "results": load_results()}
+    if (ROOT / "data" / "raw" / "surs_0700921S.csv").exists():
+        out["slovenia"] = slovenia_series()
     heads = load_headcount()
     if heads is not None:
         boom = cs.run_h3(d["fin"], d["revenue"], d["universe"], d["matches"], ev)["used"]
@@ -230,6 +233,40 @@ def fig_e(e: dict) -> go.Figure:
     return fig
 
 
+# ---------------------------------------------------------------------------------------- chapter 6 (hypothesis H; the screen is Stream B's)
+def slovenia_series(raw: Path | None = None, start: int = 2015) -> dict:
+    """Register (SURS 0700921S): monthly share of persons in employment in J62 + J63. Survey (Eurostat isoc_sks_itspt, PC_EMP): yearly
+    share of ICT specialists. Both as an index, mean of 2021 = 100, so the two different measures can share one axis."""
+    from analysis import hypotheses3_a as h3
+    raw = raw or ROOT / "data" / "raw"
+    reg = h3.share_series(pd.read_csv(raw / "surs_0700921S.csv", parse_dates=["month"]))["s"]
+    reg = reg[reg.index.year >= start]
+    eu = pd.read_csv(raw / "eurostat_isoc_sks_itspt.csv")
+    sv = eu[(eu["geo"] == "SI") & (eu["unit"] == "PC_EMP") & (eu["time"] >= start)].set_index("time")["value"].astype(float)
+    return {"register": 100 * reg / reg[reg.index.year == 2021].mean(), "survey": 100 * sv / sv.loc[2021],
+            "register_level": reg, "survey_level": sv}
+
+
+def fig_register(d: dict) -> go.Figure:
+    r, sv = d["register"], d["survey"]
+    sx = [f"{y}-07-01" for y in sv.index]
+    fig = go.Figure([
+        go.Scatter(x=sx, y=sv.values, name="anketa (strokovnjaki IKT)", mode="lines+markers", line=dict(color=wt.ROLE["contrast"], width=3),
+                   marker=dict(size=9), customdata=d["survey_level"].values,
+                   hovertemplate="%{x|%Y}: indeks %{y:.0f} (delež %{customdata:.1f} %)<extra>anketa</extra>"),
+        go.Scatter(x=_days(r.index), y=r.values, name="register (zaposleni v IT podjetjih)", mode="lines", line=dict(color=wt.ROLE["main"], width=4),
+                   customdata=d["register_level"].values,
+                   hovertemplate="%{x|%m/%Y}: indeks %{y:.0f} (delež %{customdata:.2f} %)<extra>register</extra>")])
+    fig.add_hline(y=100, line=dict(color=PALETTE["ink"], width=1, dash="dot"))
+    _layout(fig)
+    r23 = r[r.index.year == 2023].mean()
+    wt.title(fig, f"Po registru je delež IT v Sloveniji 2021-2023 zrasel za {_fmt(r23 - 100)} %, po anketi padel za {_fmt(100 - sv.loc[2023])} %",
+             "delež zaposlenih v IT, indeks (povprečje 2021 = 100); register šteje vse zaposlene, anketa le vzorec")
+    wt.direct_labels(fig, fmt=lambda name, y: "anketa" if name.startswith("anketa") else "register")
+    fig.update_yaxes(title_text="indeks (2021 = 100)")
+    return fig
+
+
 # ---------------------------------------------------------------------------------------- chapter 7
 # Every hypothesis in plain words: the question and what we expected (both streams; the table fills in as results arrive).
 HYPOTHESES = {
@@ -241,6 +278,8 @@ HYPOTHESES = {
         ("E", "Podjetja odpuščanja napovedo ob četrtletnih poročilih?"),
         ("A2", "So države EU z več IKT leta 2021 do 2024 rasle počasneje?"),
         ("F", "Je bila rast IT 2019-2024 na vzhodni obali drugačna kot na zahodni?")],
+    3: [("G", "So prosta delovna mesta v IT v državah EU sledila lastni obrestni meri?"),
+        ("H", "Je delež IT v Sloveniji po registru 2021-2023 zrasel (anketa: padec)?")],
 }
 
 
@@ -279,13 +318,14 @@ def fig_hypotheses(t: pd.DataFrame) -> go.Figure:
     fig = go.Figure(go.Table(
         columnwidth=[1.1, 5.2, 1.1, 1.9],
         header=dict(values=["", "<b>vprašanje</b>", "<b>p</b>", "<b>odgovor</b>"], align="left",
-                    fill_color=PALETTE["light_grey"], font=dict(size=14, color=PALETTE["ink"]), height=28),
+                    fill_color=PALETTE["light_grey"], font=dict(size=13, color=PALETTE["ink"]), height=24),
         cells=dict(values=[label, t["vprasanje"], p, answers], align="left", fill_color=[colors] * 4,
-                   font=dict(size=14, color=PALETTE["ink"]), height=26)))
-    _layout(fig, height=420)
+                   font=dict(size=13, color=PALETTE["ink"]), height=23)))
+    _layout(fig, height=460)
     n_yes, n_done = int((t["odgovor"] == "da").sum()), int((t["odgovor"] != "še računamo").sum())
-    wt.title(fig, f"Od {n_done} preverjenih hipotez sta {n_yes} potrjeni" if n_yes == 2 else f"Od {n_done} preverjenih hipotez potrjenih: {n_yes}",
-             "p je po popravku za štiri teste v istem krogu (Holm); »da« pomeni p < 0,05 in smer, kot smo jo napovedali")
+    verb = {1: "je {} potrjena", 2: "sta {} potrjeni"}.get(n_yes, "so {} potrjene" if 3 <= n_yes <= 4 else "je {} potrjenih")
+    wt.title(fig, f"Od {n_done} preverjenih hipotez " + verb.format(n_yes),
+             "p je popravljen za vse teste istega kroga (Holm); »da« pomeni p < 0,05 in smer, kot smo jo napovedali")
     fig.update_layout(margin=dict(l=10, r=10, t=84, b=0))
     return fig
 
@@ -303,6 +343,7 @@ def build_web_figures(data: dict | None = None) -> dict[str, go.Figure]:
             **({"3w_rast": fig_hiring(hc)} if "quartiles" in hc else {}),
             **({"4w_zaposleni": fig_c2(res["C2"])} if "C2" in res else {}),
             **({"4w_porocila": fig_e(res["E"])} if "E" in res else {}),
+            **({"6w_register": fig_register(data["slovenia"])} if data.get("slovenia") else {}),
             "7w_hipoteze": fig_hypotheses(hypothesis_table(res))}
 
 

@@ -194,5 +194,12 @@
     "url": "https://raw.githubusercontent.com/hiring-lab/remote-tracker/main/",
     "licence_or_terms": "CC BY 4.0 - attribution to Indeed Hiring Lab required (https://creativecommons.org/licenses/by/4.0/)",
     "retrieved_at_utc": "2026-11-10T09:35:50+00:00"
+  },
+  {
+    "source": "SURS SiStat 0700921S",
+    "file": "data\\raw\\surs_0700921S.csv",
+    "url": "https://pxweb.stat.si/SiStat/sl/Home/DownloadPxMatrix?pxMatrixName=0700921S",
+    "licence_or_terms": "SURS: podatki so prosto dostopni; obvezno navajanje vira (Vir: SURS)",
+    "retrieved_at_utc": "2026-11-25T14:36:18+00:00"
   }
 ]

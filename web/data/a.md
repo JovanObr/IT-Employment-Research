@@ -12,6 +12,7 @@ Vsi podatki so javni. Za vsak vir: kaj meri, katero obdobje, katere podatke smo 
 | **SEC EDGAR, finančna poročila** (borzna agencija ZDA) | premoženje, prihodki, stroški javnih podjetij | 2019 – 2026, četrtletno (869 tehnoloških podjetij) | velikost (premoženje), rast prihodkov in stroškov | uradni, preverjeni podatki za vsako podjetje | 3 |
 | **SEC EDGAR, letna poročila 10-K** | število zaposlenih na zadnji dan poslovnega leta | 2019, 2021 – 2025 (862 podjetij) | število zaposlenih, prebrano iz besedila poročila | edini javni podatek o zaposlenih po podjetjih | 3, 4 |
 | **SEC EDGAR, poročila 8-K (točka 2.02)** | datumi četrtletnih poročil o poslovanju | 2020 – 2026 | datum vsakega poročila | da preverimo, ali napovedi sovpadajo s poročili | 4 |
+| **SURS, register delovno aktivnega prebivalstva** (Statistični urad RS, tabela 0700921S) | vsi zaposleni in samozaposleni v Sloveniji po dejavnostih | januar 2015 – december 2025, mesečno | dejavnosti J62 in J63 (programiranje, svetovanje, druge informacijske dejavnosti) ter vsi zaposleni | register šteje vse, ne le vzorca: preveri padec, ki ga kaže anketa (hipoteza H) | 6 |
 | **Yahoo Finance** | dnevne cene delnic | januar 2019 – oktober 2026 | cene ob dnevih objave odpuščanj in indeks celotne borze | odziv borze na napoved | 4 |
 
 **Kaj smo s podatki naredili, preden smo karkoli testirali** (podrobno v `docs/methods/`):

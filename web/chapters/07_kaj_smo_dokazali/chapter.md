@@ -4,7 +4,7 @@ question: Vse hipoteze, preprosto povedano
 minutes: 1.5
 owner: A
 ---
-## Osem vprašanj, zapisanih vnaprej
+## Deset vprašanj, zapisanih vnaprej
 
 »Da« pomeni, da hipoteza zdrži tudi po [[popravek za več testov|popravku za več testov]] in da je učinek v smeri, ki smo jo napovedali.
 

@@ -10,8 +10,9 @@ Vsaka hipoteza ima svoj opis: vprašanje, točni podatki in od kod, vsi koraki p
 | D (1. krog) | Ali borza ponovljene napovedi kaznuje bolj kot prve? | ne moremo trditi | [D.md](https://github.com/JovanObr/IT-Employment-Research/blob/main/docs/methods/D.md) |
 | C2 (2. krog) | Ali se napoved odpuščanj 2024 in 2025 pokaže v številu zaposlenih? | da | [C2.md](https://github.com/JovanObr/IT-Employment-Research/blob/main/docs/methods/C2.md) |
 | E (2. krog) | Ali podjetja odpuščanja napovedo ob četrtletnih poročilih? | da | [E.md](https://github.com/JovanObr/IT-Employment-Research/blob/main/docs/methods/E.md) |
+| H (3. krog) | Je delež IT v Sloveniji po registru zaposlenih 2021-2023 zrasel, čeprav anketa kaže padec? | da | [H.md](https://github.com/JovanObr/IT-Employment-Research/blob/main/docs/methods/H.md) |
 
-Vnaprejšnje registracije: [1. krog](https://github.com/JovanObr/IT-Employment-Research/blob/main/docs/hypotheses/PREREGISTRATION.md), [2. krog (C2, E)](https://github.com/JovanObr/IT-Employment-Research/blob/main/docs/hypotheses/round2/C2_E.md). Datum in ura vsake registracije sta zapisana v zgodovini repozitorija (git), zato se vidi, da je bila zapisana pred rezultati.
+Vnaprejšnje registracije: [1. krog](https://github.com/JovanObr/IT-Employment-Research/blob/main/docs/hypotheses/PREREGISTRATION.md), [2. krog (C2, E)](https://github.com/JovanObr/IT-Employment-Research/blob/main/docs/hypotheses/round2/C2_E.md), [3. krog (H)](https://github.com/JovanObr/IT-Employment-Research/blob/main/docs/hypotheses/round3/H.md). Datum in ura vsake registracije sta zapisana v zgodovini repozitorija (git), zato se vidi, da je bila zapisana pred rezultati.
 
 ### Vprašanja, ki jih pričakujemo
 
