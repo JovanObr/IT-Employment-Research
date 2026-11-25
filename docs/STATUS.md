@@ -135,3 +135,15 @@ Website (Slovenian): `web/`, built into a self-contained `web/dist/` (GitHub Pag
   `primary.predicted_sign`. B re-exported only `7w_hipoteze.json` from the results files (see Phase 3 (B)) and rebuilt `web/dist/`. Notebook 11 can take B's figures from `analysis.hypotheses2_b.build_figures_b(load_results())`.
 
 ## Blocked / questions
+- 2026-11-25 (A), review of Stream B's round 2 and chapters 5-6: A2 (b = -0.025, p = 0.734) and F (medians West +2.0 % vs East +12.7 %, U = 1762,
+  p = 0.292) recomputed independently from the committed inputs (SHA-256 match) and identical; registration `fdd6e00` precedes the code and
+  the run. Round 2 Holm: E 0.0008, C2 0.003, F 0.585, A2 0.734, so C2 and E supported, A2 and F not. Small display fixes: `6w_regije`
+  title shortened (it was cut off) and every city label shown (`analysis/web_figures_b.py`, agreed display fix); the theme puts the legend
+  below the x-axis title (`web_theme.apply`); chapter 8 gets a fourth takeaway from chapters 5-6.
+- 2026-11-25: **Round 3 planned** (`docs/tasks/MILESTONE_4_ROUND3.md`, rules `docs/hypotheses/round3/README.md`): G (Stream B) = own central
+  bank vs. common shock, EU job vacancies in ICT; H (Stream A) = Slovenia's survey dip checked against the SURS employment register.
+  Registrations due Thu 26 Nov, before the data are downloaded.
+- 2026-11-25 (A): **H registered** (`docs/hypotheses/round3/H.md`, to be committed before any SURS download): metadata check of SiStat
+  0700921S (J62, J63, total; 2000M01-2025M12); collector `collectors/surs.py` (PC-Axis parser), test code `analysis/hypotheses3_a.py`,
+  synthetic tests `tests/test_hypotheses3_a.py` (10, passing). Primary changed before registration from Newey-West (over-rejects 24-54 %
+  with 24 autocorrelated months) to a simulated null from the 2015-2019 noise (5 %). **Not run on real data yet.**

@@ -139,11 +139,10 @@ def fig_regions(m: pd.DataFrame) -> go.Figure:
                              hovertemplate="%{y}: %{x:.0f} %<extra>" + label + "</extra>"))
     _layout(fig, 520)
     med = d.groupby("group")["growth"].median()
-    wt.title(fig, f"IT delovna mesta so rasla v hitro rastočih mestih (srednje {_spct(med['vzhajajoča'])}), "
-                  f"v velikih središčih skoraj ne ({_spct(med['središče'])})",
+    wt.title(fig, f"Rasla so hitro rastoča mesta (srednje {_spct(med['vzhajajoča'])}), velika središča ne ({_spct(med['središče'])})",
              "sprememba števila delovnih mest v IT storitvah 2019 → 2024; skupini po študiji Brookings (2022)")
     fig.update_layout(xaxis=dict(title="sprememba (%)", zeroline=True), yaxis=dict(title="", categoryorder="array",
-                      categoryarray=list(d["name"])), barmode="overlay", bargap=0.25,
+                      categoryarray=list(d["name"]), dtick=1, tickfont=dict(size=14)), barmode="overlay", bargap=0.25,
                       legend=dict(orientation="h", y=-0.15, x=0))
     return fig
 

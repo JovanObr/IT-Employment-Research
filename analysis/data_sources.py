@@ -53,6 +53,7 @@ SOURCE_LABELS = {
     "data/raw/indeed_aggregate_postings.csv": _INDEED,
     "data/raw/indeed_it_sector_postings.csv": _INDEED,
     # Stream B, Milestone 2
+    "data/raw/surs_0700921S.csv": "SURS, Statistični urad RS, register delovno aktivnega prebivalstva po dejavnostih (SiStat 0700921S)",
     "data/raw/indeed_remote_postings.csv": "Indeed Hiring Lab, delež oglasov v ZDA, ki ponujajo delo na daljavo ali hibridno delo",
 }
 

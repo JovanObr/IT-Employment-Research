@@ -1,5 +1,7 @@
 # Milestone 4 (due Wednesday 2026-12-02, midnight): round 2 hypotheses, presentation theme, first version of the final presentation
 
+> **Extension (2026-11-25):** round 3 hypotheses G and H, see `docs/tasks/MILESTONE_4_ROUND3.md`.
+
 ## The whole plan (both streams)
 
 ### What the milestone asks for
