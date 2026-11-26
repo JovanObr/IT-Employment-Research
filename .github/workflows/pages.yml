@@ -1,6 +1,8 @@
 # Publishes the presentation website: deploys the committed, self-contained web/dist/ folder to GitHub Pages.
 # The site is built locally (python -m analysis.web_build), because the figures need local data that GitHub does not have.
 # One-time setup in the repository: Settings -> Pages -> Source: GitHub Actions.
+# Upload and deploy are separate jobs, as actions/deploy-pages recommends: on 2026-11-25 two runs failed because the deploy step, running
+# a fraction of a second after the upload in the same job, did not yet see the uploaded artifact ("Found 0 artifact(s)").
 name: Pages
 on:
   push:
@@ -15,16 +17,20 @@ concurrency:
   group: pages
   cancel-in-progress: true
 jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: web/dist
   deploy:
+    needs: upload
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: web/dist
       - id: deployment
         uses: actions/deploy-pages@v4
