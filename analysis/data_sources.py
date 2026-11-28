@@ -55,6 +55,9 @@ SOURCE_LABELS = {
     # Stream B, Milestone 2
     "data/raw/surs_0700921S.csv": "SURS, Statistični urad RS, register delovno aktivnega prebivalstva po dejavnostih (SiStat 0700921S)",
     "data/raw/indeed_remote_postings.csv": "Indeed Hiring Lab, delež oglasov v ZDA, ki ponujajo delo na daljavo ali hibridno delo",
+    # Stream B, round 3 (hypothesis G)
+    "data/raw/eurostat_jvs_q_nace2.csv": "Eurostat, statistika prostih delovnih mest (stopnja prostih delovnih mest po dejavnostih, četrtletno)",
+    "data/raw/eurostat_irt_st_m.csv": "Eurostat, obrestne mere denarnega trga (trimesečna obrestna mera, mesečno)",
 }
 
 # Derived files: how they are built and from what. Only the inputs whose numbers reach the file are listed.
@@ -149,6 +152,8 @@ FIGURE_SOURCES = {
     "6w_obali": ["data/processed/metro_map_data.csv"],
     "6w_slovenija": ["data/raw/eurostat_isoc_sks_itspt.csv"],
     "6w_dohitevanje": ["data/raw/eurostat_isoc_sks_itspt.csv"],
+    # chapter 2 screen for G (drawn from reports/hypotheses3_b_results.json, computed by analysis.hypotheses3_b from these files)
+    "2w_drzave": ["data/raw/eurostat_jvs_q_nace2.csv", "data/raw/eurostat_irt_st_m.csv"],
     # notebook 09, Stream B (analysis/compare_text_geo.py); published numbers are named in the text
     "9b_daljava_primerjava": ["data/processed/hn_flags_monthly.csv", "data/processed/indeed_remote_monthly.csv"],
     "9b_ui_primerjava": ["data/processed/hn_flags_monthly.csv"],

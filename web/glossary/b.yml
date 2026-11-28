@@ -4,3 +4,5 @@ it storitve: Panoga računalniškega programiranja, svetovanja in upravljanja ra
 mestno območje: Mesto skupaj z okoliškimi kraji, iz katerih ljudje vsak dan hodijo tja na delo (v ZDA »metro area«).
 strokovnjak ikt: Zaposleni, ki dela z informacijskimi in komunikacijskimi tehnologijami, na primer programer, sistemski skrbnik ali analitik. Šteje jih Eurostat v anketi o delovni sili.
 regresija k povprečju: Če je meritev enkrat po naključju visoka, je naslednja praviloma nižja. Zato lahko navidezno »dohitevanje« vidimo tudi tam, kjer ga ni.
+register zaposlenih: Uradni seznam vseh zaposlenih, ki ga za statistiko uporablja Statistični urad RS. Šteje vsakega zaposlenega vsak mesec, zato nima napake vzorca.
+anketa o delovni sili: Raziskava, v kateri statistični urad vsako četrtletje vpraša vzorec ljudi o njihovem delu. Pri majhnih skupinah ima zaradi vzorca precej naključnega nihanja.

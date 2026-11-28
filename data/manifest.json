@@ -201,5 +201,19 @@
     "url": "https://pxweb.stat.si/SiStat/sl/Home/DownloadPxMatrix?pxMatrixName=0700921S",
     "licence_or_terms": "SURS: podatki so prosto dostopni; obvezno navajanje vira (Vir: SURS)",
     "retrieved_at_utc": "2026-11-25T14:36:18+00:00"
+  },
+  {
+    "source": "Eurostat jvs_q_nace2",
+    "file": "data\\raw\\eurostat_jvs_q_nace2.csv",
+    "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/jvs_q_nace2",
+    "licence_or_terms": "Eurostat: free reuse with attribution (https://ec.europa.eu/eurostat/about-us/policies/copyright)",
+    "retrieved_at_utc": "2026-11-28T12:56:37+00:00"
+  },
+  {
+    "source": "Eurostat irt_st_m",
+    "file": "data\\raw\\eurostat_irt_st_m.csv",
+    "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/irt_st_m",
+    "licence_or_terms": "Eurostat: free reuse with attribution (https://ec.europa.eu/eurostat/about-us/policies/copyright)",
+    "retrieved_at_utc": "2026-11-28T12:56:37+00:00"
   }
 ]

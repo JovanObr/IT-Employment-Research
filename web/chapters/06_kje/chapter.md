@@ -1,7 +1,7 @@
 ---
 title: Kje?
 question: Jug ZDA proti velikim središčem, vzhodna proti zahodni obali, Evropa in Slovenija
-minutes: 2.5
+minutes: 3
 owner: B
 ---
 ## Rasla so hitro rastoča mesta, ne velika središča
@@ -34,16 +34,26 @@ V EU je delež [[strokovnjak ikt|strokovnjakov IKT]] med zaposlenimi ves čas ra
 
 ---
 
-## Je Slovenija padla, ker je začela visoko?
+## Je bil slovenski padec pravi?
+
+Najverjetneje ne. Po [[register zaposlenih|registru]], ki šteje vse zaposlene in ne le vzorca, je bilo v slovenskih IT podjetjih leta 2023 **16 %** več ljudi kot leta 2021 (21.475 namesto 18.564). Njihov delež med vsemi zaposlenimi je zrasel z 2,06 % na 2,30 %, [[anketa o delovni sili|anketa]] pa je pokazala padec s 4,8 % na 3,8 %.
+
+{{figure: 6w_register}}
+
+{{govor: To je hipoteza H, zapisana vnaprej, in je potrjena, tudi po popravku za dva testa. Anketa vpraša le vzorec ljudi, zato je pri majhni skupini, kot so slovenski strokovnjaki IKT, veliko naključnega nihanja. Register Statističnega urada pa vsak mesec šteje vsakega zaposlenega. Register in anketa ne merita istega: register šteje vse ljudi v IT podjetjih, tudi tiste, ki niso programerji, anketa pa strokovnjake IKT v vseh panogah, tudi v bankah in industriji. Zato ne trdimo, da je anketa napačna, le da pravega upada ni videti. Slovenski IT po zvišanju obrestnih mer tudi ni upočasnil: leti 2022 in 2023 sta bili nad trendom let 2015 do 2019.}}
+
+---
+
+## Je Slovenija v anketi padla, ker je začela visoko?
 
 Ne. Države, ki so začele z več strokovnjaki IKT, niso rasle opazno počasneje. Po skupnem trendu bi Slovenija morala zrasti za **0,6** odstotne točke; padla je za 0,5.
 
 {{figure: 6w_dohitevanje}}
 
-{{govor: To je hipoteza A2. Če bi države z višjim izhodiščem rasle počasneje, bi pike padale od leve proti desni. Ne padajo: črta je skoraj vodoravna. Izhodišče smo vzeli iz let 2019 in 2020, da ista številka ne nastopa na obeh straneh primerjave, kar bi lahko ustvarilo navidezno [[regresija k povprečju|dohitevanje]]. Slovenija je začela na sredini lestvice. Njen padec torej ni posledica visokega izhodišča; zakaj je padla, s temi podatki ne vemo.}}
+{{govor: To je hipoteza A2. Če bi države z višjim izhodiščem rasle počasneje, bi pike padale od leve proti desni. Ne padajo: črta je skoraj vodoravna. Izhodišče smo vzeli iz let 2019 in 2020, da ista številka ne nastopa na obeh straneh primerjave, kar bi lahko ustvarilo navidezno [[regresija k povprečju|dohitevanje]]. Slovenija je začela na sredini lestvice. Njen padec v anketi torej ni posledica visokega izhodišča; po registru, ki smo ga videli na prejšnjem zaslonu, je najverjetneje naključje vzorca.}}
 
 ---
 
-{{poudarek: V ZDA so IT storitve rasle v hitro rastočih mestih juga in notranjosti, ne v velikih središčih. Razlike med obalama ne moremo dokazati, slovenskega padca po letu 2021 pa ne pojasni visoko izhodišče.}}
+{{poudarek: V ZDA so IT storitve rasle v hitro rastočih mestih juga in notranjosti, ne v velikih središčih. Razlike med obalama ne moremo dokazati. Slovenski padec po letu 2021 je viden le v anketi; register, ki šteje vse zaposlene, kaže rast.}}
 
 {{govor: Geografija je torej del zgodbe. Pogosta razlaga je, da je rast šla tja, kjer je življenje cenejše in kjer je delo na daljavo to omogočilo. Tega vzroka nismo testirali; pokazali smo le, kje je bila rast.}}

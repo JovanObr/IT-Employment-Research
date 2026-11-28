@@ -7,6 +7,7 @@ Reads only committed files, so it runs without the raw data:
   data/processed/indeed_remote_monthly.csv  (python -m analysis.compare_text_geo aggregates)  Indeed remote/hybrid share, software postings
   data/processed/metro_map_data.csv         (python -m analysis.geo mapdata)            IT job growth 2019-2024 by metro
   reports/hypotheses2_b_results.json        (python -m analysis.hypotheses2_b)         A2, F and the Slovenia check B1
+  reports/hypotheses3_b_results.json        (python -m analysis.hypotheses3_b)         G (figure 2w_drzave, chapter 2, text by Stream A)
 
 One message per chart: the title is the conclusion, at most two coloured series (analysis.web_theme roles), everything else grey.
 The numbers in the chapter text (web/chapters/05, 06) come from `facts()`, printed by `main`. Only aggregates reach the JSON files.
@@ -90,6 +91,9 @@ def load_inputs() -> dict:
     indeed = pd.read_csv(PROCESSED / "indeed_remote_monthly.csv")
     geo = pd.read_csv(PROCESSED / "metro_map_data.csv", dtype={"cbsa_code": str})
     res = json.loads((REPORTS / "hypotheses2_b_results.json").read_text(encoding="utf-8"))
+    g_path = REPORTS / "hypotheses3_b_results.json"
+    if g_path.exists():
+        res = {**res, "G": json.loads(g_path.read_text(encoding="utf-8"))["G"]}
     return {"flags": yearly_flags(flags), "indeed": yearly_indeed(indeed), "metros": study_metros(geo), "results": res,
             "last_month": str(flags["month"].max())}
 
@@ -220,6 +224,40 @@ def fig_catch_up(a2: dict) -> go.Figure:
     return fig
 
 
+# ---------------------------------------------------------------------------------------- chapter 2 (hypothesis G)
+def _qdate(q: str) -> str:
+    """'2022Q1' -> '2022-02-15' (middle of the quarter, for a date axis)."""
+    return f"{q[:4]}-{3 * int(q[-1]) - 1:02d}-15"
+
+
+def fig_countries(g: dict) -> go.Figure:
+    """ICT vacancy rate of the four early-hiking countries vs. the euro-area countries, with the first hikes marked."""
+    s = pd.DataFrame(g["series"])
+    x = [_qdate(q) for q in s["quarter"]]
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=x, y=s["vac_early"].round(2), mode="lines+markers", name="Češka, Madžarska, Poljska, Romunija",
+                             line=dict(color=ROLE["main"], width=3), hovertemplate="%{x|%Y}: %{y:.1f} %<extra>zgodnje podražitve</extra>"))
+    fig.add_trace(go.Scatter(x=x, y=s["vac_euro"].round(2), mode="lines+markers", name="države z obrestno mero ECB",
+                             line=dict(color=ROLE["contrast"], width=3), hovertemplate="%{x|%Y}: %{y:.1f} %<extra>evro</extra>"))
+    _layout(fig, 480)
+    wt.direct_labels(fig)
+    for d, label, side in (("2021-06-22", "prve podražitve<br>(Češka, Madžarska)", "right"), ("2022-07-21", "prva podražitev<br>ECB", "left")):
+        fig.add_shape(type="line", x0=d, x1=d, y0=0, y1=1, yref="paper", line=dict(color=PALETTE["grey"], width=1, dash="dot"))
+        fig.add_annotation(x=d, y=0.03, yref="paper", text=label, showarrow=False, xanchor=side, yanchor="bottom",
+                           xshift=-4 if side == "right" else 4, align=side, font=dict(color=PALETTE["grey"], size=12))
+    p = g["primary"]
+    supported = p["p"] < 0.05 and p["b"] < 0
+    peak_e = s.loc[s["vac_early"].idxmax(), "quarter"]
+    peak_u = s.loc[s["vac_euro"].idxmax(), "quarter"]
+    head = ("Kjer so obresti dvignili prej, je povpraševanje po kadrih IKT upadlo prej" if supported else
+            (f"Prosta mesta v IKT so povsod začela padati leta {peak_e[:4]}, ne glede na to, kdaj so dvignili obresti"
+             if peak_e == peak_u else "Povpraševanje po kadrih IKT ni sledilo lastni centralni banki"))
+    wt.title(fig, head, "stopnja prostih delovnih mest v informacijskih in komunikacijskih dejavnostih (%), povprečje držav v skupini (z obrestno mero ECB: 19 držav z evrom, Hrvaška in Bolgarija)")
+    fig.update_layout(yaxis=dict(title="prosta delovna mesta (%)", rangemode="tozero"),
+                      xaxis=dict(title="", range=[_qdate(s["quarter"].iloc[0])[:7] + "-01", f"{int(s['quarter'].iloc[-1][:4]) + 1}-09-01"]))
+    return fig
+
+
 # ---------------------------------------------------------------------------------------- all
 def build_web_figures(data: dict | None = None) -> dict[str, go.Figure]:
     """Every Stream B figure used on the site, by name."""
@@ -230,7 +268,8 @@ def build_web_figures(data: dict | None = None) -> dict[str, go.Figure]:
             "6w_regije": fig_regions(data["metros"]),
             **({"6w_obali": fig_coasts(res["F"])} if "F" in res else {}),
             **({"6w_slovenija": fig_slovenia(res["B1"])} if "B1" in res else {}),
-            **({"6w_dohitevanje": fig_catch_up(res["A2"])} if "A2" in res else {})}
+            **({"6w_dohitevanje": fig_catch_up(res["A2"])} if "A2" in res else {}),
+            **({"2w_drzave": fig_countries(res["G"])} if "G" in res else {})}
 
 
 def facts(data: dict) -> dict:
@@ -257,6 +296,14 @@ def facts(data: dict) -> dict:
         sr = pd.DataFrame(b1["series"]).set_index("year")
         f["B1"] = {"si": sr["si"].to_dict(), "eu27": sr["eu27"].to_dict(), "rank": b1["rank"], "change": b1["change_2021_2024"],
                    "earlier": b1["earlier_rise"], "thousands": {r["year"]: r["si"] for r in b1["thousands"]}}
+    if "G" in res:
+        g = res["G"]
+        p, s = g["primary"], pd.DataFrame(g["series"]).set_index("quarter")
+        f["G"] = {"b": round(p["b"], 3), "ci95": [round(v, 3) for v in p["ci95_cr1"]], "p_wild": p["p_wild"], "p_ri": p["p_ri"],
+                  "mde_b": p["mde_b"], "placebo": g["placebo"]["share_p_below_005"], "n": p["n"], "countries": p["countries"],
+                  "vac_early": {q: round(s.at[q, "vac_early"], 2) for q in ("2019Q4", "2022Q1", "2024Q4")},
+                  "vac_euro": {q: round(s.at[q, "vac_euro"], 2) for q in ("2019Q4", "2022Q1", "2024Q4")},
+                  "peak_early": str(s["vac_early"].idxmax()), "peak_euro": str(s["vac_euro"].idxmax())}
     return f
 
 

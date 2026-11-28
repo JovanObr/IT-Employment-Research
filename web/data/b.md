@@ -9,6 +9,8 @@
 | **Census Gazetteer** | lega mestnih območij | razmejitev 2023 | koordinate za zemljevid | zemljevid v 8. zvezku | 6 |
 | **Brookings** (Muro in You, 2022) | seznam velikih tehnoloških središč in hitro rastočih mest | objava 2022 | imena 17 mest v dveh skupinah | skupine je določil nekdo drug, pred našimi podatki | 6 |
 | **Eurostat**, anketa o delovni sili (`isoc_sks_itspt`) | strokovnjaki IKT kot delež vseh zaposlenih in v tisočih | 2015 – 2025, letno, 27 držav EU in povprečje EU | delež (%) in število (tisoč) | uradna primerljiva statistika za vse države EU | 6 |
+| **Eurostat**, statistika prostih delovnih mest (`jvs_q_nace2`) | delež prostih delovnih mest med vsemi delovnimi mesti, četrtletno | 2015 Q1 – 2024 Q4 (test 2019 Q1 – 2024 Q4), 27 držav EU | informacijske in komunikacijske dejavnosti (J) ter vse dejavnosti (B-S), nedesezonirano, vsa podjetja | uradni podatek o povpraševanju po delavcih za vse države EU; za to vprašanje ga prej nismo videli | 2 |
+| **Eurostat**, obrestne mere denarnega trga (`irt_st_m`) | trimesečna medbančna obrestna mera, mesečno | julij 2017 – december 2024 | evrsko območje ter Češka, Danska, Madžarska, Poljska, Romunija, Švedska; četrtletna povprečja | lastna obrestna mera vsake države | 2 |
 
 **Kaj smo s podatki naredili, preden smo karkoli testirali** (podrobno v `docs/methods/A.md`, `B.md`, `A2.md`, `F.md`):
 
@@ -17,3 +19,4 @@
 - QCEW: četrtletje, v katerem urad števila zaposlenih ne objavi (zaradi zaupnosti), štejemo kot manjkajoče, nikoli kot nič. Rast 2019 → 2024 primerja ista četrtletja v obeh letih (243 območij), če to ni mogoče, povprečje objavljenih četrtletij (20 območij); 140 območij nima rasti. Območja, ki so leta 2023 dobila novo kodo, smo povezali s staro (`config/qcew_code_crosswalk.csv`).
 - Obali: po prvi zvezni državi v imenu mesta, s seznamom držav, zapisanim pred testom.
 - Eurostat: vrednosti uporabimo, kot so objavljene; ocene (oznaka »e«) in prelom metode leta 2021 (oznaka »b«) so našteti v rezultatih. Primerjave sprememb se začnejo leta 2021.
+- Prosta delovna mesta in obresti (hipoteza G): primerjamo spremembo v enem letu (isto četrtletje lani), zato sezonsko nihanje odpade. Države z evrom ter Hrvaška in Bolgarija (njune valute so bile vezane na evro, lastne obrestne mere v tem obdobju niso objavljene) dobijo obrestno mero ECB. Francija za 1. četrtletje 2020 nima podatka (2 od 648 vrstic manjkata).

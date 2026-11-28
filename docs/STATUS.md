@@ -134,6 +134,11 @@ Website (Slovenian): `web/`, built into a self-contained `web/dist/` (GitHub Pag
 - 2026-11-23 B tells A (Jovan): `reports/hypotheses2_b_results.json` is pushed with keys `A2` and `F`, each with `primary.p` and
   `primary.predicted_sign`. B re-exported only `7w_hipoteze.json` from the results files (see Phase 3 (B)) and rebuilt `web/dist/`. Notebook 11 can take B's figures from `analysis.hypotheses2_b.build_figures_b(load_results())`.
 
+- 2026-11-28 B tells A (Jovan): `reports/hypotheses3_b_results.json` is pushed with key `G` (`primary.p` = 0.5163, `primary.predicted_sign` = false),
+  figure `web/figures/b/2w_drzave.json` (`analysis/web_figures_b.py` `fig_countries`, `FIGURE_SOURCES` row) and the facts block at the end of
+  `docs/methods/G.md` for your chapter 2 screen. Please add G to `HYPOTHESES` for `7w_hipoteze` and notebook 11. Chapter 6 now has the H screen
+  (after "Evropa in Slovenija", minutes 2.5 -> 3) and two glossary terms in `web/glossary/b.yml` (`register zaposlenih`, `anketa o delovni sili`).
+
 ## Blocked / questions
 - 2026-11-25 (A), review of Stream B's round 2 and chapters 5-6: A2 (b = -0.025, p = 0.734) and F (medians West +2.0 % vs East +12.7 %, U = 1762,
   p = 0.292) recomputed independently from the committed inputs (SHA-256 match) and identical; registration `fdd6e00` precedes the code and
@@ -154,3 +159,12 @@ Website (Slovenian): `web/`, built into a self-contained `web/dist/` (GitHub Pag
   Holm (m = 2) can at most double p, so **H is supported whatever G gives**. Dossier `docs/methods/H.md` (generated, with the facts block for
   Petar's chapter 6 screen), figure `6w_register` (register vs survey, index 2021 = 100), `7w_hipoteze` now has round 3 (G pending), SURS row
   in `web/data/a.md`, H in `web/background/a.md`. The January steps in the register share are seasonal (total employment dips every January).
+- 2026-11-28 (B), **done by the coding agent (Claude), not by a person**: **G registered** (`docs/hypotheses/round3/G.md`, commit `849b2ea`,
+  13:56:22; collector run 13:56:35). Design check (metadata, counts, flags only): indicator is `JVR`; all 27 countries publish section J NSA and SA,
+  France misses 2020Q1, Slovenia flagged `u`; BG and HR have no own 3-month rate in the window (both take the ECB rate); only CZ, HU, PL, RO
+  depart from the euro-area rate (SE, DK follow it). Synthetic calibration before registration: cluster-robust t over-rejects 13-21 %, the
+  restricted wild cluster bootstrap 2.3-5.5 % on the real rate paths, so it stayed the primary. **Single real run: b = +0.024 (95 % -0.048 to
+  +0.097), wild p = 0.516, wrong sign: not supported**; Holm (m = 2) leaves 0.516. Placebo 3.9 %; power logged before b: 0.16. Every secondary the
+  same (lags 0/2, without SI, all industries, leave-one-out). Descriptive: ICT vacancies peaked in 2022Q1 in both the early hikers and the
+  ECB-rate countries. Dossier `docs/methods/G.md` (facts block for Jovan), figure `2w_drzave`, chapter 6 screen for H, `web/data/b.md` and
+  `web/background/b.md` rows. Not done: a human read-through of the Slovenian text, rehearsal of chapter 6 at 3 minutes.
